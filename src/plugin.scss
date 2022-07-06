@@ -1,0 +1,18 @@
+$body: yellow;
+
+h1 {
+  color: blueviolet;
+  height: min-content;
+
+  &::after {
+    display: block;
+    content: '';
+    width: 30px;
+    height: 30px;
+    background-color: rgb(128 128 128);
+  }
+}
+
+body {
+  background-color: $body;
+}

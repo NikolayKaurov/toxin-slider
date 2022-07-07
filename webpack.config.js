@@ -41,7 +41,6 @@ module.exports = {
     }),
 
     new MiniCssExtractPlugin({ filename: '[name].css' }),
-
   ],
 
   module: {
@@ -57,10 +56,6 @@ module.exports = {
       {
         test: /\.s[ac]ss$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
-      },
-      {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: 'asset',
       },
     ],
   },

@@ -1,27 +1,23 @@
 .toxin-slider {
-  display: flex;
-  align-items: center;
-  color: red;
-  height: min-content;
-  text-transform: uppercase;
+  $thumb-thickness: 24px;
+  $thumb-length: 24px;
 
-  &::after {
-    border-radius: 30px;
-    margin: 5px;
-    display: inline-block;
-    content: '';
-    width: 30px;
-    height: 30px;
-    background-color: rgb(32 128 32);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  &__inner-wrapper {
+    width: calc(100% - $thumb-length);
+    height: $thumb-thickness;
+    position: relative;
   }
 
-  &::before {
-    border-radius: 30px;
-    margin: 5px;
-    display: inline-block;
-    content: '';
-    width: 30px;
-    height: 30px;
-    background-color: rgb(32 32 128);
+  &__thumb {
+    width: $thumb-length;
+    height: $thumb-thickness;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: $thumb-length;
+    border: 5px solid crimson;
   }
 }

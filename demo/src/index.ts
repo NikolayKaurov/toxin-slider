@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-import '../../src/plugin';
-import '../../src/plugin.scss';
+import '../../src/toxin-slider';
+import '../../src/toxin-slider.scss';
 
-$('h1').emptyPlugin();
+$('.js-container').toxinSlider();

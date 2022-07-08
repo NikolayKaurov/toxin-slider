@@ -1,10 +1,15 @@
+@use 'sass:math';
+
 .toxin-slider {
+  $root: &;
   $thumb-thickness: 24px;
   $thumb-length: 24px;
+  $half-thumb-length: math.div($thumb-length, 2);
 
   display: flex;
   flex-direction: column;
   width: 100%;
+  z-index: 0;
 
   &__inner-wrapper {
     width: calc(100% - $thumb-length);
@@ -13,11 +18,36 @@
   }
 
   &__thumb {
-    width: $thumb-length;
-    height: $thumb-thickness;
+    width: 100%;
+    height: inherit;
     position: absolute;
-    box-sizing: border-box;
-    border-radius: $thumb-length;
-    border: 5px solid crimson;
+    pointer-events: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: $thumb-length;
+      height: inherit;
+      box-sizing: border-box;
+      border: 2px solid crimson;
+      border-radius: $thumb-length;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    &-tooltip {
+      position: absolute;
+      bottom: 125%;
+      left: $half-thumb-length;
+      transform: translateX(-50%);
+
+      &_hidden {
+        display: none;
+      }
+    }
+
+    &_hidden {
+      display: none;
+    }
   }
 }

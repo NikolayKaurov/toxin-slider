@@ -29,6 +29,14 @@ module.exports = {
         sourceType: 'module',
         project: './tsconfig.json',
       },
+      rules: {
+        '@typescript-eslint/no-use-before-define': [
+          'error',
+          {
+            functions: false,
+          },
+        ],
+      },
     },
   ],
   parserOptions: {

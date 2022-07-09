@@ -2,6 +2,8 @@ interface ToxinSlider {
   (): JQuery;
 }
 
+type DragPosition = number | null;
+
 interface ThumbState {
   value: number;
   position: number;

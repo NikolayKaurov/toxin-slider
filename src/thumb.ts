@@ -1,22 +1,32 @@
 import $ from 'jquery';
 
-const thumbHTML = '<div class="toxin-slider__thumb" tabindex="0"></div>';
-const tooltipHTML = '<div class="toxin-slider__thumb-tooltip"></div>';
+const thumbHTML = '<div class="toxin-slider__thumb js-toxin-slider__thumb" tabindex="0"></div>';
+const tooltipHTML = '<div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip"></div>';
+
+const enum MoveDirection {
+  back,
+  stop,
+  forward,
+}
 
 export default class Thumb {
-  $wrapper: JQuery;
+  private readonly $wrapper: JQuery;
 
-  $thumb: JQuery;
+  private readonly $thumb: JQuery;
 
-  $tooltip: JQuery;
+  private readonly $tooltip: JQuery;
 
-  state: ThumbState = {
+  private state: ThumbState = {
     value: 0,
     position: 0,
     isVertical: false,
     hidden: false,
     tooltipIsHidden: false,
   };
+
+  private dragPosition: DragPosition = null;
+
+  private moveDirection: MoveDirection = MoveDirection.stop;
 
   constructor(options: { $wrapper: JQuery; state: ThumbState }) {
     const { $wrapper, state } = options;
@@ -28,11 +38,42 @@ export default class Thumb {
     this.update(state);
   }
 
-  update(state: ThumbState) {
+  update(state: ThumbState): Thumb {
     this.state = state;
 
-    const axis = state.isVertical ? 'Y' : 'X';
+    this.position();
+
     this.$tooltip.text(state.value);
-    this.$thumb.css('transform', `translate${axis}(${state.position}%)`);
+
+    if (state.hidden) {
+      this.$thumb.addClass('toxin-slider__thumb_hidden');
+    } else {
+      this.$thumb.removeClass('toxin-slider__thumb_hidden');
+    }
+
+    if (state.tooltipIsHidden) {
+      this.$tooltip.addClass('toxin-slider__thumb-tooltip_hidden');
+    } else {
+      this.$tooltip.removeClass('toxin-slider__thumb-tooltip_hidden');
+    }
+
+    return this;
+  }
+
+  getPosition(): number {
+    return this.dragPosition === null ? this.state.position : this.dragPosition;
+  }
+
+  getDirection(): MoveDirection {
+    return this.moveDirection;
+  }
+
+  private position(): Thumb {
+    const axis = this.state.isVertical ? 'Y' : 'X';
+    const position = this.dragPosition === null ? this.state.position : this.dragPosition;
+
+    this.$thumb.css('transform', `translate${axis}(${position}%)`);
+
+    return this;
   }
 }

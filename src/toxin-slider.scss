@@ -42,12 +42,16 @@
       transform: translateX(-50%);
 
       &_hidden {
-        display: none;
+        visibility: hidden;
+      }
+
+      &::selection {
+        background: transparent;
       }
     }
 
     &_hidden {
-      display: none;
+      visibility: hidden;
     }
   }
 }

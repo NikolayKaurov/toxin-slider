@@ -32,6 +32,7 @@
       border: 2px solid crimson;
       border-radius: $thumb-length;
       pointer-events: auto;
+      touch-action: none;
       cursor: pointer;
     }
 
@@ -52,6 +53,34 @@
 
     &_hidden {
       visibility: hidden;
+    }
+  }
+
+  &_direction_vertical {
+    flex-direction: row;
+    width: min-content;
+    height: 100%;
+
+    #{$root}__inner-wrapper {
+      width: $thumb-thickness;
+      height: calc(100% - $thumb-length);
+    }
+
+    #{$root}__thumb {
+      width: inherit;
+      height: 100%;
+
+      &::before {
+        width: inherit;
+        height: $thumb-length;
+      }
+
+      &-tooltip {
+        bottom: auto;
+        top: $half-thumb-length;
+        left: 125%;
+        transform: translateY(-50%);
+      }
     }
   }
 }

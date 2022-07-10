@@ -81,4 +81,48 @@ describe('Thumb test', () => {
     expect($thumb.hasClass('toxin-slider__thumb_hidden')).toEqual(hidden);
     expect($tooltip.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(tooltipIsHidden);
   });
+
+  test('Thumb move test', () => {
+    const $wrapper = $('.js-wrapper');
+
+    $wrapper.css({
+      width: '1000px',
+      height: '1000px',
+    });
+
+    const state = {
+      value: 0,
+      position: 0,
+      isVertical: false,
+      hidden: false,
+      tooltipIsHidden: false,
+    };
+
+    const thumb = new Thumb({ $wrapper, state });
+
+    $wrapper.on('toxin-slider.thumb.drag', update);
+
+    function update() {
+      thumb.update(state);
+    }
+
+    const $thumb = $('.js-toxin-slider__thumb');
+
+    const event = $.Event(
+      'mousedown',
+      {
+        clientX: 1,
+      },
+    );
+
+    $thumb.trigger(event);
+
+    event.type = 'mousemove';
+    event.clientX = 101;
+
+    $thumb.trigger(event);
+
+    expect(thumb.getPosition()).toEqual(10);
+    expect($thumb.css('transform')).toEqual('translateX(10%)');
+  });
 });

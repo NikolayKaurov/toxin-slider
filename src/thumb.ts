@@ -35,6 +35,8 @@ export default class Thumb {
     this.$thumb = $(thumbHTML).append(this.$tooltip);
     this.$wrapper = $wrapper.append(this.$thumb);
 
+    this.$thumb.on('mousedown', { thumb: this }, handleThumbMousedown);
+
     this.update(state);
   }
 
@@ -68,6 +70,45 @@ export default class Thumb {
     return this.moveDirection;
   }
 
+  getDragRestriction(): {
+    wrapperPosition: number;
+    wrapperSize: number;
+    isVertical: boolean;
+  } {
+    const { isVertical } = this.state;
+
+    if (isVertical) {
+      const wrapperPosition = this.$wrapper.offset()?.top ?? 0;
+      const wrapperSize = this.$wrapper.outerHeight() ?? 0;
+
+      return { wrapperPosition, wrapperSize, isVertical };
+    }
+
+    const wrapperPosition = this.$wrapper.offset()?.left ?? 0;
+    const wrapperSize = this.$wrapper.outerWidth() ?? 0;
+
+    return { wrapperPosition, wrapperSize, isVertical };
+  }
+
+  setDragPosition(dragPosition: DragPosition) {
+    this.dragPosition = dragPosition;
+
+    return this;
+  }
+
+  sendDragMessage(options?: { innerOffset: number, wrapperSize: number }) {
+    const parameters = options !== undefined
+      ? {
+        ...options,
+        value: this.state.value,
+      }
+      : {};
+
+    this.$thumb.trigger('toxin-slider.thumb.drag', parameters);
+
+    return this;
+  }
+
   private position(): Thumb {
     const axis = this.state.isVertical ? 'Y' : 'X';
     const position = this.dragPosition === null ? this.state.position : this.dragPosition;
@@ -76,4 +117,84 @@ export default class Thumb {
 
     return this;
   }
+}
+
+function handleThumbMousedown(event: JQuery.TriggeredEvent) {
+  const $thumb = $(event.target);
+  const { thumb } = event.data as { thumb: Thumb };
+  const { wrapperPosition, wrapperSize, isVertical } = thumb.getDragRestriction();
+
+  const grabPoint = isVertical
+    ? ($thumb.offset()?.top ?? 0) - (event.clientY ?? 0)
+    : ($thumb.offset()?.left ?? 0) - (event.clientX ?? 0);
+
+  const minRestriction = grabPoint + wrapperPosition;
+  const maxRestriction = minRestriction + wrapperSize;
+
+  $(document).on(
+    'mousemove pointermove',
+    {
+      thumb,
+      minRestriction,
+      maxRestriction,
+      wrapperSize,
+      isVertical,
+    },
+    handleThumbMousemove,
+  );
+
+  $(document).on(
+    'mouseup pointerup',
+    { thumb },
+    handleThumbMouseup,
+  );
+}
+
+function handleThumbMousemove(event: JQuery.TriggeredEvent) {
+  const {
+    thumb,
+    minRestriction,
+    maxRestriction,
+    wrapperSize,
+    isVertical,
+  } = event.data as {
+    thumb: Thumb;
+    minRestriction: number;
+    maxRestriction: number;
+    wrapperSize: number;
+    isVertical: boolean;
+  };
+
+  const dragPosition = isVertical
+    ? (event.clientY ?? 0)
+    : (event.clientX ?? 0);
+
+  const getInnerOffset = () => {
+    if (dragPosition < minRestriction) {
+      return 0;
+    }
+
+    if (dragPosition > maxRestriction) {
+      return wrapperSize;
+    }
+
+    return dragPosition - minRestriction;
+  };
+
+  const innerOffset = getInnerOffset();
+
+  thumb
+    .setDragPosition((100 * innerOffset) / wrapperSize)
+    .sendDragMessage({ innerOffset, wrapperSize });
+}
+
+function handleThumbMouseup(event: JQuery.TriggeredEvent) {
+  $(document).off('mousemove pointermove', handleThumbMousemove);
+  $(document).off('mouseup pointerup', handleThumbMouseup);
+
+  const { thumb } = event.data as { thumb: Thumb };
+
+  thumb
+    .setDragPosition(null)
+    .sendDragMessage();
 }

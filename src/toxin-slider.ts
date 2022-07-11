@@ -10,7 +10,7 @@ $.fn.toxinSlider = function toxinSlider(this: JQuery): JQuery {
 
   const state = {
     value: 11,
-    position: 0,
+    position: 50,
     isVertical: false,
     hidden: false,
     tooltipIsHidden: false,

@@ -9,7 +9,9 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: min-content;
   z-index: 0;
+  overflow-x: clip;
 
   &__inner-wrapper {
     width: calc(100% - $thumb-length);
@@ -22,6 +24,7 @@
     height: inherit;
     position: absolute;
     pointer-events: none;
+    outline: 0;
 
     &::before {
       content: '';
@@ -34,6 +37,10 @@
       pointer-events: auto;
       touch-action: none;
       cursor: pointer;
+    }
+
+    &:focus {
+      box-shadow: black;
     }
 
     &-tooltip {

@@ -4,19 +4,19 @@ const thumbHTML = '<div class="toxin-slider__thumb js-toxin-slider__thumb" tabin
 const tooltipHTML = '<div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip"></div>';
 
 const enum MoveDirection {
-  back,
+  back = -1,
   stop,
   forward,
 }
 
 export default class Thumb {
-  private readonly $wrapper: JQuery;
+  readonly $wrapper: JQuery;
 
-  private readonly $thumb: JQuery;
+  readonly $thumb: JQuery;
 
-  private readonly $tooltip: JQuery;
+  readonly $tooltip: JQuery;
 
-  private state: ThumbState = {
+  state: ThumbState = {
     value: 0,
     position: 0,
     isVertical: false,
@@ -24,9 +24,18 @@ export default class Thumb {
     tooltipIsHidden: false,
   };
 
-  private dragPosition: DragPosition = null;
+  drag: DragData = {
+    position: null as DragPosition,
+    innerOffset: 0,
+    wrapperPosition: 0,
+    wrapperSize: 0,
+    minRestriction: 0,
+    maxRestriction: 0,
+  };
 
-  private moveDirection: MoveDirection = MoveDirection.stop;
+  /* This property describes thumb movement using the KEYBOARD
+  and is named using the word MOVE instead of DRAG by design. */
+  moveDirection: MoveDirection = MoveDirection.stop;
 
   constructor(options: { $wrapper: JQuery; state: ThumbState }) {
     const { $wrapper, state } = options;
@@ -63,55 +72,29 @@ export default class Thumb {
   }
 
   getPosition(): number {
-    return this.dragPosition === null ? this.state.position : this.dragPosition;
+    return this.drag.position === null ? this.state.position : this.drag.position;
   }
 
   getDirection(): MoveDirection {
     return this.moveDirection;
   }
 
-  getDragRestriction(): {
-    wrapperPosition: number;
-    wrapperSize: number;
-    isVertical: boolean;
-  } {
-    const { isVertical } = this.state;
-
-    if (isVertical) {
-      const wrapperPosition = this.$wrapper.offset()?.top ?? 0;
-      const wrapperSize = this.$wrapper.outerHeight() ?? 0;
-
-      return { wrapperPosition, wrapperSize, isVertical };
-    }
-
-    const wrapperPosition = this.$wrapper.offset()?.left ?? 0;
-    const wrapperSize = this.$wrapper.outerWidth() ?? 0;
-
-    return { wrapperPosition, wrapperSize, isVertical };
-  }
-
-  setDragPosition(dragPosition: DragPosition) {
-    this.dragPosition = dragPosition;
-
-    return this;
-  }
-
-  sendDragMessage(options?: { innerOffset: number, wrapperSize: number }) {
-    const parameters = options !== undefined
-      ? {
-        ...options,
+  sendDragMessage() {
+    this.$thumb.trigger(
+      'toxin-slider.thumb.drag',
+      {
+        innerOffset: this.drag.innerOffset,
+        wrapperSize: this.drag.wrapperSize,
         value: this.state.value,
-      }
-      : {};
-
-    this.$thumb.trigger('toxin-slider.thumb.drag', parameters);
+      },
+    );
 
     return this;
   }
 
   private position(): Thumb {
     const axis = this.state.isVertical ? 'Y' : 'X';
-    const position = this.dragPosition === null ? this.state.position : this.dragPosition;
+    const position = this.drag.position === null ? this.state.position : this.drag.position;
 
     this.$thumb.css('transform', `translate${axis}(${position}%)`);
 
@@ -120,81 +103,64 @@ export default class Thumb {
 }
 
 function handleThumbMousedown(event: JQuery.TriggeredEvent) {
-  const $thumb = $(event.target);
   const { thumb } = event.data as { thumb: Thumb };
-  const { wrapperPosition, wrapperSize, isVertical } = thumb.getDragRestriction();
+  const {
+    $thumb,
+    $wrapper,
+    state,
+    drag,
+  } = thumb;
 
-  const grabPoint = isVertical
-    ? ($thumb.offset()?.top ?? 0) - (event.clientY ?? 0)
-    : ($thumb.offset()?.left ?? 0) - (event.clientX ?? 0);
+  if (state.isVertical) {
+    drag.wrapperPosition = $wrapper.offset()?.top ?? 0;
+    drag.wrapperSize = $wrapper.outerHeight() ?? 0;
+  } else {
+    drag.wrapperPosition = $wrapper.offset()?.left ?? 0;
+    drag.wrapperSize = $wrapper.outerWidth() ?? 0;
+  }
 
-  const minRestriction = grabPoint + wrapperPosition;
-  const maxRestriction = minRestriction + wrapperSize;
+  const grabPoint = state.isVertical
+    ? (event.clientY ?? 0) - ($thumb.offset()?.top ?? 0)
+    : (event.clientX ?? 0) - ($thumb.offset()?.left ?? 0);
 
-  $(document).on(
-    'mousemove pointermove',
-    {
-      thumb,
-      minRestriction,
-      maxRestriction,
-      wrapperSize,
-      isVertical,
-    },
-    handleThumbMousemove,
-  );
+  drag.minRestriction = grabPoint + drag.wrapperPosition;
+  drag.maxRestriction = drag.minRestriction + drag.wrapperSize;
 
-  $(document).on(
-    'mouseup pointerup',
-    { thumb },
-    handleThumbMouseup,
-  );
+  $(document).on('mousemove pointermove', { thumb }, handleThumbMousemove);
+  $(document).on('mouseup pointerup', { thumb }, handleThumbMouseup);
 }
 
 function handleThumbMousemove(event: JQuery.TriggeredEvent) {
-  const {
-    thumb,
-    minRestriction,
-    maxRestriction,
-    wrapperSize,
-    isVertical,
-  } = event.data as {
-    thumb: Thumb;
-    minRestriction: number;
-    maxRestriction: number;
-    wrapperSize: number;
-    isVertical: boolean;
-  };
+  const { thumb } = event.data as { thumb: Thumb };
+  const { state, drag } = thumb;
 
-  const dragPosition = isVertical
+  const mousePosition = state.isVertical
     ? (event.clientY ?? 0)
     : (event.clientX ?? 0);
 
-  const getInnerOffset = () => {
-    if (dragPosition < minRestriction) {
-      return 0;
-    }
+  if (mousePosition < drag.minRestriction) {
+    drag.innerOffset = 0;
+  } else if (mousePosition > drag.maxRestriction) {
+    drag.innerOffset = drag.wrapperSize;
+  } else {
+    drag.innerOffset = mousePosition - drag.minRestriction;
+  }
 
-    if (dragPosition > maxRestriction) {
-      return wrapperSize;
-    }
+  drag.position = (100 * drag.innerOffset) / drag.wrapperSize;
 
-    return dragPosition - minRestriction;
-  };
+  console.log(drag);
 
-  const innerOffset = getInnerOffset();
-
-  thumb
-    .setDragPosition((100 * innerOffset) / wrapperSize)
-    .sendDragMessage({ innerOffset, wrapperSize });
+  thumb.sendDragMessage();
 }
 
 function handleThumbMouseup(event: JQuery.TriggeredEvent) {
+  const { thumb } = event.data as { thumb: Thumb };
+  const { drag } = thumb;
+
   $(document).off('mousemove pointermove', handleThumbMousemove);
   $(document).off('mouseup pointerup', handleThumbMouseup);
 
-  const { thumb } = event.data as { thumb: Thumb };
+  drag.position = null;
 
-  thumb
-    .setDragPosition(null)
-    .sendDragMessage();
+  thumb.sendDragMessage();
 }

@@ -2,6 +2,10 @@ interface ToxinSlider {
   (): JQuery;
 }
 
+interface JQuery {
+  toxinSlider: ToxinSlider;
+}
+
 type DragPosition = number | null;
 
 interface DragData {
@@ -21,6 +25,9 @@ interface ThumbState {
   tooltipIsHidden: boolean;
 }
 
-interface JQuery {
-  toxinSlider: ToxinSlider;
+interface ProgressBarState {
+  min: number;
+  max: number;
+  isVertical: boolean;
+  hidden: boolean;
 }

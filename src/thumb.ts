@@ -96,7 +96,9 @@ export default class Thumb {
     const axis = this.state.isVertical ? 'Y' : 'X';
     const position = this.drag.position === null ? this.state.position : this.drag.position;
 
-    this.$thumb.css('transform', `translate${axis}(${position}%)`);
+    this.$thumb.css('transform', `translate${axis}(${
+      axis === 'X' ? position : 100 - position
+    }%)`);
 
     return this;
   }
@@ -126,6 +128,8 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
   drag.minRestriction = grabPoint + drag.wrapperPosition;
   drag.maxRestriction = drag.minRestriction + drag.wrapperSize;
 
+  $thumb.addClass('toxin-slider__thumb_draggable');
+
   $(document).on('mousemove pointermove', { thumb }, handleThumbMousemove);
   $(document).on('mouseup pointerup', { thumb }, handleThumbMouseup);
 }
@@ -139,28 +143,34 @@ function handleThumbMousemove(event: JQuery.TriggeredEvent) {
     : (event.clientX ?? 0);
 
   if (mousePosition < drag.minRestriction) {
-    drag.innerOffset = 0;
+    drag.innerOffset = state.isVertical
+      ? drag.wrapperSize
+      : 0;
   } else if (mousePosition > drag.maxRestriction) {
-    drag.innerOffset = drag.wrapperSize;
+    drag.innerOffset = state.isVertical
+      ? 0
+      : drag.wrapperSize;
   } else {
-    drag.innerOffset = mousePosition - drag.minRestriction;
+    drag.innerOffset = state.isVertical
+      ? drag.maxRestriction - mousePosition
+      : mousePosition - drag.minRestriction;
   }
 
   drag.position = (100 * drag.innerOffset) / drag.wrapperSize;
-
-  console.log(drag);
 
   thumb.sendDragMessage();
 }
 
 function handleThumbMouseup(event: JQuery.TriggeredEvent) {
   const { thumb } = event.data as { thumb: Thumb };
-  const { drag } = thumb;
+  const { $thumb, drag } = thumb;
 
   $(document).off('mousemove pointermove', handleThumbMousemove);
   $(document).off('mouseup pointerup', handleThumbMouseup);
 
   drag.position = null;
+
+  $thumb.removeClass('toxin-slider__thumb_draggable');
 
   thumb.sendDragMessage();
 }

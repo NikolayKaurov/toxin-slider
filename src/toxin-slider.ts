@@ -8,16 +8,24 @@ const innerWrapperHTML = '<div class="toxin-slider__inner-wrapper"></div>';
 $.fn.toxinSlider = function toxinSlider(this: JQuery): JQuery {
   const $innerWrapper = $(innerWrapperHTML);
 
-  const state = {
+  const stateA = {
     value: 11,
-    position: 50,
+    position: 75,
     isVertical: false,
     hidden: false,
     tooltipIsHidden: false,
   };
 
-  const thumb = new Thumb({
-    state,
+  const thumbA = new Thumb({
+    state: stateA,
+    $wrapper: $innerWrapper,
+  });
+
+  const stateB = { ...stateA };
+  stateB.position = 25;
+
+  const thumbB = new Thumb({
+    state: stateB,
     $wrapper: $innerWrapper,
   });
 
@@ -26,7 +34,8 @@ $.fn.toxinSlider = function toxinSlider(this: JQuery): JQuery {
   $innerWrapper.on('toxin-slider.thumb.drag', update);
 
   function update() {
-    thumb.update(state);
+    thumbA.update(stateA);
+    thumbB.update(stateB);
   }
 
   return this.append($toxinSlider);

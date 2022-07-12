@@ -37,7 +37,7 @@ describe('Thumb setup test', () => {
       },
     });
 
-    expect($wrapper.html()).toEqual('<div class="toxin-slider__thumb js-toxin-slider__thumb" tabindex="0" style="transform: translateX(0%);"><div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip">0</div></div><div class="toxin-slider__thumb js-toxin-slider__thumb toxin-slider__thumb_hidden" tabindex="0" style="transform: translateY(91%);"><div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip toxin-slider__thumb-tooltip_hidden">17</div></div>');
+    expect($wrapper.html()).toEqual('<div class="toxin-slider__thumb js-toxin-slider__thumb" tabindex="0" style="transform: translateX(0%);"><div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip">0</div></div><div class="toxin-slider__thumb js-toxin-slider__thumb toxin-slider__thumb_hidden" tabindex="0" style="transform: translateY(9%);"><div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip toxin-slider__thumb-tooltip_hidden">17</div></div>');
     expect(thumbB.getPosition()).toEqual(91);
     expect(thumbB.getDirection()).toEqual(0);
   });
@@ -73,7 +73,9 @@ describe('Thumb setup test', () => {
       });
 
       expect($tooltip.text()).toEqual(value.toString(10));
-      expect($thumb.css('transform')).toEqual(`translate${axis}(${position}%)`);
+      expect($thumb.css('transform')).toEqual(`translate${axis}(${
+        axis === 'X' ? position : 100 - position
+      }%)`);
       expect($thumb.hasClass('toxin-slider__thumb_hidden')).toEqual(hidden);
       expect($tooltip.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(tooltipIsHidden);
     }
@@ -83,19 +85,17 @@ describe('Thumb setup test', () => {
 describe('Thumb drag test', () => {
   const wrapperSizeX = 100;
   const wrapperSizeY = 100;
-  const margin = 100;
 
   const $wrapper = $('<div></div>')
     .css({
       width: `${wrapperSizeX}px`,
       height: `${wrapperSizeY}px`,
-      margin: `${margin}px`,
     });
   $('body').append($wrapper);
 
   const state = {
     value: 0,
-    position: 50,
+    position: 0,
     isVertical: false,
     hidden: false,
     tooltipIsHidden: false,
@@ -111,8 +111,8 @@ describe('Thumb drag test', () => {
 
   beforeEach(() => {
     event.type = 'mousedown';
-    event.clientX = 100;
-    event.clientY = 100;
+    event.clientX = 0;
+    event.clientY = 0;
 
     $draggingThumb.trigger(event);
 
@@ -125,10 +125,64 @@ describe('Thumb drag test', () => {
   });
 
   test('Thumb simple horizontal drag test', () => {
-    event.clientX = margin + 27;
+    for (let i = 0; i < 3; i += 1) {
+      const position = Math.round(Math.random() * 100);
+
+      event.clientX = position * (wrapperSizeX / 100);
+      $draggingThumb.trigger(event);
+
+      expect(draggingThumb.getPosition()).toEqual(position);
+      expect($draggingThumb.css('transform')).toEqual(`translateX(${position}%)`);
+    }
+  });
+
+  test('Thumb horizontal drag over left border test', () => {
+    event.clientX = -100;
     $draggingThumb.trigger(event);
 
-    expect(draggingThumb.getPosition()).toEqual(27);
-    expect($draggingThumb.css('transform')).toEqual(`translateX(${27}%)`);
+    expect(draggingThumb.getPosition()).toEqual(0);
+    expect($draggingThumb.css('transform')).toEqual('translateX(0%)');
+  });
+
+  test('Thumb horizontal drag over right border test', () => {
+    event.clientX = wrapperSizeX * 2;
+    $draggingThumb.trigger(event);
+
+    expect(draggingThumb.getPosition()).toEqual(100);
+    expect($draggingThumb.css('transform')).toEqual('translateX(100%)');
+  });
+
+  test('Thumb simple vertical drag test', () => {
+    state.isVertical = true;
+
+    for (let i = 0; i < 3; i += 1) {
+      const position = Math.round(Math.random() * 100);
+
+      event.clientY = position * (wrapperSizeY / 100);
+      $draggingThumb.trigger(event);
+
+      expect(draggingThumb.getPosition()).toEqual(position);
+      expect($draggingThumb.css('transform')).toEqual(`translateY(${100 - position}%)`);
+    }
+  });
+
+  test('Thumb vertical drag over top border test', () => {
+    state.isVertical = true;
+
+    event.clientY = -100;
+    $draggingThumb.trigger(event);
+
+    expect(draggingThumb.getPosition()).toEqual(0);
+    expect($draggingThumb.css('transform')).toEqual('translateY(100%)');
+  });
+
+  test('Thumb vertical drag over bottom border test', () => {
+    state.isVertical = true;
+
+    event.clientY = wrapperSizeY * 2;
+    $draggingThumb.trigger(event);
+
+    expect(draggingThumb.getPosition()).toEqual(100);
+    expect($draggingThumb.css('transform')).toEqual('translateY(0%)');
   });
 });

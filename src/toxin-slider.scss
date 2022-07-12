@@ -2,27 +2,30 @@
 
 .toxin-slider {
   $root: &;
-  $thumb-thickness: 24px;
-  $thumb-length: 24px;
+  $thumb-thickness: 16px;
+  $thumb-length: 16px;
   $half-thumb-length: math.div($thumb-length, 2);
+  $thumb-color: #6fcf97;
+  $bar-thickness: 50%;
 
   display: flex;
   flex-direction: column;
   width: 100%;
   height: min-content;
-  z-index: 0;
   overflow-x: clip;
+  overflow-y: visible;
+  z-index: 0;
 
   &__inner-wrapper {
+    position: relative;
     width: calc(100% - $thumb-length);
     height: $thumb-thickness;
-    position: relative;
   }
 
   &__thumb {
+    position: absolute;
     width: 100%;
     height: inherit;
-    position: absolute;
     pointer-events: none;
     outline: 0;
 
@@ -32,22 +35,32 @@
       width: $thumb-length;
       height: inherit;
       box-sizing: border-box;
-      border: 2px solid crimson;
+      border: 2px solid white;
       border-radius: $thumb-length;
+      background-color: $thumb-color;
       pointer-events: auto;
       touch-action: none;
       cursor: pointer;
+      z-index: 1;
+    }
+
+    &_draggable {
+      z-index: 2;
     }
 
     &:focus {
-      box-shadow: black;
+      &::before {
+        border: 0;
+        background: white;
+        box-shadow: 0 0 $half-thumb-length inset $thumb-color;
+      }
     }
 
     &-tooltip {
       position: absolute;
-      bottom: 125%;
       left: $half-thumb-length;
       transform: translateX(-50%);
+      bottom: 125%;
 
       &_hidden {
         visibility: hidden;
@@ -63,10 +76,28 @@
     }
   }
 
+  &__progress-bar {
+    position: absolute;
+    top: 50%;
+    left: $half-thumb-length;
+    transform: translateY(-50%);
+    width: 100%;
+    height: $bar-thickness;
+    max-height: $thumb-thickness;
+    background: #0074d9;
+    z-index: 0;
+
+    &_hidden {
+      visibility: hidden;
+    }
+  }
+
   &_direction_vertical {
     flex-direction: row;
     width: min-content;
     height: 100%;
+    overflow-x: visible;
+    overflow-y: clip;
 
     #{$root}__inner-wrapper {
       width: $thumb-thickness;
@@ -83,11 +114,21 @@
       }
 
       &-tooltip {
-        bottom: auto;
         top: $half-thumb-length;
-        left: 125%;
         transform: translateY(-50%);
+        left: 125%;
+        bottom: auto;
       }
+    }
+
+    #{$root}__progress-bar {
+      top: $half-thumb-length;
+      left: 50%;
+      transform: translateX(-50%);
+      width: $bar-thickness;
+      max-width: $thumb-thickness;
+      height: 100%;
+      max-height: none;
     }
   }
 }

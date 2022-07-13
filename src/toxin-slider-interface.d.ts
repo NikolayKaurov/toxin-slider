@@ -31,3 +31,12 @@ interface ProgressBarState {
   isVertical: boolean;
   hidden: boolean;
 }
+
+interface ModelState {
+  start?: number;
+  end?: number;
+  step?: number;
+  from?: number;
+  to?: number;
+  range?: 'single' | 'double';
+}

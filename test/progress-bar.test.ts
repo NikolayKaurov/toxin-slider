@@ -36,7 +36,7 @@ describe('Progress-bar test', () => {
 
     const progressBarB = new ProgressBar({ $wrapper, state });
 
-    for (let i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 10; i += 1) {
       state.min = Math.round(Math.random() * 100);
       state.max = Math.round(Math.random() * 100);
       state.hidden = Math.round(Math.random()) === 0;

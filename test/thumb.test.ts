@@ -56,7 +56,7 @@ describe('Thumb setup test', () => {
 
     const { $thumb, $tooltip } = thumb;
 
-    for (let i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 10; i += 1) {
       const value = Math.round(Math.random() * 100);
       const position = Math.round(Math.random() * 100);
       const isVertical = Math.round(Math.random()) === 0;

@@ -94,7 +94,7 @@ export default class Thumb {
 
   private position(): Thumb {
     const axis = this.state.isVertical ? 'Y' : 'X';
-    const position = this.drag.position === null ? this.state.position : this.drag.position;
+    const position = this.getPosition();
 
     this.$thumb.css('transform', `translate${axis}(${
       axis === 'X' ? position - 100 : -position

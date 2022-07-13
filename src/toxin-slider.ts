@@ -1,17 +1,18 @@
 import $ from 'jquery';
 
 import Thumb from './thumb';
+import ProgressBar from './progress-bar';
 
-const toxinSliderHTML = '<div class="toxin-slider"></div>';
+const toxinSliderHTML = '<div class="toxin-slider toxin-slider_direction_vertical"></div>';
 const innerWrapperHTML = '<div class="toxin-slider__inner-wrapper"></div>';
 
 $.fn.toxinSlider = function toxinSlider(this: JQuery): JQuery {
   const $innerWrapper = $(innerWrapperHTML);
 
   const stateA = {
-    value: 11,
+    value: 75,
     position: 75,
-    isVertical: false,
+    isVertical: true,
     hidden: false,
     tooltipIsHidden: false,
   };
@@ -21,12 +22,25 @@ $.fn.toxinSlider = function toxinSlider(this: JQuery): JQuery {
     $wrapper: $innerWrapper,
   });
 
+  /*
   const stateB = { ...stateA };
   stateB.position = 25;
+  stateB.value = 25;
 
   const thumbB = new Thumb({
     state: stateB,
     $wrapper: $innerWrapper,
+  });
+  */
+
+  const progressBar = new ProgressBar({
+    $wrapper: $innerWrapper,
+    state: {
+      min: 0,
+      max: stateA.position,
+      isVertical: true,
+      hidden: false,
+    },
   });
 
   const $toxinSlider = $(toxinSliderHTML).append($innerWrapper);
@@ -35,7 +49,15 @@ $.fn.toxinSlider = function toxinSlider(this: JQuery): JQuery {
 
   function update() {
     thumbA.update(stateA);
-    thumbB.update(stateB);
+    // thumbB.update(stateB);
+    progressBar.update({
+      min: 0,
+      max: thumbA.getPosition(),
+      // min: 0,
+      // max: 10,
+      isVertical: true,
+      hidden: false,
+    });
   }
 
   return this.append($toxinSlider);

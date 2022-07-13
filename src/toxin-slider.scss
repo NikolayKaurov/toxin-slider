@@ -5,15 +5,15 @@
   $thumb-thickness: 16px;
   $thumb-length: 16px;
   $half-thumb-length: math.div($thumb-length, 2);
-  $thumb-color: #6fcf97;
-  $bar-thickness: 50%;
+  $background: linear-gradient(180deg, #6fcf97 0%, #66d2ea 100%);
+  $background-vertical: linear-gradient(90deg, #6fcf97 0%, #66d2ea 100%);
+  $shadow-color: #6fcf97;
+  $bar-thickness: 6px;
 
   display: flex;
   flex-direction: column;
   width: 100%;
   height: min-content;
-  overflow-x: clip;
-  overflow-y: visible;
   z-index: 0;
 
   &__inner-wrapper {
@@ -25,42 +25,38 @@
   &__thumb {
     position: absolute;
     width: 100%;
-    height: inherit;
-    pointer-events: none;
+    height: 0;
     outline: 0;
+    z-index: 1;
+    will-change: transform;
 
     &::before {
       content: '';
       position: absolute;
+      left: 100%;
       width: $thumb-length;
-      height: inherit;
+      height: $thumb-thickness;
       box-sizing: border-box;
       border: 2px solid white;
-      border-radius: $thumb-length;
-      background-color: $thumb-color;
-      pointer-events: auto;
+      border-radius: $thumb-thickness;
+      background: $background;
       touch-action: none;
       cursor: pointer;
-      z-index: 1;
-    }
-
-    &_draggable {
-      z-index: 2;
     }
 
     &:focus {
+      z-index: 2;
+
       &::before {
-        border: 0;
-        background: white;
-        box-shadow: 0 0 $half-thumb-length inset $thumb-color;
+        box-shadow: 0 0 $half-thumb-length $shadow-color;
       }
     }
 
     &-tooltip {
       position: absolute;
-      left: $half-thumb-length;
+      left: calc(100% + $half-thumb-length);
       transform: translateX(-50%);
-      bottom: 125%;
+      bottom: calc($thumb-thickness * 0.25);
 
       &_hidden {
         visibility: hidden;
@@ -81,11 +77,25 @@
     top: 50%;
     left: $half-thumb-length;
     transform: translateY(-50%);
+    transform-origin: 0 0;
     width: 100%;
     height: $bar-thickness;
     max-height: $thumb-thickness;
-    background: #0074d9;
+    background: $background;
     z-index: 0;
+    will-change: transform;
+
+    &::before {
+      content: '';
+      position: absolute;
+      right: 100%;
+      width: $half-thumb-length;
+      height: $bar-thickness;
+      max-height: $thumb-thickness;
+      background: $background;
+      border-bottom-left-radius: $bar-thickness;
+      border-top-left-radius: $bar-thickness;
+    }
 
     &_hidden {
       visibility: hidden;
@@ -96,8 +106,6 @@
     flex-direction: row;
     width: min-content;
     height: 100%;
-    overflow-x: visible;
-    overflow-y: clip;
 
     #{$root}__inner-wrapper {
       width: $thumb-thickness;
@@ -105,18 +113,20 @@
     }
 
     #{$root}__thumb {
-      width: inherit;
+      width: 0;
       height: 100%;
 
       &::before {
-        width: inherit;
+        left: auto;
+        top: 100%;
+        width: $thumb-thickness;
         height: $thumb-length;
       }
 
       &-tooltip {
-        top: $half-thumb-length;
+        top: calc(100% + $half-thumb-length);
         transform: translateY(-50%);
-        left: 125%;
+        left: calc($thumb-thickness * 1.25);
         bottom: auto;
       }
     }
@@ -129,6 +139,21 @@
       max-width: $thumb-thickness;
       height: 100%;
       max-height: none;
+      background: $background-vertical;
+
+      &::before {
+        right: auto;
+        top: 100%;
+        width: $bar-thickness;
+        max-width: $thumb-thickness;
+        height: $half-thumb-length;
+        max-height: none;
+        background: $background-vertical;
+        border-bottom-left-radius: $bar-thickness;
+        border-bottom-right-radius: $bar-thickness;
+        border-top-left-radius: 0;
+        transform: scaleY(166%) !important;
+      }
     }
   }
 }

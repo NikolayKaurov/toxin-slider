@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>166/166</span>
+                <span class='fraction'>172/172</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.88% </span>
+                <span class="strong">69.81% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>31/45</span>
+                <span class='fraction'>37/53</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>166/166</span>
+                <span class='fraction'>172/172</span>
             </div>
         
             
@@ -229,7 +229,13 @@
 <a name='L164'></a><a href='#L164'>164</a>
 <a name='L165'></a><a href='#L165'>165</a>
 <a name='L166'></a><a href='#L166'>166</a>
-<a name='L167'></a><a href='#L167'>167</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -286,6 +292,12 @@
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -294,12 +306,6 @@
 <span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -373,9 +379,15 @@
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">10x</span>
@@ -494,7 +506,7 @@ export default class Thumb {
     const position = this.drag.position === null ? this.state.position : this.drag.position;
 &nbsp;
     this.$thumb.css('transform', `translate${axis}(${
-      axis === 'X' ? position : 100 - position
+      axis === 'X' ? position - 100 : -position
     }%)`);
 &nbsp;
     return this;
@@ -519,8 +531,8 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
   }
 &nbsp;
   const grabPoint = state.isVertical
-    ? (event.clientY<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.t</span>op<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>
-    : (event.clientX<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.l</span>eft<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>;
+    ? (event.clientY<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.t</span>op<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.outerHeight()<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>
+    : (event.clientX<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.l</span>eft<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.outerWidth()<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>;
 &nbsp;
   drag.minRestriction = grabPoint + drag.wrapperPosition;
   drag.maxRestriction = drag.minRestriction + drag.wrapperSize;
@@ -538,11 +550,17 @@ function handleThumbMousemove(event: JQuery.TriggeredEvent) {
     : (event.clientX<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>;
 &nbsp;
   if (mousePosition &lt; drag.minRestriction) {
-    drag.innerOffset = 0;
+    drag.innerOffset = state.isVertical
+      ? drag.wrapperSize
+      : 0;
   } else if (mousePosition &gt; drag.maxRestriction) {
-    drag.innerOffset = drag.wrapperSize;
+    drag.innerOffset = state.isVertical
+      ? 0
+      : drag.wrapperSize;
   } else {
-    drag.innerOffset = mousePosition - drag.minRestriction;
+    drag.innerOffset = state.isVertical
+      ? drag.maxRestriction - mousePosition
+      : mousePosition - drag.minRestriction;
   }
 &nbsp;
   drag.position = (100 * drag.innerOffset) / drag.wrapperSize;
@@ -568,7 +586,7 @@ function handleThumbMouseup(event: JQuery.TriggeredEvent) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Tue Jul 12 2022 12:27:16 GMT+0700 (Индокитай)
+                at Wed Jul 13 2022 12:35:10 GMT+0700 (Индокитай)
             </div>
         <script src="prettify.js"></script>
         <script>

@@ -4,7 +4,7 @@
   "description": "Slider plugin for jQuery",
   "main": "webpack.config.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --verbose",
     "start": "webpack serve",
     "build": "sass src/toxin-slider.scss dist/toxin-slider.css && postcss dist/toxin-slider.css -r && rollup -c"
   },

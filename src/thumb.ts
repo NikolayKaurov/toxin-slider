@@ -97,7 +97,7 @@ export default class Thumb {
     const position = this.drag.position === null ? this.state.position : this.drag.position;
 
     this.$thumb.css('transform', `translate${axis}(${
-      axis === 'X' ? position : 100 - position
+      axis === 'X' ? position - 100 : -position
     }%)`);
 
     return this;
@@ -122,13 +122,11 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
   }
 
   const grabPoint = state.isVertical
-    ? (event.clientY ?? 0) - ($thumb.offset()?.top ?? 0)
-    : (event.clientX ?? 0) - ($thumb.offset()?.left ?? 0);
+    ? (event.clientY ?? 0) - ($thumb.offset()?.top ?? 0) - ($thumb.outerHeight() ?? 0)
+    : (event.clientX ?? 0) - ($thumb.offset()?.left ?? 0) - ($thumb.outerWidth() ?? 0);
 
   drag.minRestriction = grabPoint + drag.wrapperPosition;
   drag.maxRestriction = drag.minRestriction + drag.wrapperSize;
-
-  $thumb.addClass('toxin-slider__thumb_draggable');
 
   $(document).on('mousemove pointermove', { thumb }, handleThumbMousemove);
   $(document).on('mouseup pointerup', { thumb }, handleThumbMouseup);
@@ -163,14 +161,12 @@ function handleThumbMousemove(event: JQuery.TriggeredEvent) {
 
 function handleThumbMouseup(event: JQuery.TriggeredEvent) {
   const { thumb } = event.data as { thumb: Thumb };
-  const { $thumb, drag } = thumb;
+  const { drag } = thumb;
 
   $(document).off('mousemove pointermove', handleThumbMousemove);
   $(document).off('mouseup pointerup', handleThumbMouseup);
 
   drag.position = null;
-
-  $thumb.removeClass('toxin-slider__thumb_draggable');
 
   thumb.sendDragMessage();
 }

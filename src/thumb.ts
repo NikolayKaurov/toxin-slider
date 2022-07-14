@@ -3,7 +3,7 @@ import $ from 'jquery';
 const thumbHTML = '<div class="toxin-slider__thumb js-toxin-slider__thumb" tabindex="0"></div>';
 const tooltipHTML = '<div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip"></div>';
 
-const enum MoveDirection {
+enum MoveDirection {
   back = -1,
   stop,
   forward,
@@ -21,7 +21,7 @@ export default class Thumb {
     position: 0,
     isVertical: false,
     hidden: false,
-    tooltipIsHidden: false,
+    tooltipHidden: false,
   };
 
   drag: DragData = {
@@ -62,7 +62,7 @@ export default class Thumb {
       this.$thumb.removeClass('toxin-slider__thumb_hidden');
     }
 
-    if (state.tooltipIsHidden) {
+    if (state.tooltipHidden) {
       this.$tooltip.addClass('toxin-slider__thumb-tooltip_hidden');
     } else {
       this.$tooltip.removeClass('toxin-slider__thumb-tooltip_hidden');

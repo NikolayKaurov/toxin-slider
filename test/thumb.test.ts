@@ -18,7 +18,7 @@ describe('Thumb setup test', () => {
         position: 0,
         isVertical: false,
         hidden: false,
-        tooltipIsHidden: false,
+        tooltipHidden: false,
       },
     });
 
@@ -33,7 +33,7 @@ describe('Thumb setup test', () => {
         position: 91,
         isVertical: true,
         hidden: true,
-        tooltipIsHidden: true,
+        tooltipHidden: true,
       },
     });
 
@@ -50,7 +50,7 @@ describe('Thumb setup test', () => {
         position: 0,
         isVertical: false,
         hidden: false,
-        tooltipIsHidden: false,
+        tooltipHidden: false,
       },
     });
 
@@ -62,14 +62,14 @@ describe('Thumb setup test', () => {
       const isVertical = Math.round(Math.random()) === 0;
       const axis = isVertical ? 'Y' : 'X';
       const hidden = Math.round(Math.random()) === 0;
-      const tooltipIsHidden = Math.round(Math.random()) === 0;
+      const tooltipHidden = Math.round(Math.random()) === 0;
 
       thumb.update({
         value,
         position,
         isVertical,
         hidden,
-        tooltipIsHidden,
+        tooltipHidden,
       });
 
       expect($tooltip.text()).toEqual(value.toString(10));
@@ -77,7 +77,7 @@ describe('Thumb setup test', () => {
         axis === 'X' ? position - 100 : -position
       }%)`);
       expect($thumb.hasClass('toxin-slider__thumb_hidden')).toEqual(hidden);
-      expect($tooltip.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(tooltipIsHidden);
+      expect($tooltip.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(tooltipHidden);
     }
   });
 });
@@ -98,7 +98,7 @@ describe('Thumb drag test', () => {
     position: 0,
     isVertical: false,
     hidden: false,
-    tooltipIsHidden: false,
+    tooltipHidden: false,
   };
 
   const draggingThumb = new Thumb({ $wrapper, state });

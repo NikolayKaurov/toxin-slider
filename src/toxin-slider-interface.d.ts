@@ -1,12 +1,18 @@
-interface ToxinSlider {
-  (): JQuery;
-}
-
 interface JQuery {
   toxinSlider: ToxinSlider;
 }
 
-type DragPosition = number | null;
+interface ToxinSlider {
+  (): JQuery;
+}
+
+interface ThumbState {
+  value: number;
+  position: number;
+  isVertical: boolean;
+  hidden: boolean;
+  tooltipHidden: boolean;
+}
 
 interface DragData {
   position: DragPosition;
@@ -17,12 +23,12 @@ interface DragData {
   maxRestriction: number;
 }
 
-interface ThumbState {
+type DragPosition = number | null;
+
+interface DragMessage {
+  innerOffset: number;
+  wrapperSize: number;
   value: number;
-  position: number;
-  isVertical: boolean;
-  hidden: boolean;
-  tooltipIsHidden: boolean;
 }
 
 interface ProgressBarState {
@@ -38,5 +44,5 @@ interface ModelState {
   step?: number;
   from?: number;
   to?: number;
-  range?: 'single' | 'double';
+  hasTwoValues?: boolean;
 }

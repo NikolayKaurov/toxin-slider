@@ -1,36 +1,69 @@
 export default class Model {
-  private state: ModelState;
+  private state: ModelState = {
+    start: 0,
+    end: 0,
+    step: 0,
+    from: 0,
+    to: 0,
+    hasTwoValues: false,
+  };
+
+  private modulo = 0;
 
   constructor(state: ModelState) {
-    const {
-      start = 0,
-      end = 0,
-      step = 0,
-      from = 0,
-      to = 0,
-      range = 'single',
-    } = state;
-
-    this.state = {
-      start,
-      end,
-      step,
-      from,
-      to,
-      range,
-    };
-
-    this.normalizeState();
+    this.update(state);
   }
 
-  normalizeState(): Model {
+  update(message: ModelState | DragMessage): ModelState {
+    if (!isDragMessage(message)) {
+      this.state = { ...this.state, ...message };
+
+      return this.normalizeState();
+    }
+
+    const {
+      start = 0,
+      end = 0,
+      from = 0,
+      hasTwoValues = false,
+    } = this.state;
+
+    const { innerOffset, wrapperSize, value } = message;
+
+    const newValue = this.normalizeValue((innerOffset * (end - start)) / wrapperSize + start);
+
+    if (hasTwoValues) {
+      if (value === from) {
+        this.state.from = newValue;
+      } else {
+        this.state.to = newValue;
+      }
+    } else {
+      this.state.from = newValue;
+    }
+
+    return this.sortValues();
+  }
+
+  normalizeState(): ModelState {
+    const {
+      from = 0,
+      to = 0,
+    } = this.state;
+
+    this.modulo = this.normalizeStep().getModulo();
+
+    this.state.from = this.normalizeValue(from);
+    this.state.to = this.normalizeValue(to);
+
+    return this.sortValues();
+  }
+
+  normalizeStep(): Model {
     const {
       start = 0,
       end = 0,
       step = 0,
-      from = 0,
-      to = 0,
-      range = 'single',
     } = this.state;
 
     if (Math.abs(step) > Math.abs(end - start)) {
@@ -39,20 +72,7 @@ export default class Model {
       const isCorrectStepSign = (end > start && step > 0) || (end < start && step < 0);
 
       if (!isCorrectStepSign) {
-        this.state.step = -1 * step;
-      }
-    }
-
-    this.state.from = this.normalizeValue(from);
-    this.state.to = this.normalizeValue(to);
-
-    if (range === 'double') {
-      if (start > end) {
-        if (this.state.from < this.state.to) {
-          [this.state.from, this.state.to] = [this.state.to, this.state.from];
-        }
-      } else if (this.state.from > this.state.to) {
-        [this.state.from, this.state.to] = [this.state.to, this.state.from];
+        this.state.step = -step;
       }
     }
 
@@ -65,6 +85,7 @@ export default class Model {
       end = 0,
       step = 0,
     } = this.state;
+    const { modulo } = this;
 
     if (start > end) {
       if (raw > start) {
@@ -76,8 +97,6 @@ export default class Model {
       }
 
       if (step !== 0) {
-        const modulo = start - end + step * Math.floor((end - start) / step);
-
         if (raw < (end + modulo / 2)) {
           return end;
         }
@@ -101,8 +120,6 @@ export default class Model {
     }
 
     if (step !== 0) {
-      const modulo = end - start - step * Math.floor((end - start) / step);
-
       if (raw > (end - modulo / 2)) {
         return end;
       }
@@ -116,4 +133,40 @@ export default class Model {
 
     return raw;
   }
+
+  sortValues(): ModelState {
+    const {
+      start = 0,
+      end = 0,
+      from = 0,
+      to = 0,
+      hasTwoValues = false,
+    } = this.state;
+
+    if (hasTwoValues) {
+      if (start > end) {
+        if (from < to) {
+          [this.state.from, this.state.to] = [to, from];
+        }
+      } else if (from > to) {
+        [this.state.from, this.state.to] = [to, from];
+      }
+    }
+
+    return this.state;
+  }
+
+  getModulo(): number {
+    const {
+      start = 0,
+      end = 0,
+      step = 0,
+    } = this.state;
+
+    return Math.abs(end - start - step * Math.floor((end - start) / step));
+  }
+}
+
+function isDragMessage(message: ModelState | DragMessage): message is DragMessage {
+  return (message as DragMessage).value !== undefined;
 }

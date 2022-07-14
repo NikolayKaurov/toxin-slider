@@ -14,7 +14,7 @@ $.fn.toxinSlider = function toxinSlider(this: JQuery): JQuery {
     position: 75,
     isVertical: false,
     hidden: false,
-    tooltipIsHidden: false,
+    tooltipHidden: false,
   };
 
   const thumbA = new Thumb({

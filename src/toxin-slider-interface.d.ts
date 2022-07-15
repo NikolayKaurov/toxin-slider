@@ -38,6 +38,11 @@ interface ProgressBarState {
   hidden: boolean;
 }
 
+interface BarMessage {
+  size: number;
+  clickPoint: number;
+}
+
 interface ModelState {
   start?: number;
   end?: number;
@@ -45,4 +50,10 @@ interface ModelState {
   from?: number;
   to?: number;
   hasTwoValues?: boolean;
+}
+
+interface ViewState extends ModelState {
+  isVertical?: boolean;
+  progressBarHidden?: boolean;
+  tooltipHidden?: boolean;
 }

@@ -79,7 +79,7 @@ export default class Thumb {
     return this.moveDirection;
   }
 
-  sendDragMessage() {
+  sendDragMessage(): Thumb {
     this.$thumb.trigger(
       'toxin-slider.thumb.drag',
       {

@@ -43,7 +43,7 @@ describe('Bar test', () => {
       clickPoint: -1,
     };
 
-    $wrapper.on('toxin-slider.bar.clicking', handleBarClicking);
+    $wrapper.on('toxin-slider.update', handleBarClicking);
 
     function handleBarClicking(event: JQuery.TriggeredEvent, message: BarMessage) {
       receivedMessage = message;

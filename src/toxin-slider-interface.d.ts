@@ -3,7 +3,7 @@ interface JQuery {
 }
 
 interface ToxinSlider {
-  (): JQuery;
+  (state: ViewState): JQuery;
 }
 
 interface ThumbState {

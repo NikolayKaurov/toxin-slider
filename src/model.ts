@@ -1,5 +1,5 @@
 export default class Model {
-  private state: ModelState = {
+  state: ModelState = {
     start: 0,
     end: 0,
     step: 0,
@@ -14,19 +14,38 @@ export default class Model {
     this.update(state);
   }
 
-  update(message: ModelState | DragMessage): ModelState {
+  update(message: ModelState | DragMessage | BarMessage): ModelState {
+    const {
+      start = 0,
+      end = 0,
+      from = 0,
+      to = 0,
+      hasTwoValues = false,
+    } = this.state;
+
+    if (isBarMessage(message)) {
+      const { size, clickPoint } = message;
+
+      const newValue = this.normalizeValue((clickPoint * (end - start)) / size + start);
+
+      if (hasTwoValues) {
+        if (Math.abs(from - newValue) < Math.abs(to - newValue)) {
+          this.state.from = newValue;
+        } else {
+          this.state.to = newValue;
+        }
+      } else {
+        this.state.from = newValue;
+      }
+
+      return this.sortValues();
+    }
+
     if (!isDragMessage(message)) {
       this.state = { ...this.state, ...message };
 
       return this.normalizeState();
     }
-
-    const {
-      start = 0,
-      end = 0,
-      from = 0,
-      hasTwoValues = false,
-    } = this.state;
 
     const { innerOffset, wrapperSize, value } = message;
 
@@ -163,10 +182,18 @@ export default class Model {
       step = 0,
     } = this.state;
 
+    if (step === 0) {
+      return 0;
+    }
+
     return Math.abs(end - start - step * Math.floor((end - start) / step));
   }
 }
 
-function isDragMessage(message: ModelState | DragMessage): message is DragMessage {
+function isDragMessage(message: ModelState | DragMessage | BarMessage): message is DragMessage {
   return (message as DragMessage).value !== undefined;
+}
+
+function isBarMessage(message: ModelState | DragMessage | BarMessage): message is BarMessage {
+  return (message as BarMessage).size !== undefined;
 }

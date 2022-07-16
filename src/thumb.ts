@@ -81,7 +81,7 @@ export default class Thumb {
 
   sendDragMessage(): Thumb {
     this.$thumb.trigger(
-      'toxin-slider.thumb.drag',
+      'toxin-slider.update',
       {
         innerOffset: this.drag.innerOffset,
         wrapperSize: this.drag.wrapperSize,
@@ -121,12 +121,26 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
     drag.wrapperSize = $wrapper.outerWidth() ?? 0;
   }
 
-  const grabPoint = state.isVertical
-    ? (event.clientY ?? 0) - ($thumb.offset()?.top ?? 0) - ($thumb.outerHeight() ?? 0)
-    : (event.clientX ?? 0) - ($thumb.offset()?.left ?? 0) - ($thumb.outerWidth() ?? 0);
+  const thumbPosition = state.isVertical
+    ? ($thumb.offset()?.top ?? 0)
+    : ($thumb.offset()?.left ?? 0);
+
+  const thumbSize = state.isVertical
+    ? ($thumb.outerHeight() ?? 0)
+    : ($thumb.outerWidth() ?? 0);
+
+  const mousePosition = state.isVertical
+    ? (event.clientY ?? 0)
+    : (event.clientX ?? 0);
+
+  const grabPoint = mousePosition - thumbPosition - thumbSize;
 
   drag.minRestriction = grabPoint + drag.wrapperPosition;
   drag.maxRestriction = drag.minRestriction + drag.wrapperSize;
+
+  drag.innerOffset = state.isVertical
+    ? drag.wrapperPosition - thumbPosition
+    : thumbPosition + thumbSize - drag.wrapperPosition;
 
   $(document).on('mousemove pointermove', { thumb }, handleThumbMousemove);
   $(document).on('mouseup pointerup', { thumb }, handleThumbMouseup);

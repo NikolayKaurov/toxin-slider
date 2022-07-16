@@ -10,13 +10,13 @@ const innerWrapperHTML = '<div class="toxin-slider__inner-wrapper js-toxin-slide
 export default class View {
   readonly $toxinSlider: JQuery;
 
-  thumbA: Thumb;
+  private thumbA: Thumb;
 
-  thumbB: Thumb;
+  private thumbB: Thumb;
 
-  progressBar: ProgressBar;
+  private progressBar: ProgressBar;
 
-  bar: Bar;
+  private bar: Bar;
 
   state: ViewState = {
     start: 0,
@@ -34,7 +34,6 @@ export default class View {
     const { $outerWrapper, state } = options;
 
     this.state = { ...this.state, ...state };
-
     const {
       from = 0,
       to = 0,
@@ -45,6 +44,7 @@ export default class View {
     } = this.state;
 
     const $innerWrapper = $(innerWrapperHTML);
+
     const { min, max } = this.calculateRange();
 
     this.thumbA = new Thumb({
@@ -89,17 +89,72 @@ export default class View {
       this.$toxinSlider.addClass('toxin-slider_direction_vertical');
     }
 
-    this.$toxinSlider.append($innerWrapper);
-
     this.bar = new Bar({
       isVertical,
       $wrapper: this.$toxinSlider,
     });
 
+    this.$toxinSlider.append($innerWrapper);
+
     $outerWrapper.append(this.$toxinSlider);
   }
 
   update(state: ViewState): View {
+    this.state = { ...this.state, ...state };
+    const {
+      from = 0,
+      to = 0,
+      hasTwoValues = false,
+      isVertical = false,
+      progressBarHidden = false,
+      tooltipHidden = false,
+    } = this.state;
+
+    if (!hasTwoValues) {
+      this.$toxinSlider.addClass('toxin-slider_range_single');
+    } else {
+      this.$toxinSlider.removeClass('toxin-slider_range_single');
+    }
+
+    if (isVertical) {
+      this.$toxinSlider.addClass('toxin-slider_direction_vertical');
+    } else {
+      this.$toxinSlider.removeClass('toxin-slider_direction_vertical');
+    }
+
+    const { min, max } = this.sortThumbs().calculateRange();
+    const {
+      thumbA,
+      thumbB,
+      progressBar,
+      bar,
+    } = this;
+
+    thumbA.update({
+      isVertical,
+      tooltipHidden,
+      value: hasTwoValues ? from : NaN,
+      position: min,
+      hidden: !hasTwoValues,
+    });
+
+    thumbB.update({
+      isVertical,
+      tooltipHidden,
+      value: hasTwoValues ? to : from,
+      position: max,
+      hidden: false,
+    });
+
+    progressBar.update({
+      min: thumbA.getPosition(),
+      max: thumbB.getPosition(),
+      isVertical,
+      hidden: progressBarHidden,
+    });
+
+    bar.update(isVertical);
+
     return this;
   }
 
@@ -122,33 +177,30 @@ export default class View {
     }
 
     const min = hasTwoValues
-      ? (from - start) / scope
+      ? (100 * (from - start)) / scope
       : 0;
 
     const max = hasTwoValues
-      ? (to - start) / scope
-      : (from - start) / scope;
+      ? (100 * (to - start)) / scope
+      : (100 * (from - start)) / scope;
 
     return { min, max };
   }
 
   sortThumbs(): View {
-    const {
-      start = 0,
-      end = 0,
-      from = 0,
-      to = 0,
-      hasTwoValues = false,
-    } = this.state;
+    const { hasTwoValues = false } = this.state;
     const { thumbA, thumbB } = this;
 
     if (hasTwoValues) {
       if (thumbA.getPosition() > thumbB.getPosition()) {
         [this.thumbA, this.thumbB] = [thumbB, thumbA];
-      } else if (
-        thumbA.getPosition() === thumbB.getPosition()
-        &&
-      )
+      } else if (thumbA.getPosition() === thumbB.getPosition()) {
+        if (thumbA.getDirection() > thumbB.getDirection()) {
+          [this.thumbA, this.thumbB] = [thumbB, thumbA];
+        }
+      }
     }
+
+    return this;
   }
 }

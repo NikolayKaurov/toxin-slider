@@ -2,9 +2,9 @@ import Model from './model';
 import View from './view';
 
 export default class Controller {
-  private readonly model;
+  readonly model;
 
-  private readonly view;
+  readonly view;
 
   constructor(options: { model: Model, view: View }) {
     const { model, view } = options;

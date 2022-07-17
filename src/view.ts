@@ -6,17 +6,22 @@ import Bar from './bar';
 
 const toxinSliderHTML = '<div class="toxin-slider js-toxin-slider"></div>';
 const innerWrapperHTML = '<div class="toxin-slider__inner-wrapper js-toxin-slider__inner-wrapper"></div>';
+const inputHTML = '<input type="number" class="toxin-slider__input js-toxin-slider__input">';
 
 export default class View {
   readonly $toxinSlider: JQuery;
 
-  private thumbA: Thumb;
+  readonly $from: JQuery;
 
-  private thumbB: Thumb;
+  readonly $to: JQuery;
 
-  private progressBar: ProgressBar;
+  thumbA: Thumb;
 
-  private bar: Bar;
+  thumbB: Thumb;
+
+  progressBar: ProgressBar;
+
+  private readonly bar: Bar;
 
   state: ViewState = {
     start: 0,
@@ -29,6 +34,7 @@ export default class View {
     progressBarHidden: false,
     tooltipHidden: false,
     units: '',
+    name: 'undefined-name',
   };
 
   constructor(options: { $outerWrapper: JQuery, state: ViewState }) {
@@ -43,6 +49,7 @@ export default class View {
       progressBarHidden = false,
       tooltipHidden = false,
       units = '',
+      name = 'undefined-name',
     } = this.state;
 
     const $innerWrapper = $(innerWrapperHTML);
@@ -55,7 +62,7 @@ export default class View {
         isVertical,
         tooltipHidden,
         units,
-        value: hasTwoValues ? from : NaN,
+        value: from,
         position: min,
         hidden: !hasTwoValues,
       },
@@ -98,7 +105,17 @@ export default class View {
       $wrapper: this.$toxinSlider,
     });
 
-    this.$toxinSlider.append($innerWrapper);
+    this.$from = $(inputHTML)
+      .attr('name', `${name}-from`)
+      .val(from);
+    this.$to = $(inputHTML)
+      .attr('name', `${name}-to`)
+      .val(to);
+
+    this.$toxinSlider
+      .append($innerWrapper)
+      .append(this.$from)
+      .append(this.$to);
 
     $outerWrapper.append(this.$toxinSlider);
   }
@@ -114,6 +131,9 @@ export default class View {
       tooltipHidden = false,
       units = '',
     } = this.state;
+
+    this.$from.val(from);
+    this.$to.val(to);
 
     if (!hasTwoValues) {
       this.$toxinSlider.addClass('toxin-slider_range_single');
@@ -139,7 +159,7 @@ export default class View {
       isVertical,
       tooltipHidden,
       units,
-      value: hasTwoValues ? from : NaN,
+      value: from,
       position: min,
       hidden: !hasTwoValues,
     });

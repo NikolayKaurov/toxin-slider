@@ -32,6 +32,11 @@ interface DragMessage {
   value: number;
 }
 
+interface MoveMessage {
+  moveDirection: number;
+  value: number;
+}
+
 interface ProgressBarState {
   min: number;
   max: number;
@@ -62,4 +67,4 @@ interface ViewState extends ModelState {
   name?: string;
 }
 
-type Message = ViewState | BarMessage | DragMessage;
+type Message = ViewState | BarMessage | DragMessage | MoveMessage;

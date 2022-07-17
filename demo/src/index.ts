@@ -7,12 +7,12 @@ import './index.scss';
 
 $('.js-container').toxinSlider({
   start: 0,
-  step: 1000,
+  step: 1,
   end: 10000,
   from: 17,
   to: 29,
   hasTwoValues: true,
-  isVertical: true,
+  // isVertical: true,
   units: 'кг.',
   // progressBarHidden: true,
   // tooltipHidden: true,

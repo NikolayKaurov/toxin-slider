@@ -3,6 +3,11 @@ import $ from 'jquery';
 const thumbHTML = '<div class="toxin-slider__thumb js-toxin-slider__thumb" tabindex="0"></div>';
 const tooltipHTML = '<div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip"></div>';
 
+const left = 37;
+const up = 38;
+const right = 39;
+const down = 40;
+
 enum MoveDirection {
   back = -1,
   stop,
@@ -46,6 +51,8 @@ export default class Thumb {
     this.$wrapper = $wrapper.append(this.$thumb);
 
     this.$thumb.on('mousedown', { thumb: this }, handleThumbMousedown);
+    this.$thumb.on('keydown', { thumb: this }, handleThumbKeydown);
+    this.$thumb.on('keyup', { thumb: this }, handleThumbKeyup);
 
     this.update(state);
   }
@@ -86,6 +93,18 @@ export default class Thumb {
       {
         innerOffset: this.drag.innerOffset,
         wrapperSize: this.drag.wrapperSize,
+        value: this.state.value,
+      },
+    );
+
+    return this;
+  }
+
+  sendMoveMessage(): Thumb {
+    this.$thumb.trigger(
+      'toxin-slider.update',
+      {
+        direction: this.getDirection(),
         value: this.state.value,
       },
     );
@@ -184,4 +203,23 @@ function handleThumbMouseup(event: JQuery.TriggeredEvent) {
   drag.position = null;
 
   thumb.sendDragMessage();
+}
+
+function handleThumbKeydown(event: JQuery.TriggeredEvent) {
+  const { thumb } = event.data as { thumb: Thumb };
+  const { keyCode } = event;
+
+  if (keyCode === up || keyCode === right) {
+    thumb.moveDirection = MoveDirection.forward;
+    thumb.sendMoveMessage();
+  } else if (keyCode === down || keyCode === left) {
+    thumb.moveDirection = MoveDirection.back;
+    thumb.sendMoveMessage();
+  }
+}
+
+function handleThumbKeyup(event: JQuery.TriggeredEvent) {
+  const { thumb } = event.data as { thumb: Thumb };
+
+  thumb.moveDirection = MoveDirection.stop;
 }

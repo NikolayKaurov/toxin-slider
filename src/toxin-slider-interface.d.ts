@@ -12,6 +12,7 @@ interface ThumbState {
   isVertical: boolean;
   hidden: boolean;
   tooltipHidden: boolean;
+  units?: string;
 }
 
 interface DragData {
@@ -56,4 +57,9 @@ interface ViewState extends ModelState {
   isVertical?: boolean;
   progressBarHidden?: boolean;
   tooltipHidden?: boolean;
+  scaleHidden?: boolean;
+  units?: string;
+  name?: string;
 }
+
+type Message = ViewState | BarMessage | DragMessage;

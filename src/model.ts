@@ -14,7 +14,7 @@ export default class Model {
     this.update(state);
   }
 
-  update(message: ModelState | DragMessage | BarMessage): ModelState {
+  update(message: Message): ModelState {
     const {
       start = 0,
       end = 0,
@@ -23,20 +23,24 @@ export default class Model {
       hasTwoValues = false,
     } = this.state;
 
+    const assignToNearest = (between: number) => {
+      if (hasTwoValues) {
+        if (Math.abs(from - between) < Math.abs(to - between)) {
+          this.state.from = between;
+        } else {
+          this.state.to = between;
+        }
+      } else {
+        this.state.from = between;
+      }
+    };
+
     if (isBarMessage(message)) {
       const { size, clickPoint } = message;
 
       const newValue = this.normalizeValue((clickPoint * (end - start)) / size + start);
 
-      if (hasTwoValues) {
-        if (Math.abs(from - newValue) < Math.abs(to - newValue)) {
-          this.state.from = newValue;
-        } else {
-          this.state.to = newValue;
-        }
-      } else {
-        this.state.from = newValue;
-      }
+      assignToNearest(newValue);
 
       return this.sortValues();
     }
@@ -91,7 +95,7 @@ export default class Model {
       const isCorrectStepSign = (end > start && step > 0) || (end < start && step < 0);
 
       if (!isCorrectStepSign) {
-        this.state.step = -step;
+        this.state.step = -1 * step;
       }
     }
 

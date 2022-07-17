@@ -1,6 +1,9 @@
 import $ from 'jquery';
 
+/* This constant should be duplicated in the stylesheet ./toxin-slider.scss: $thumb-length
+and the test file ../test/bar.test.ts: const thumbLength */
 const thumbLength = 16;
+
 const halfThumbLength = thumbLength / 2;
 
 const barHTML = '<div class="toxin-slider__bar js-toxin-slider__bar"></div>';
@@ -33,27 +36,31 @@ function handleBarMousedown(event: JQuery.TriggeredEvent) {
   const { $bar, isVertical } = bar;
 
   const size = isVertical
-    ? ($bar.outerHeight() ?? 0) - thumbLength
-    : ($bar.outerWidth() ?? 0) - thumbLength;
+    ? ($bar.outerHeight() ?? 0)
+    : ($bar.outerWidth() ?? 0);
 
   const clickPoint = isVertical
-    ? ($bar.offset()?.top ?? 0) + ($bar.outerHeight() ?? 0) - (event?.clientY ?? 0)
+    ? ($bar.offset()?.top ?? 0) + size - (event?.clientY ?? 0)
     : (event?.clientX ?? 0) - ($bar.offset()?.left ?? 0);
 
   $bar.trigger('toxin-slider.update', {
-    size,
-    clickPoint: getNormalizeClickPoint(clickPoint),
+    size: normalizeSize(),
+    clickPoint: normalizeClickPoint(),
   });
 
-  function getNormalizeClickPoint(raw: number): number {
-    if (raw < halfThumbLength) {
+  function normalizeSize(): number {
+    return size - thumbLength;
+  }
+
+  function normalizeClickPoint(): number {
+    if (clickPoint < halfThumbLength) {
       return 0;
     }
 
-    if (raw > size + halfThumbLength) {
-      return size;
+    if (clickPoint > size - halfThumbLength) {
+      return size - thumbLength;
     }
 
-    return raw - halfThumbLength;
+    return clickPoint - halfThumbLength;
   }
 }

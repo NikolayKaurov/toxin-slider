@@ -22,6 +22,7 @@ export default class Thumb {
     isVertical: false,
     hidden: false,
     tooltipHidden: false,
+    units: '',
   };
 
   drag: DragData = {
@@ -50,11 +51,11 @@ export default class Thumb {
   }
 
   update(state: ThumbState): Thumb {
-    this.state = state;
+    this.state = { ...this.state, ...state };
 
     this.position();
 
-    this.$tooltip.text(state.value);
+    this.$tooltip.text(`${new Intl.NumberFormat('ru-RU').format(state.value)}${state.units ?? ''}`);
 
     if (state.hidden) {
       this.$thumb.addClass('toxin-slider__thumb_hidden');
@@ -97,7 +98,7 @@ export default class Thumb {
     const position = this.getPosition();
 
     this.$thumb.css('transform', `translate${axis}(${
-      axis === 'X' ? position - 100 : -position
+      axis === 'X' ? (position - 100) : (-1 * position)
     }%)`);
 
     return this;

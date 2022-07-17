@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>172/172</span>
+                <span class='fraction'>187/187</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.23% </span>
+                <span class="strong">70.68% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>36/52</span>
+                <span class='fraction'>41/58</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>172/172</span>
+                <span class='fraction'>187/187</span>
             </div>
         
             
@@ -235,7 +235,23 @@
 <a name='L170'></a><a href='#L170'>170</a>
 <a name='L171'></a><a href='#L171'>171</a>
 <a name='L172'></a><a href='#L172'>172</a>
-<a name='L173'></a><a href='#L173'>173</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -300,10 +316,10 @@
 <span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-yes">30x</span>
@@ -351,12 +367,26 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
@@ -431,6 +461,7 @@ export default class Thumb {
     isVertical: false,
     hidden: false,
     tooltipHidden: false,
+    units: '',
   };
 &nbsp;
   drag: DragData = {
@@ -459,11 +490,11 @@ export default class Thumb {
   }
 &nbsp;
   update(state: ThumbState): Thumb {
-    this.state = state;
+    this.state = { ...this.state, ...state };
 &nbsp;
     this.position();
 &nbsp;
-    this.$tooltip.text(state.value);
+    this.$tooltip.text(`${new Intl.NumberFormat('ru-RU').format(state.value)}${state.units<span class="branch-0 cbranch-no" title="branch not covered" > ?? '</span>'}`);
 &nbsp;
     if (state.hidden) {
       this.$thumb.addClass('toxin-slider__thumb_hidden');
@@ -488,9 +519,9 @@ export default class Thumb {
     return this.moveDirection;
   }
 &nbsp;
-  sendDragMessage() {
+  sendDragMessage(): Thumb {
     this.$thumb.trigger(
-      'toxin-slider.thumb.drag',
+      'toxin-slider.update',
       {
         innerOffset: this.drag.innerOffset,
         wrapperSize: this.drag.wrapperSize,
@@ -506,7 +537,7 @@ export default class Thumb {
     const position = this.getPosition();
 &nbsp;
     this.$thumb.css('transform', `translate${axis}(${
-      axis === 'X' ? position - 100 : -position
+      axis === 'X' ? (position - 100) : (-1 * position)
     }%)`);
 &nbsp;
     return this;
@@ -530,12 +561,26 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
     drag.wrapperSize = $wrapper.outerWidth()<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0;</span>
   }
 &nbsp;
-  const grabPoint = state.isVertical
-    ? (event.clientY<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.t</span>op<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.outerHeight()<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>
-    : (event.clientX<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.l</span>eft<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span> - ($thumb.outerWidth()<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>;
+  const thumbPosition = state.isVertical
+    ? ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.t</span>op<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>
+    : ($thumb.offset()<span class="branch-0 cbranch-no" title="branch not covered" >?.l</span>eft<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>;
+&nbsp;
+  const thumbSize = state.isVertical
+    ? ($thumb.outerHeight()<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>
+    : ($thumb.outerWidth()<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>;
+&nbsp;
+  const mousePosition = state.isVertical
+    ? (event.clientY<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>
+    : (event.clientX<span class="branch-0 cbranch-no" title="branch not covered" > ?? 0)</span>;
+&nbsp;
+  const grabPoint = mousePosition - thumbPosition - thumbSize;
 &nbsp;
   drag.minRestriction = grabPoint + drag.wrapperPosition;
   drag.maxRestriction = drag.minRestriction + drag.wrapperSize;
+&nbsp;
+  drag.innerOffset = state.isVertical
+    ? drag.wrapperPosition - thumbPosition
+    : thumbPosition + thumbSize - drag.wrapperPosition;
 &nbsp;
   $(document).on('mousemove pointermove', { thumb }, handleThumbMousemove);
   $(document).on('mouseup pointerup', { thumb }, handleThumbMouseup);
@@ -586,7 +631,7 @@ function handleThumbMouseup(event: JQuery.TriggeredEvent) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Fri Jul 15 2022 09:28:57 GMT+0700 (Индокитай)
+                at Sun Jul 17 2022 13:44:45 GMT+0700 (Индокитай)
             </div>
         <script src="prettify.js"></script>
         <script>

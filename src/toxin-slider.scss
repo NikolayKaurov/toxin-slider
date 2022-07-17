@@ -3,6 +3,9 @@
 .toxin-slider {
   $root: &;
   $thumb-thickness: 16px;
+
+  /* This constant must be duplicated in the file ./bar.ts: const thumbLength
+  and the test file ../test/bar.test.ts: const thumbLength */
   $thumb-length: 16px;
   $half-thumb-thickness: math.div($thumb-thickness, 2);
   $half-thumb-length: math.div($thumb-length, 2);
@@ -35,7 +38,6 @@
     outline: 0;
     z-index: 1;
     will-change: transform;
-    transition: transform 300ms;
 
     &::before {
       content: '';
@@ -92,7 +94,6 @@
     background: $background;
     z-index: 0;
     will-change: transform;
-    transition: transform 300ms;
 
     &_hidden {
       visibility: hidden;
@@ -178,22 +179,22 @@
       height: 100%;
       max-height: none;
     }
-  }
 
-  &_direction_vertical#{$root}_range_single {
-    #{$root}__inner-wrapper {
-      &::before {
-        top: calc(100% + $half-thumb-length);
-        left: 50%;
-        transform: translateX(-50%);
-        width: $bar-thickness;
-        max-width: $thumb-thickness;
-        height: $half-thumb-length;
-        max-height: none;
-        background: $background-vertical;
-        border-bottom-left-radius: $bar-thickness;
-        border-bottom-right-radius: $bar-thickness;
-        border-top-left-radius: 0;
+    &#{$root}_range_single {
+      #{$root}__inner-wrapper {
+        &::before {
+          top: calc(100% + $half-thumb-length);
+          left: 50%;
+          transform: translateX(-50%);
+          width: $bar-thickness;
+          max-width: $thumb-thickness;
+          height: $half-thumb-length;
+          max-height: none;
+          background: $background-vertical;
+          border-bottom-left-radius: $bar-thickness;
+          border-bottom-right-radius: $bar-thickness;
+          border-top-left-radius: 0;
+        }
       }
     }
   }

@@ -105,7 +105,7 @@ describe('Thumb drag test', () => {
   const { $thumb: $draggingThumb } = draggingThumb;
 
   const update = () => draggingThumb.update(state);
-  $wrapper.on('toxin-slider.thumb.drag', update);
+  $wrapper.on('toxin-slider.update', update);
 
   const event = $.Event('mousedown');
 
@@ -150,11 +150,11 @@ describe('Thumb drag test', () => {
 
     expect(draggingThumb.getPosition()).toEqual(100);
     expect($draggingThumb.css('transform')).toEqual('translateX(0%)');
+
+    state.isVertical = true;
   });
 
   test('Thumb simple vertical drag test', () => {
-    state.isVertical = true;
-
     for (let i = 0; i < 3; i += 1) {
       const position = Math.round(Math.random() * 100);
 
@@ -167,8 +167,6 @@ describe('Thumb drag test', () => {
   });
 
   test('Thumb vertical drag over top border test', () => {
-    state.isVertical = true;
-
     event.clientY = wrapperSizeY / 2;
     $draggingThumb.trigger(event);
 
@@ -177,8 +175,6 @@ describe('Thumb drag test', () => {
   });
 
   test('Thumb vertical drag over bottom border test', () => {
-    state.isVertical = true;
-
     event.clientY = wrapperSizeY * 3;
     $draggingThumb.trigger(event);
 

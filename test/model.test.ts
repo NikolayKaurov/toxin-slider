@@ -121,4 +121,71 @@ describe('Model test', () => {
       hasTwoValues: false,
     });
   });
+
+  test('Model update test: handle bar click message', () => {
+    model.update({ hasTwoValues: true });
+
+    expect(model.update({ size: 90, clickPoint: 70 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 4,
+      to: 1,
+      hasTwoValues: true,
+    });
+
+    expect(model.update({ size: 442, clickPoint: 61 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 10,
+      to: 1,
+      hasTwoValues: true,
+    });
+
+    model.update({ hasTwoValues: false });
+
+    expect(model.update({ size: 442, clickPoint: 307 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 4,
+      to: 1,
+      hasTwoValues: false,
+    });
+  });
+
+  test('Model update test: receive new state', () => {
+    expect(model.update({
+      start: 6,
+      end: 66,
+      step: -3,
+      from: 10,
+      to: 59,
+      hasTwoValues: true,
+    })).toEqual({
+      start: 6,
+      end: 66,
+      step: 3,
+      from: 9,
+      to: 60,
+      hasTwoValues: true,
+    });
+
+    expect(model.update({
+      start: 10000,
+      end: 1000,
+      step: 500,
+      from: 4691,
+      to: 7777,
+      hasTwoValues: false,
+    })).toEqual({
+      start: 10000,
+      end: 1000,
+      step: -500,
+      from: 4500,
+      to: 8000,
+      hasTwoValues: false,
+    });
+  });
 });

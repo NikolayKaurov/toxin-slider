@@ -28,6 +28,7 @@ export default class View {
     isVertical: false,
     progressBarHidden: false,
     tooltipHidden: false,
+    units: '',
   };
 
   constructor(options: { $outerWrapper: JQuery, state: ViewState }) {
@@ -41,6 +42,7 @@ export default class View {
       isVertical = false,
       progressBarHidden = false,
       tooltipHidden = false,
+      units = '',
     } = this.state;
 
     const $innerWrapper = $(innerWrapperHTML);
@@ -52,6 +54,7 @@ export default class View {
       state: {
         isVertical,
         tooltipHidden,
+        units,
         value: hasTwoValues ? from : NaN,
         position: min,
         hidden: !hasTwoValues,
@@ -63,6 +66,7 @@ export default class View {
       state: {
         isVertical,
         tooltipHidden,
+        units,
         value: hasTwoValues ? to : from,
         position: max,
         hidden: false,
@@ -108,6 +112,7 @@ export default class View {
       isVertical = false,
       progressBarHidden = false,
       tooltipHidden = false,
+      units = '',
     } = this.state;
 
     if (!hasTwoValues) {
@@ -133,6 +138,7 @@ export default class View {
     thumbA.update({
       isVertical,
       tooltipHidden,
+      units,
       value: hasTwoValues ? from : NaN,
       position: min,
       hidden: !hasTwoValues,
@@ -141,15 +147,16 @@ export default class View {
     thumbB.update({
       isVertical,
       tooltipHidden,
+      units,
       value: hasTwoValues ? to : from,
       position: max,
       hidden: false,
     });
 
     progressBar.update({
+      isVertical,
       min: thumbA.getPosition(),
       max: thumbB.getPosition(),
-      isVertical,
       hidden: progressBarHidden,
     });
 

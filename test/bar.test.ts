@@ -25,7 +25,12 @@ describe('Bar test', () => {
     }
   });
 
-  test('Bar send message about clicking test', () => {
+  test('Bar send clicking message test', () => {
+    /* This constant should be duplicated in the stylesheet ../src/toxin-slider.scss: $thumb-length
+    and the file ../src/bar.ts: const thumbLength */
+    const thumbLength = 16;
+    const halfThumbLength = thumbLength / 2;
+
     bar.$bar.css({
       width: `${sizeX}px`,
       height: `${sizeY}px`,
@@ -52,13 +57,35 @@ describe('Bar test', () => {
     bar.update(false);
     bar.$bar.trigger(triggerEvent);
 
-    expect(receivedMessage.size).toEqual(sizeX);
-    expect(receivedMessage.clickPoint).toEqual(clickPointX);
+    expect(receivedMessage.size).toEqual(sizeX - thumbLength);
+    expect(receivedMessage.clickPoint).toEqual(normalizeClickPoint(clickPointX, sizeX));
+
+    triggerEvent.clientX = halfThumbLength - 1;
+    bar.$bar.trigger(triggerEvent);
+
+    expect(receivedMessage.clickPoint).toEqual(0);
+
+    triggerEvent.clientX = sizeX;
+    bar.$bar.trigger(triggerEvent);
+
+    expect(receivedMessage.clickPoint).toEqual(sizeX - thumbLength);
 
     bar.update(true);
     bar.$bar.trigger(triggerEvent);
 
-    expect(receivedMessage.size).toEqual(sizeY);
-    expect(receivedMessage.clickPoint).toEqual(clickPointY);
+    expect(receivedMessage.size).toEqual(sizeY - thumbLength);
+    expect(receivedMessage.clickPoint).toEqual(normalizeClickPoint(clickPointY, sizeY));
+
+    function normalizeClickPoint(point: number, size: number): number {
+      if (point < halfThumbLength) {
+        return 0;
+      }
+
+      if (point > size - halfThumbLength) {
+        return size - thumbLength;
+      }
+
+      return point - halfThumbLength;
+    }
   });
 });

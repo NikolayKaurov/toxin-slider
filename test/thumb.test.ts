@@ -182,3 +182,73 @@ describe('Thumb drag test', () => {
     expect($draggingThumb.css('transform')).toEqual('translateY(0%)');
   });
 });
+
+describe('Thumb send keyboard message', () => {
+  const left = 37;
+  const up = 38;
+  const right = 39;
+  const down = 40;
+
+  const $wrapper = $('<div></div>');
+  $('body').append($wrapper);
+
+  let receivedMessage: MoveMessage = { moveDirection: 0, value: 0 };
+
+  function handleMoveMessage(event: JQuery.TriggeredEvent, message: MoveMessage) {
+    receivedMessage = message;
+  }
+
+  $wrapper.on('toxin-slider.update', handleMoveMessage);
+
+  const triggerEvent = $.Event('keydown');
+  triggerEvent.keyCode = left;
+
+  const movingThumb = new Thumb({
+    $wrapper,
+    state: {
+      value: 43,
+      position: 0,
+      isVertical: false,
+      hidden: false,
+      tooltipHidden: false,
+    },
+  });
+
+  test('Key left', () => {
+    movingThumb.$thumb.trigger(triggerEvent);
+
+    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.moveDirection).toEqual(-1);
+  });
+
+  test('Key up', () => {
+    triggerEvent.keyCode = up;
+    movingThumb.$thumb.trigger(triggerEvent);
+
+    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.moveDirection).toEqual(1);
+  });
+
+  test('Key down', () => {
+    triggerEvent.keyCode = down;
+    movingThumb.$thumb.trigger(triggerEvent);
+
+    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.moveDirection).toEqual(-1);
+  });
+
+  test('Key right', () => {
+    triggerEvent.keyCode = right;
+    movingThumb.$thumb.trigger(triggerEvent);
+
+    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.moveDirection).toEqual(1);
+  });
+
+  test('Stop', () => {
+    triggerEvent.type = 'keyup';
+    movingThumb.$thumb.trigger(triggerEvent);
+
+    expect(movingThumb.getDirection()).toEqual(0);
+  });
+});

@@ -18,14 +18,28 @@ export default class Model {
     const {
       start = 0,
       end = 0,
+      step = 0,
       from = 0,
       to = 0,
       hasTwoValues = false,
     } = this.state;
+    const { modulo } = this;
 
     const assignToNearest = (between: number) => {
       if (hasTwoValues) {
         if (Math.abs(from - between) < Math.abs(to - between)) {
+          this.state.from = between;
+        } else {
+          this.state.to = between;
+        }
+      } else {
+        this.state.from = between;
+      }
+    };
+
+    const assignToCongruent = (between: number, comparable: number) => {
+      if (hasTwoValues) {
+        if (comparable === from) {
           this.state.from = between;
         } else {
           this.state.to = between;
@@ -45,6 +59,20 @@ export default class Model {
       return this.sortValues();
     }
 
+    if (isMoveMessage(message)) {
+      const { moveDirection, value } = message;
+
+      const specialCase = (modulo !== 0) && (value === end) && (moveDirection === -1);
+
+      const newValue = specialCase
+        ? end - modulo
+        : value + step * moveDirection;
+
+      assignToCongruent(this.normalizeValue(newValue), value);
+
+      return this.sortValues();
+    }
+
     if (!isDragMessage(message)) {
       this.state = { ...this.state, ...message };
 
@@ -55,15 +83,7 @@ export default class Model {
 
     const newValue = this.normalizeValue((innerOffset * (end - start)) / wrapperSize + start);
 
-    if (hasTwoValues) {
-      if (value === from) {
-        this.state.from = newValue;
-      } else {
-        this.state.to = newValue;
-      }
-    } else {
-      this.state.from = newValue;
-    }
+    assignToCongruent(newValue, value);
 
     return this.sortValues();
   }
@@ -120,12 +140,12 @@ export default class Model {
       }
 
       if (step !== 0) {
-        if (raw < (end + modulo / 2)) {
+        if (raw < (end - modulo / 2)) {
           return end;
         }
 
-        if (raw < (end + modulo)) {
-          return end + modulo;
+        if (raw < (end - modulo)) {
+          return end - modulo;
         }
 
         return start + step * Math.round((raw - start) / step);
@@ -190,14 +210,18 @@ export default class Model {
       return 0;
     }
 
-    return Math.abs(end - start - step * Math.floor((end - start) / step));
+    return end - start - step * Math.floor((end - start) / step);
   }
 }
 
-function isDragMessage(message: ModelState | DragMessage | BarMessage): message is DragMessage {
-  return (message as DragMessage).value !== undefined;
+function isDragMessage(message: Message): message is DragMessage {
+  return (message as DragMessage).innerOffset !== undefined;
 }
 
-function isBarMessage(message: ModelState | DragMessage | BarMessage): message is BarMessage {
+function isBarMessage(message: Message): message is BarMessage {
   return (message as BarMessage).size !== undefined;
+}
+
+function isMoveMessage(message: Message): message is MoveMessage {
+  return (message as MoveMessage).moveDirection !== undefined;
 }

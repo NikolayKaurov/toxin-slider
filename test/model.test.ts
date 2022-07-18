@@ -155,6 +155,37 @@ describe('Model test', () => {
     });
   });
 
+  test('Model update test: handle keyboard move message', () => {
+    model.update({ hasTwoValues: true });
+
+    expect(model.update({ moveDirection: -1, value: 4 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 7,
+      to: 1,
+      hasTwoValues: true,
+    });
+
+    expect(model.update({ moveDirection: 1, value: 1 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 7,
+      to: 0,
+      hasTwoValues: true,
+    });
+
+    expect(model.update({ moveDirection: -1, value: 0 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 7,
+      to: 1,
+      hasTwoValues: true,
+    });
+  });
+
   test('Model update test: receive new state', () => {
     expect(model.update({
       start: 6,

@@ -7,8 +7,8 @@ import './index.scss';
 
 $('.js-container').toxinSlider({
   start: 0,
-  step: 1,
-  end: 10000,
+  step: 50,
+  end: 330,
   from: 17,
   to: 29,
   hasTwoValues: true,

@@ -104,7 +104,7 @@ export default class Thumb {
     this.$thumb.trigger(
       'toxin-slider.update',
       {
-        direction: this.getDirection(),
+        moveDirection: this.getDirection(),
         value: this.state.value,
       },
     );

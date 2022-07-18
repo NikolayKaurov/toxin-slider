@@ -40,7 +40,7 @@ describe('View test', () => {
     progressBar,
   } = view;
   const { $thumb: $thumbA, $tooltip: $tooltipA } = thumbA;
-  const { $tooltip: $tooltipB } = thumbB;
+  const { $thumb: $thumbB, $tooltip: $tooltipB } = thumbB;
   const { $progressBar } = progressBar;
   const event = $.Event('toxin-slider.update');
 
@@ -146,16 +146,137 @@ describe('View test', () => {
 
   test('View update state #4', () => {
     $toxinSlider.trigger(event, {
-      innerOffset: 57,
+      innerOffset: 37,
       wrapperSize: 100,
       value: 820,
     });
 
     expect($from.val()).toEqual('840');
-    expect($to.val()).toEqual('860');
+    expect($to.val()).toEqual('840');
     expect(thumbA.getPosition()).toEqual(40);
-    expect(thumbB.getPosition()).toEqual(60);
+    expect(thumbB.getPosition()).toEqual(40);
     expect($tooltipA.text()).toEqual('840$');
-    expect($tooltipB.text()).toEqual('860$');
+    expect($tooltipB.text()).toEqual('840$');
+
+    thumbA.update({
+      value: 840,
+      position: 46,
+      isVertical: true,
+      tooltipHidden: false,
+      hidden: false,
+    });
+
+    $toxinSlider.trigger(event, {
+      innerOffset: 46,
+      wrapperSize: 100,
+      value: 840,
+    });
+
+    expect($from.val()).toEqual('840');
+    expect($to.val()).toEqual('850');
+    expect(thumbA.getPosition()).toEqual(50);
+    expect(thumbB.getPosition()).toEqual(40);
+    expect($tooltipA.text()).toEqual('850$');
+    expect($tooltipB.text()).toEqual('840$');
+  });
+
+  test('View update state #5', () => {
+    const left = 37;
+    const right = 39;
+    const thumbEvent = $.Event('keydown', { keyCode: right });
+
+    $thumbB.trigger(thumbEvent);
+    $thumbB.trigger(thumbEvent);
+    $thumbB.trigger(thumbEvent);
+
+    expect($from.val()).toEqual('850');
+    expect($to.val()).toEqual('870');
+    expect(thumbA.getPosition()).toEqual(50);
+    expect(thumbB.getPosition()).toEqual(70);
+    expect($tooltipA.text()).toEqual('850$');
+    expect($tooltipB.text()).toEqual('870$');
+
+    thumbEvent.keyCode = left;
+
+    $thumbB.trigger(thumbEvent);
+    $thumbB.trigger(thumbEvent);
+    $thumbB.trigger(thumbEvent);
+    $thumbB.trigger(thumbEvent);
+
+    expect($from.val()).toEqual('830');
+    expect($to.val()).toEqual('850');
+    expect(thumbA.getPosition()).toEqual(50);
+    expect(thumbB.getPosition()).toEqual(30);
+    expect($tooltipA.text()).toEqual('850$');
+    expect($tooltipB.text()).toEqual('830$');
+  });
+
+  test('View update state #6', () => {
+    $toxinSlider.trigger(event, {
+      clickPoint: 100,
+      size: 500,
+    });
+
+    expect($from.val()).toEqual('820');
+    expect($to.val()).toEqual('850');
+    expect(thumbA.getPosition()).toEqual(50);
+    expect(thumbB.getPosition()).toEqual(20);
+    expect($tooltipA.text()).toEqual('850$');
+    expect($tooltipB.text()).toEqual('820$');
+  });
+
+  test('View update state #7', () => {
+    $toxinSlider.trigger(event, {
+      start: 900,
+      end: 800,
+    });
+
+    expect($from.val()).toEqual('850');
+    expect($to.val()).toEqual('820');
+    expect(thumbA.getPosition()).toEqual(80);
+    expect(thumbB.getPosition()).toEqual(50);
+    expect($tooltipA.text()).toEqual('820$');
+    expect($tooltipB.text()).toEqual('850$');
+
+    $toxinSlider.trigger(event, {
+      from: 1000,
+    });
+
+    expect($from.val()).toEqual('900');
+
+    $toxinSlider.trigger(event, {
+      to: 700,
+    });
+
+    expect($to.val()).toEqual('800');
+
+    $toxinSlider.trigger(event, {
+      step: 30,
+      from: 802,
+      to: 808,
+    });
+
+    expect($from.val()).toEqual('810');
+    expect($to.val()).toEqual('800');
+
+    $toxinSlider.trigger(event, {
+      start: 800,
+      end: 900,
+    });
+
+    expect($from.val()).toEqual('800');
+    expect($to.val()).toEqual('800');
+
+    $toxinSlider.trigger(event, {
+      to: 910,
+    });
+
+    expect($to.val()).toEqual('900');
+
+    $toxinSlider.trigger(event, {
+      from: 770,
+    });
+
+    expect($from.val()).toEqual('800');
   });
 });

@@ -209,6 +209,19 @@ describe('View test', () => {
     expect(thumbB.getPosition()).toEqual(30);
     expect($tooltipA.text()).toEqual('850$');
     expect($tooltipB.text()).toEqual('830$');
+
+    $toxinSlider.trigger(event, {
+      hasTwoValues: false,
+    });
+
+    $thumbA.trigger(thumbEvent);
+    $thumbA.trigger(thumbEvent);
+
+    expect($from.val()).toEqual('810');
+
+    $toxinSlider.trigger(event, {
+      hasTwoValues: true,
+    });
   });
 
   test('View update state #6', () => {
@@ -223,12 +236,33 @@ describe('View test', () => {
     expect(thumbB.getPosition()).toEqual(20);
     expect($tooltipA.text()).toEqual('850$');
     expect($tooltipB.text()).toEqual('820$');
+
+    $toxinSlider.trigger(event, {
+      clickPoint: 400,
+      size: 500,
+    });
+
+    expect($to.val()).toEqual('880');
+
+    $toxinSlider.trigger(event, {
+      hasTwoValues: false,
+    });
+
+    $toxinSlider.trigger(event, {
+      clickPoint: 200,
+      size: 500,
+    });
+
+    expect($from.val()).toEqual('840');
   });
 
   test('View update state #7', () => {
     $toxinSlider.trigger(event, {
       start: 900,
       end: 800,
+      from: 820,
+      to: 850,
+      hasTwoValues: true,
     });
 
     expect($from.val()).toEqual('850');
@@ -260,12 +294,20 @@ describe('View test', () => {
     expect($to.val()).toEqual('800');
 
     $toxinSlider.trigger(event, {
+      step: 0,
+      from: 811.87,
+    });
+
+    expect($from.val()).toEqual('811.87');
+
+    $toxinSlider.trigger(event, {
       start: 800,
       end: 900,
+      step: 10,
     });
 
     expect($from.val()).toEqual('800');
-    expect($to.val()).toEqual('800');
+    expect($to.val()).toEqual('810');
 
     $toxinSlider.trigger(event, {
       to: 910,
@@ -278,5 +320,21 @@ describe('View test', () => {
     });
 
     expect($from.val()).toEqual('800');
+
+    $toxinSlider.trigger(event, {
+      step: 0,
+      from: 801.44,
+    });
+
+    expect($from.val()).toEqual('801.44');
+
+    $toxinSlider.trigger(event, {
+      step: 30,
+      from: 891.44,
+      to: 899,
+    });
+
+    expect($from.val()).toEqual('890');
+    expect($to.val()).toEqual('900');
   });
 });

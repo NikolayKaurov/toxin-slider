@@ -49,6 +49,14 @@ interface BarMessage {
   clickPoint: number;
 }
 
+interface ScaleState {
+  start: number;
+  end: number;
+  step: number;
+  hidden: boolean;
+  units?: string;
+}
+
 interface ModelState {
   start?: number;
   end?: number;

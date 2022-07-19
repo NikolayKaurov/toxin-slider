@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
-const thumbHTML = '<div class="toxin-slider__thumb js-toxin-slider__thumb" tabindex="0"></div>';
-const tooltipHTML = '<div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip"></div>';
+const thumbHTML = '<div class="toxin-slider__thumb" tabindex="0"></div>';
+const tooltipHTML = '<div class="toxin-slider__thumb-tooltip"></div>';
 
 const left = 37;
 const up = 38;

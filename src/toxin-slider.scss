@@ -21,7 +21,6 @@
   position: relative;
   font-size: $thumb-thickness;
   font-family: Montserrat, Arial, sans-serif;
-  color: rgba(31 32 65 / 75%);
 
   &__inner-wrapper {
     position: relative;
@@ -113,6 +112,76 @@
     z-index: 0;
   }
 
+  &__scale {
+    align-self: center;
+    width: calc(100% - $thumb-length);
+    height: min-content;
+
+    &-inner-wrapper {
+      width: 100%;
+      display: flex;
+    }
+
+    &-value {
+      line-height: 1.5em;
+      cursor: pointer;
+      z-index: 1;
+
+      &::selection {
+        background: transparent;
+      }
+    }
+
+    &-item {
+      position: relative;
+      flex-grow: 2;
+      flex-basis: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+
+      &:first-child {
+        flex-grow: 1;
+        flex-basis: 0;
+        overflow: visible;
+
+        #{$root}__scale-value {
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+
+      &:last-child {
+        flex-grow: 1;
+        flex-basis: 0;
+        overflow: visible;
+
+        #{$root}__scale-value {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translate(50%, -50%);
+        }
+      }
+
+      &_penult {
+        flex-grow: 1;
+        flex-basis: 0;
+        overflow: visible;
+
+        #{$root}__scale-value {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translate(50%, -50%);
+        }
+      }
+    }
+  }
+
   &__input {
     display: none;
   }
@@ -135,7 +204,7 @@
   }
 
   &_direction_vertical {
-    flex-direction: row;
+    flex-direction: row-reverse;
     width: min-content;
     height: 100%;
 
@@ -176,12 +245,46 @@
 
     #{$root}__bar {
       top: auto;
-      left: $half-thumb-thickness;
-      transform: translateX(-50%);
+      right: $half-thumb-thickness;
+      transform: translateX(50%);
       width: $bar-thickness;
       max-width: $thumb-thickness;
       height: 100%;
       max-height: none;
+    }
+
+    #{$root}__scale {
+      height: calc(100% - $thumb-length);
+      width: min-content;
+      margin-right: 0.5em;
+
+      &-inner-wrapper {
+        height: 100%;
+        flex-direction: column-reverse;
+      }
+
+      &-item {
+        &:first-child {
+          #{$root}__scale-value {
+            top: 100%;
+            left: 50%;
+          }
+        }
+
+        &:last-child {
+          #{$root}__scale-value {
+            top: 0;
+            right: 50%;
+          }
+        }
+
+        &_penult {
+          #{$root}__scale-value {
+            top: 0;
+            right: 50%;
+          }
+        }
+      }
     }
 
     &#{$root}_range_single {

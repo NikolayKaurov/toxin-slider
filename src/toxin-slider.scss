@@ -66,6 +66,7 @@
       left: calc(100% + $half-thumb-length);
       transform: translateX(-50%);
       bottom: calc($thumb-thickness * 0.25);
+      line-height: 1.5em;
 
       &_hidden {
         visibility: hidden;
@@ -115,11 +116,13 @@
   &__scale {
     align-self: center;
     width: calc(100% - $thumb-length);
+    margin-top: 0.25em;
     height: min-content;
 
     &-inner-wrapper {
       width: 100%;
       display: flex;
+      justify-content: space-between;
     }
 
     &-value {
@@ -134,16 +137,12 @@
 
     &-item {
       position: relative;
-      flex-grow: 2;
-      flex-basis: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
 
       &:first-child {
-        flex-grow: 1;
-        flex-basis: 0;
         overflow: visible;
 
         #{$root}__scale-value {
@@ -155,8 +154,6 @@
       }
 
       &:last-child {
-        flex-grow: 1;
-        flex-basis: 0;
         overflow: visible;
 
         #{$root}__scale-value {
@@ -168,8 +165,6 @@
       }
 
       &_penult {
-        flex-grow: 1;
-        flex-basis: 0;
         overflow: visible;
 
         #{$root}__scale-value {
@@ -179,6 +174,10 @@
           transform: translate(50%, -50%);
         }
       }
+    }
+
+    &_hidden {
+      display: none;
     }
   }
 
@@ -256,7 +255,8 @@
     #{$root}__scale {
       height: calc(100% - $thumb-length);
       width: min-content;
-      margin-right: 0.5em;
+      margin-top: 0;
+      margin-right: 0.75em;
 
       &-inner-wrapper {
         height: 100%;

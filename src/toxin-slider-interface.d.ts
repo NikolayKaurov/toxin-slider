@@ -57,6 +57,10 @@ interface ScaleState {
   units?: string;
 }
 
+interface ScaleMessage {
+  scaleValue: number;
+}
+
 interface ModelState {
   start?: number;
   end?: number;
@@ -75,4 +79,4 @@ interface ViewState extends ModelState {
   name?: string;
 }
 
-type Message = ViewState | BarMessage | DragMessage | MoveMessage;
+type Message = ViewState | BarMessage | DragMessage | MoveMessage | ScaleMessage;

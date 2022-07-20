@@ -15,6 +15,7 @@ describe('View test', () => {
     hasTwoValues: false,
     progressBarHidden: false,
     tooltipHidden: false,
+    scaleHidden: false,
     units: 'mm.',
   };
 
@@ -38,10 +39,12 @@ describe('View test', () => {
     thumbA,
     thumbB,
     progressBar,
+    scale,
   } = view;
   const { $thumb: $thumbA, $tooltip: $tooltipA } = thumbA;
   const { $thumb: $thumbB, $tooltip: $tooltipB } = thumbB;
   const { $progressBar } = progressBar;
+  const { $scale} = scale;
   const event = $.Event('toxin-slider.update');
 
   test('View creation test', () => {
@@ -56,6 +59,7 @@ describe('View test', () => {
     expect($tooltipB.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(false);
     expect($thumbA.hasClass('toxin-slider__thumb_hidden')).toEqual(true);
     expect($progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(false);
+    expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(false);
     expect($toxinSlider.hasClass('toxin-slider_direction_vertical')).toEqual(true);
     expect($toxinSlider.hasClass('toxin-slider_range_single')).toEqual(true);
   });
@@ -71,6 +75,7 @@ describe('View test', () => {
       hasTwoValues: true,
       progressBarHidden: true,
       tooltipHidden: true,
+      scaleHidden: true,
       units: 'sec.',
     });
 
@@ -84,6 +89,7 @@ describe('View test', () => {
     expect($tooltipB.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(true);
     expect($thumbA.hasClass('toxin-slider__thumb_hidden')).toEqual(false);
     expect($progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(true);
+    expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(true);
     expect($toxinSlider.hasClass('toxin-slider_direction_vertical')).toEqual(false);
     expect($toxinSlider.hasClass('toxin-slider_range_single')).toEqual(false);
   });

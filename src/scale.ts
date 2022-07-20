@@ -2,16 +2,16 @@ import $ from 'jquery';
 
 const scaleHTML = '<div class="toxin-slider__scale"></div>';
 const itemHTML = '<div class="toxin-slider__scale-item"></div>';
-const valueHTML = '<div class="toxin-slider__scale-value"></div>';
+const valueHTML = '<div class="toxin-slider__scale-value js-toxin-slider__scale-value"></div>';
 const innerWrapperHTML = '<div class="toxin-slider__scale-inner-wrapper"></div>';
 
 export default class Scale {
   readonly $scale: JQuery;
 
   state: ScaleState = {
-    start: 0,
-    end: 0,
-    step: 0,
+    start: NaN,
+    end: NaN,
+    step: NaN,
     hidden: false,
     units: '',
   };
@@ -21,6 +21,13 @@ export default class Scale {
 
     this.$scale = $(scaleHTML);
     $wrapper.append(this.$scale);
+
+    this.$scale.on(
+      'mousedown',
+      '.toxin-slider__scale-value',
+      { $scale: this.$scale },
+      handleScaleMousedown,
+    );
 
     this.update(state);
   }
@@ -43,6 +50,13 @@ export default class Scale {
       this.$scale.removeClass('toxin-slider__scale_hidden');
     }
   }
+}
+
+function handleScaleMousedown(event: JQuery.TriggeredEvent) {
+  const { $scale } = event.data as { $scale: JQuery };
+  const scaleValue = Number($(event.target).attr('data-value'));
+
+  $scale.trigger('toxin-slider.update', { scaleValue });
 }
 
 function getInnerScale(options: {
@@ -68,9 +82,17 @@ function getInnerScale(options: {
     .append(
       $(itemHTML)
         .append(
-          $(valueHTML).text(
-            `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
-          ),
+          $(valueHTML)
+            .text(
+              `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
+            )
+            .attr('data-value', cycleValue),
+        )
+        .css(
+          {
+            'flex-grow': scaleStep,
+            'flex-basis': '0',
+          },
         ),
     );
 
@@ -82,19 +104,35 @@ function getInnerScale(options: {
     const $item = $(itemHTML);
 
     const specialCase = (cycleValue === end - modulo) && (cycleValue !== end);
-    if (specialCase) {
-      $item.addClass('toxin-slider__scale-item_penult');
-    }
-
     const outOfScale = (
       cycleValue > start && cycleValue > end
     ) || (
       cycleValue < start && cycleValue < end
     );
-    if (outOfScale) {
+
+    if (specialCase) {
+      $item
+        .addClass('toxin-slider__scale-item_penult')
+        .css(
+          {
+            'flex-grow': scaleStep,
+            'flex-basis': '0',
+          },
+        );
+    } else if (cycleValue === end) {
+      $item.css({
+        'flex-grow': scaleStep,
+        'flex-basis': '0',
+      });
+    } else if (outOfScale) {
       cycleValue = end;
       $item.css({
-        'flex-grow': (2 * modulo) / step,
+        'flex-grow': 2 * modulo,
+        'flex-basis': '0',
+      });
+    } else {
+      $item.css({
+        'flex-grow': 2 * scaleStep,
         'flex-basis': '0',
       });
     }
@@ -103,9 +141,11 @@ function getInnerScale(options: {
       .append(
         $item
           .append(
-            $(valueHTML).text(
-              `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
-            ),
+            $(valueHTML)
+              .text(
+                `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
+              )
+              .attr('data-value', cycleValue),
           ),
       );
 

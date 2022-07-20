@@ -73,6 +73,14 @@ export default class Model {
       return this.sortValues();
     }
 
+    if (isScaleMessage(message)) {
+      const { scaleValue } = message;
+
+      assignToNearest(scaleValue);
+
+      return this.sortValues();
+    }
+
     if (!isDragMessage(message)) {
       this.state = { ...this.state, ...message };
 
@@ -224,4 +232,8 @@ function isBarMessage(message: Message): message is BarMessage {
 
 function isMoveMessage(message: Message): message is MoveMessage {
   return (message as MoveMessage).moveDirection !== undefined;
+}
+
+function isScaleMessage(message: Message): message is ScaleMessage {
+  return (message as ScaleMessage).scaleValue !== undefined;
 }

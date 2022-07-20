@@ -211,9 +211,12 @@ function handleThumbKeydown(event: JQuery.TriggeredEvent) {
 
   if (keyCode === up || keyCode === right) {
     thumb.moveDirection = MoveDirection.forward;
-    thumb.sendMoveMessage();
   } else if (keyCode === down || keyCode === left) {
     thumb.moveDirection = MoveDirection.back;
+  }
+
+  if (thumb.getDirection() !== MoveDirection.stop) {
+    event.preventDefault();
     thumb.sendMoveMessage();
   }
 }

@@ -186,6 +186,28 @@ describe('Model test', () => {
     });
   });
 
+  test('Model update test: handle scale click message', () => {
+    model.update({ hasTwoValues: true });
+
+    expect(model.update({ scaleValue: 10 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 10,
+      to: 1,
+      hasTwoValues: true,
+    });
+
+    expect(model.update({ scaleValue: 7 })).toEqual({
+      start: 10,
+      end: 0,
+      step: -3,
+      from: 7,
+      to: 1,
+      hasTwoValues: true,
+    });
+  });
+
   test('Model update test: receive new state', () => {
     expect(model.update({
       start: 6,

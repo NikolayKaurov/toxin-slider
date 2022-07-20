@@ -21,7 +21,7 @@ describe('Progress-bar test', () => {
       },
     });
 
-    expect($wrapper.html()).toEqual('<div class="toxin-slider__progress-bar js-toxin-slider__progress-bar toxin-slider__progress-bar_hidden" style="transform: translate(-50%, 29%) scaleY(9%);"></div>');
+    expect($wrapper.html()).toEqual('<div class="toxin-slider__progress-bar toxin-slider__progress-bar_hidden" style="transform: translate(-50%, 29%) scaleY(9%);"></div>');
     expect(progressBarA.$progressBar.css('transform')).toEqual('translate(-50%, 29%) scaleY(9%)');
     expect(progressBarA.$progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(true);
   });

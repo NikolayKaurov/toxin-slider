@@ -142,12 +142,16 @@ export default class View {
   update(state: ViewState): View {
     this.state = { ...this.state, ...state };
     const {
+      start = 0,
+      end = 0,
+      step = 0,
       from = 0,
       to = 0,
       hasTwoValues = false,
       isVertical = false,
       progressBarHidden = false,
       tooltipHidden = false,
+      scaleHidden = false,
       units = '',
     } = this.state;
 
@@ -172,6 +176,7 @@ export default class View {
       thumbB,
       progressBar,
       bar,
+      scale,
     } = this;
 
     thumbA.update({
@@ -200,6 +205,14 @@ export default class View {
     });
 
     bar.update(isVertical);
+
+    scale.update({
+      start,
+      end,
+      step,
+      units,
+      hidden: scaleHidden,
+    });
 
     return this;
   }

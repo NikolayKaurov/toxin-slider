@@ -13,7 +13,7 @@ describe('Bar test', () => {
   $('body').append($wrapper);
 
   test('Bar creation test', () => {
-    expect($wrapper.html()).toEqual('<div class="toxin-slider__bar js-toxin-slider__bar"></div>');
+    expect($wrapper.html()).toEqual('<div class="toxin-slider__bar"></div>');
     expect(typeof bar.update).toBe('function');
   });
 

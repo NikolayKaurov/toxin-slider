@@ -44,7 +44,7 @@ describe('View test', () => {
   const { $thumb: $thumbA, $tooltip: $tooltipA } = thumbA;
   const { $thumb: $thumbB, $tooltip: $tooltipB } = thumbB;
   const { $progressBar } = progressBar;
-  const { $scale} = scale;
+  const { $scale } = scale;
   const event = $.Event('toxin-slider.update');
 
   test('View creation test', () => {
@@ -341,6 +341,13 @@ describe('View test', () => {
     });
 
     expect($from.val()).toEqual('890');
+    expect($to.val()).toEqual('900');
+
+    $toxinSlider.trigger(event, {
+      scaleValue: 860,
+    });
+
+    expect($from.val()).toEqual('860');
     expect($to.val()).toEqual('900');
   });
 });

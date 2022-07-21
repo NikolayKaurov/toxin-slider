@@ -17,8 +17,11 @@ export default class Controller {
   }
 }
 
-function handleSliderUpdate(event: JQuery.TriggeredEvent, message: DragMessage) {
+function handleSliderUpdate(event: JQuery.TriggeredEvent, message: Message) {
   const { model, view } = event.data as { model: Model; view: View };
+  const { $toxinSlider } = view;
 
   view.update({ ...view.state, ...model.update(message) });
+
+  $toxinSlider.trigger('toxin-slider.slide', view.state);
 }

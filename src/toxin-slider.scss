@@ -21,6 +21,7 @@
   position: relative;
   font-size: $thumb-thickness;
   font-family: Montserrat, Arial, sans-serif;
+  color: black;
 
   &__inner-wrapper {
     position: relative;
@@ -28,6 +29,20 @@
     height: $thumb-thickness;
     z-index: 1;
     pointer-events: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: $half-thumb-length;
+      height: $bar-thickness;
+      max-height: $thumb-thickness;
+      background: $background;
+      border-bottom-left-radius: $bar-thickness;
+      border-top-left-radius: $bar-thickness;
+      opacity: 0;
+    }
   }
 
   &__thumb {
@@ -36,7 +51,8 @@
     height: 0;
     outline: 0;
     z-index: 1;
-    will-change: transform;
+
+    // will-change: transform;
 
     &::before {
       content: '';
@@ -188,16 +204,7 @@
   &_range_single {
     #{$root}__inner-wrapper {
       &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: $half-thumb-length;
-        height: $bar-thickness;
-        max-height: $thumb-thickness;
-        background: $background;
-        border-bottom-left-radius: $bar-thickness;
-        border-top-left-radius: $bar-thickness;
+        opacity: 1;
       }
     }
   }
@@ -210,6 +217,20 @@
     #{$root}__inner-wrapper {
       width: $thumb-thickness;
       height: calc(100% - $thumb-length);
+
+      &::before {
+        top: calc(100% + $half-thumb-length);
+        left: 50%;
+        transform: translateX(-50%);
+        width: $bar-thickness;
+        max-width: $thumb-thickness;
+        height: $half-thumb-length;
+        max-height: none;
+        background: $background-vertical;
+        border-bottom-left-radius: $bar-thickness;
+        border-bottom-right-radius: $bar-thickness;
+        border-top-left-radius: 0;
+      }
     }
 
     #{$root}__thumb {
@@ -283,24 +304,6 @@
             top: 0;
             right: 50%;
           }
-        }
-      }
-    }
-
-    &#{$root}_range_single {
-      #{$root}__inner-wrapper {
-        &::before {
-          top: calc(100% + $half-thumb-length);
-          left: 50%;
-          transform: translateX(-50%);
-          width: $bar-thickness;
-          max-width: $thumb-thickness;
-          height: $half-thumb-length;
-          max-height: none;
-          background: $background-vertical;
-          border-bottom-left-radius: $bar-thickness;
-          border-bottom-right-radius: $bar-thickness;
-          border-top-left-radius: 0;
         }
       }
     }

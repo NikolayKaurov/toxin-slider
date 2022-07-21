@@ -5,15 +5,26 @@ import View from './view';
 import Controller from './controller';
 
 $.fn.toxinSlider = function toxinSlider(this: JQuery, state: ViewState): JQuery {
-  const model = new Model(state);
+  return this.each((index, outerWrapper) => {
+    const $outerWrapper = $(outerWrapper);
+    const $toxinSlider = $('.js-toxin-slider', $outerWrapper);
 
-  const view = new View({
-    state: model.state,
-    $outerWrapper: this,
+    if ($toxinSlider.length > 0) {
+      $toxinSlider.trigger('toxin-slider.update', state);
+    } else {
+      const { name = '' } = state;
+      const sliderName = index > 0 ? `${name}-${index}` : name;
+      const sliderState = { ...state, ...{ name: sliderName } };
+
+      const model = new Model(sliderState);
+
+      const view = new View({
+        $outerWrapper,
+        state: model.state,
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const controller = new Controller({ model, view });
+    }
   });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const controller = new Controller({ model, view });
-
-  return this;
 };

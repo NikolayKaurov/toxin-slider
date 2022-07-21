@@ -1,8 +1,33 @@
 doctype html
 html(lang="ru")
   head
-    title= 'demo'
+    title= 'toxin-slider demo'
     meta(charset="utf-8")
   body
-    h1 Demo
-    .container.js-container
+    h1 toxin-slider demo
+    .demo.demo-1
+      .container.container-1.js-container.js-container-1
+      form.config.js-config.config-1.js-config-1
+        label.label Начало шкалы
+          input.input(type="number" step="0.0001" name="start-1")
+        label.label Конец шкалы
+          input.input(type="number" step="0.0001" name="end-1")
+        label.label Шаг шкалы
+          input.input(type="number" step="0.0001" name="step-1")
+        label.label От
+          input.input(type="number" step="0.0001" name="from-1")
+        label.label До
+          input.input(type="number" step="0.0001" name="to-1")
+        label.label два значения
+          input(type="checkbox" name="hasTwoValues-1")
+        label.label слайдер вертикальный
+          input(type="checkbox" name="isVertical-1")
+        label.label шкала скрыта
+          input(type="checkbox" name="scaleHidden-1")
+        label.label прогресс-бар скрыт
+          input(type="checkbox" name="progressBarHidden-1")
+        label.label тултип скрыт
+          input(type="checkbox" name="tooltipHidden-1")
+        button применить
+
+

@@ -100,7 +100,7 @@ export default class View {
 
     this.$toxinSlider = $(toxinSliderHTML);
 
-    if (!hasTwoValues) {
+    if (!hasTwoValues && !progressBarHidden) {
       this.$toxinSlider.addClass('toxin-slider_range_single');
     }
 
@@ -137,6 +137,8 @@ export default class View {
     });
 
     $outerWrapper.append(this.$toxinSlider);
+
+    this.$toxinSlider.trigger('toxin-slider.slide', this.state);
   }
 
   update(state: ViewState): View {
@@ -158,7 +160,7 @@ export default class View {
     this.$from.val(from);
     this.$to.val(to);
 
-    if (!hasTwoValues) {
+    if (!hasTwoValues && !progressBarHidden) {
       this.$toxinSlider.addClass('toxin-slider_range_single');
     } else {
       this.$toxinSlider.removeClass('toxin-slider_range_single');

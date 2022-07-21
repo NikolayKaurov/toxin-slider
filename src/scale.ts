@@ -90,7 +90,7 @@ function getInnerScale(options: {
         )
         .css(
           {
-            'flex-grow': scaleStep,
+            'flex-grow': Math.abs(scaleStep),
             'flex-basis': '0',
           },
         ),
@@ -115,24 +115,24 @@ function getInnerScale(options: {
         .addClass('toxin-slider__scale-item_penult')
         .css(
           {
-            'flex-grow': scaleStep,
+            'flex-grow': Math.abs(scaleStep),
             'flex-basis': '0',
           },
         );
     } else if (cycleValue === end) {
       $item.css({
-        'flex-grow': scaleStep,
+        'flex-grow': Math.abs(scaleStep),
         'flex-basis': '0',
       });
     } else if (outOfScale) {
       cycleValue = end;
       $item.css({
-        'flex-grow': 2 * modulo,
+        'flex-grow': Math.abs(2 * modulo),
         'flex-basis': '0',
       });
     } else {
       $item.css({
-        'flex-grow': 2 * scaleStep,
+        'flex-grow': Math.abs(2 * scaleStep),
         'flex-basis': '0',
       });
     }

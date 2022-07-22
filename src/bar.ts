@@ -40,8 +40,8 @@ function handleBarMousedown(event: JQuery.TriggeredEvent) {
     : ($bar.outerWidth() ?? 0);
 
   const clickPoint = isVertical
-    ? ($bar.offset()?.top ?? 0) + size - (event?.clientY ?? 0)
-    : (event?.clientX ?? 0) - ($bar.offset()?.left ?? 0);
+    ? ($bar.offset()?.top ?? 0) - window.scrollY + size - (event?.clientY ?? 0)
+    : (event?.clientX ?? 0) + window.scrollX - ($bar.offset()?.left ?? 0);
 
   $bar.trigger('toxin-slider.update', {
     size: normalizeSize(),

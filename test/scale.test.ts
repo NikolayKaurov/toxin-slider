@@ -21,8 +21,9 @@ describe('Scale creation test', () => {
   test('Scale creation test', () => {
     expect(typeof scale.update).toBe('function');
     expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(false);
-    // common scale text: '1$' + '4$' + '7$' + '10$' + '11$'
-    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('1$4$7$10$11$');
+    // common scale text: '1$' + '1$' + '4$' + '7$' + '10$' + '11$' + '11$'
+    // the first and last element contain invisible double-spacers
+    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('1$1$4$7$10$11$11$');
   });
 
   test('Scale update test', () => {
@@ -32,9 +33,10 @@ describe('Scale creation test', () => {
       step: 5,
       hidden: false,
     });
-    // common scale text: '10' + '15' + '20' + '25' + '30'
+    // common scale text: '10' + '10' + '15' + '20' + '25' + '30' + '30'
+    // the first and last element contain invisible double-spacers
     // eslint-disable-next-line fsd/jq-cache-dom-elements
-    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('1015202530');
+    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('10101520253030');
 
     scale.update({
       start: 23,
@@ -44,8 +46,9 @@ describe('Scale creation test', () => {
       units: '%',
     });
     expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(true);
-    // common scale text: '23%' + '19%' + '15%' + '11%' + '7%' + '3%' + '2%'
-    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('23%19%15%11%7%3%2%');
+    // common scale text: '23%' + '23%' + '19%' + '15%' + '11%' + '7%' + '3%' + '2%' + '2%'
+    // the first and last element contain invisible double-spacers
+    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('23%23%19%15%11%7%3%2%2%');
   });
 
   test('Scale send message test', () => {
@@ -61,7 +64,7 @@ describe('Scale creation test', () => {
       receivedMessage = message;
     }
 
-    $($('.js-toxin-slider__scale-value', $scale).get()[3]).trigger(triggerEvent);
+    $($('.js-toxin-slider__scale-value', $scale).get()[4]).trigger(triggerEvent);
 
     expect(receivedMessage.scaleValue).toEqual(11);
   });

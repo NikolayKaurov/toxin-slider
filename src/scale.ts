@@ -88,6 +88,14 @@ function getInnerScale(options: {
             )
             .attr('data-value', cycleValue),
         )
+        // an invisible element is needed as a spacer
+        .append(
+          $(valueHTML)
+            .text(
+              `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
+            )
+            .addClass('toxin-slider__scale-value_invisible'),
+        )
         .css(
           {
             'flex-grow': Math.abs(scaleStep),
@@ -135,6 +143,17 @@ function getInnerScale(options: {
         'flex-grow': Math.abs(2 * scaleStep),
         'flex-basis': '0',
       });
+    }
+
+    // an invisible element is needed as a spacer
+    if (cycleValue === end) {
+      $item.append(
+        $(valueHTML)
+          .text(
+            `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
+          )
+          .addClass('toxin-slider__scale-value_invisible'),
+      );
     }
 
     $innerScale

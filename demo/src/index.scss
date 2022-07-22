@@ -2,6 +2,15 @@ body {
   font-family: Montserrat, Arial, sans-serif;
 }
 
+.demo {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 50px;
+  padding-top: 50px;
+}
+
 .container {
   border: 1px solid #6fcf97;
   box-shadow: 0 0 32px #6fcf97;
@@ -12,13 +21,18 @@ body {
   height: 40vh;
 }
 
-.demo {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 50px;
-  padding-top: 50px;
+.container-2 {
+  max-width: 60vw;
+  height: 60vh;
+}
+
+.container-3 {
+  max-width: 65vw;
+  height: 70vh;
+}
+
+.container-4 {
+  height: 80vh;
 }
 
 .config {

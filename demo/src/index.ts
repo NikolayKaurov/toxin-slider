@@ -33,11 +33,12 @@ function handleContainer1Slide(event: JQuery.TriggeredEvent, state: ViewState) {
     scaleHidden = false,
   } = state;
 
-  $start1.val(start);
-  $end1.val(end);
-  $step1.val(step);
-  $from1.val(from);
-  $to1.val(to);
+  $start1.val(Math.round(start * 1000) / 1000);
+  $end1.val(Math.round(end * 1000) / 1000);
+  $step1.val(Math.round(step * 1000) / 1000);
+  $from1.val(Math.round(from * 1000) / 1000);
+  $to1.val(Math.round(to * 1000) / 1000);
+  $to1.prop('disabled', !hasTwoValues);
   $hasTwoValues1.prop('checked', hasTwoValues);
   $isVertical1.prop('checked', isVertical);
   $scaleHidden1.prop('checked', scaleHidden);
@@ -62,17 +63,223 @@ function handleConfig1submit(event: JQuery.TriggeredEvent) {
   });
 }
 
+const $config2 = $('.js-config-2');
+const $container2 = $('.js-container-2');
+const $start2 = $('.input[name="start-2"]', $config2);
+const $end2 = $('.input[name="end-2"]', $config2);
+const $step2 = $('.input[name="step-2"]', $config2);
+const $from2 = $('.input[name="from-2"]', $config2);
+const $to2 = $('.input[name="to-2"]', $config2);
+const $hasTwoValues2 = $('input[name="hasTwoValues-2"]', $config2);
+const $isVertical2 = $('input[name="isVertical-2"]', $config2);
+const $scaleHidden2 = $('input[name="scaleHidden-2"]', $config2);
+const $progressBarHidden2 = $('input[name="progressBarHidden-2"]', $config2);
+const $tooltipHidden2 = $('input[name="tooltipHidden-2"]', $config2);
+
+$container2.on('toxin-slider.slide', handleContainer2Slide);
+function handleContainer2Slide(event: JQuery.TriggeredEvent, state: ViewState) {
+  const {
+    start = 0,
+    end = 0,
+    step = 0,
+    from = 0,
+    to = 0,
+    hasTwoValues = false,
+    isVertical = false,
+    progressBarHidden = false,
+    tooltipHidden = false,
+    scaleHidden = false,
+  } = state;
+
+  $start2.val(Math.round(start * 1000) / 1000);
+  $end2.val(Math.round(end * 1000) / 1000);
+  $step2.val(Math.round(step * 1000) / 1000);
+  $from2.val(Math.round(from * 1000) / 1000);
+  $to2.val(Math.round(to * 1000) / 1000);
+  $to2.prop('disabled', !hasTwoValues);
+  $hasTwoValues2.prop('checked', hasTwoValues);
+  $isVertical2.prop('checked', isVertical);
+  $scaleHidden2.prop('checked', scaleHidden);
+  $progressBarHidden2.prop('checked', progressBarHidden);
+  $tooltipHidden2.prop('checked', tooltipHidden);
+}
+
+$config2.on('submit', handleConfig2submit);
+function handleConfig2submit(event: JQuery.TriggeredEvent) {
+  event.preventDefault();
+  $container2.toxinSlider({
+    start: Number($start2.val()),
+    step: Number($step2.val()),
+    end: Number($end2.val()),
+    from: Number($from2.val()),
+    to: Number($to2.val()),
+    hasTwoValues: $hasTwoValues2.prop('checked') === true,
+    isVertical: $isVertical2.prop('checked') === true,
+    progressBarHidden: $progressBarHidden2.prop('checked') === true,
+    tooltipHidden: $tooltipHidden2.prop('checked') === true,
+    scaleHidden: $scaleHidden2.prop('checked') === true,
+  });
+}
+
+const $config3 = $('.js-config-3');
+const $container3 = $('.js-container-3');
+const $start3 = $('.input[name="start-3"]', $config3);
+const $end3 = $('.input[name="end-3"]', $config3);
+const $step3 = $('.input[name="step-3"]', $config3);
+const $from3 = $('.input[name="from-3"]', $config3);
+const $to3 = $('.input[name="to-3"]', $config3);
+const $hasTwoValues3 = $('input[name="hasTwoValues-3"]', $config3);
+const $isVertical3 = $('input[name="isVertical-3"]', $config3);
+const $scaleHidden3 = $('input[name="scaleHidden-3"]', $config3);
+const $progressBarHidden3 = $('input[name="progressBarHidden-3"]', $config3);
+const $tooltipHidden3 = $('input[name="tooltipHidden-3"]', $config3);
+
+$container3.on('toxin-slider.slide', handleContainer3Slide);
+function handleContainer3Slide(event: JQuery.TriggeredEvent, state: ViewState) {
+  const {
+    start = 0,
+    end = 0,
+    step = 0,
+    from = 0,
+    to = 0,
+    hasTwoValues = false,
+    isVertical = false,
+    progressBarHidden = false,
+    tooltipHidden = false,
+    scaleHidden = false,
+  } = state;
+
+  $start3.val(Math.round(start * 1000) / 1000);
+  $end3.val(Math.round(end * 1000) / 1000);
+  $step3.val(Math.round(step * 1000) / 1000);
+  $from3.val(Math.round(from * 1000) / 1000);
+  $to3.val(Math.round(to * 1000) / 1000);
+  $to3.prop('disabled', !hasTwoValues);
+  $hasTwoValues3.prop('checked', hasTwoValues);
+  $isVertical3.prop('checked', isVertical);
+  $scaleHidden3.prop('checked', scaleHidden);
+  $progressBarHidden3.prop('checked', progressBarHidden);
+  $tooltipHidden3.prop('checked', tooltipHidden);
+}
+
+$config3.on('submit', handleConfig3submit);
+function handleConfig3submit(event: JQuery.TriggeredEvent) {
+  event.preventDefault();
+  $container3.toxinSlider({
+    start: Number($start3.val()),
+    step: Number($step3.val()),
+    end: Number($end3.val()),
+    from: Number($from3.val()),
+    to: Number($to3.val()),
+    hasTwoValues: $hasTwoValues3.prop('checked') === true,
+    isVertical: $isVertical3.prop('checked') === true,
+    progressBarHidden: $progressBarHidden3.prop('checked') === true,
+    tooltipHidden: $tooltipHidden3.prop('checked') === true,
+    scaleHidden: $scaleHidden3.prop('checked') === true,
+  });
+}
+
+const $config4 = $('.js-config-4');
+const $container4 = $('.js-container-4');
+const $start4 = $('.input[name="start-4"]', $config4);
+const $end4 = $('.input[name="end-4"]', $config4);
+const $step4 = $('.input[name="step-4"]', $config4);
+const $from4 = $('.input[name="from-4"]', $config4);
+const $to4 = $('.input[name="to-4"]', $config4);
+const $hasTwoValues4 = $('input[name="hasTwoValues-4"]', $config4);
+const $isVertical4 = $('input[name="isVertical-4"]', $config4);
+const $scaleHidden4 = $('input[name="scaleHidden-4"]', $config4);
+const $progressBarHidden4 = $('input[name="progressBarHidden-4"]', $config4);
+const $tooltipHidden4 = $('input[name="tooltipHidden-4"]', $config4);
+
+$container4.on('toxin-slider.slide', handleContainer4Slide);
+function handleContainer4Slide(event: JQuery.TriggeredEvent, state: ViewState) {
+  const {
+    start = 0,
+    end = 0,
+    step = 0,
+    from = 0,
+    to = 0,
+    hasTwoValues = false,
+    isVertical = false,
+    progressBarHidden = false,
+    tooltipHidden = false,
+    scaleHidden = false,
+  } = state;
+
+  $start4.val(Math.round(start * 1000) / 1000);
+  $end4.val(Math.round(end * 1000) / 1000);
+  $step4.val(Math.round(step * 1000) / 1000);
+  $from4.val(Math.round(from * 1000) / 1000);
+  $to4.val(Math.round(to * 1000) / 1000);
+  $to4.prop('disabled', !hasTwoValues);
+  $hasTwoValues4.prop('checked', hasTwoValues);
+  $isVertical4.prop('checked', isVertical);
+  $scaleHidden4.prop('checked', scaleHidden);
+  $progressBarHidden4.prop('checked', progressBarHidden);
+  $tooltipHidden4.prop('checked', tooltipHidden);
+}
+
+$config4.on('submit', handleConfig4submit);
+function handleConfig4submit(event: JQuery.TriggeredEvent) {
+  event.preventDefault();
+  $container4.toxinSlider({
+    start: Number($start4.val()),
+    step: Number($step4.val()),
+    end: Number($end4.val()),
+    from: Number($from4.val()),
+    to: Number($to4.val()),
+    hasTwoValues: $hasTwoValues4.prop('checked') === true,
+    isVertical: $isVertical4.prop('checked') === true,
+    progressBarHidden: $progressBarHidden4.prop('checked') === true,
+    tooltipHidden: $tooltipHidden4.prop('checked') === true,
+    scaleHidden: $scaleHidden4.prop('checked') === true,
+  });
+}
+
 $container1.toxinSlider({
-  start: -14,
-  step: 0.1,
+  start: -4,
+  step: 2,
   end: 14,
   from: 1,
   to: 10,
   hasTwoValues: true,
-  // isVertical: true,
   units: '',
-  // progressBarHidden: true,
-  // tooltipHidden: true,
   scaleHidden: true,
   name: 'slider-1',
+});
+
+$container2.toxinSlider({
+  start: -40,
+  step: 5,
+  end: 50,
+  from: 20,
+  to: 10,
+  isVertical: true,
+  units: '°C',
+  tooltipHidden: true,
+  name: 'thermometer',
+});
+
+$container3.toxinSlider({
+  start: 19,
+  step: 3,
+  end: 0,
+  from: 1,
+  to: 10,
+  hasTwoValues: true,
+  units: '',
+  name: 'slider-2',
+});
+
+$container4.toxinSlider({
+  start: 80,
+  step: 1,
+  end: 105,
+  from: 81,
+  to: 102,
+  hasTwoValues: true,
+  units: '',
+  name: 'slider-3',
+  isVertical: true,
 });

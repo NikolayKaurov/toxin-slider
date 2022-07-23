@@ -13,6 +13,7 @@
   $background: linear-gradient(180deg, #6fcf97 0%, #66d2ea 100%);
   $background-vertical: linear-gradient(90deg, #6fcf97 0%, #66d2ea 100%);
   $shadow-color: #6fcf97;
+  $animation-duration: 300ms;
 
   display: flex;
   flex-direction: column;
@@ -43,6 +44,16 @@
       border-top-left-radius: $bar-thickness;
       opacity: 0;
     }
+
+    &_draggable {
+      #{$root}__thumb {
+        transition: transform 0ms;
+      }
+
+      #{$root}__progress-bar {
+        transition: transform 0ms;
+      }
+    }
   }
 
   &__thumb {
@@ -51,6 +62,8 @@
     height: 0;
     outline: 0;
     z-index: 1;
+    transition: transform $animation-duration;
+    touch-action: none;
 
     &::before {
       content: '';
@@ -62,7 +75,6 @@
       border: 2px solid white;
       border-radius: $thumb-thickness;
       background: $background;
-      touch-action: none;
       pointer-events: auto;
       cursor: pointer;
     }
@@ -108,6 +120,7 @@
     background: $background;
     z-index: 0;
     will-change: transform;
+    transition: transform $animation-duration;
 
     &_hidden {
       visibility: hidden;

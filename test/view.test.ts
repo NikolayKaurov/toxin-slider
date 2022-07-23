@@ -191,9 +191,12 @@ describe('View test', () => {
     const right = 39;
     const thumbEvent = $.Event('keydown', { keyCode: right });
 
-    $thumbB.trigger(thumbEvent);
-    $thumbB.trigger(thumbEvent);
-    $thumbB.trigger(thumbEvent);
+    for (let i = 0; i < 3; i += 1) {
+      $thumbB.trigger(thumbEvent);
+      thumbEvent.type = 'keyup';
+      $thumbB.trigger(thumbEvent);
+      thumbEvent.type = 'keydown';
+    }
 
     expect($from.val()).toEqual('850');
     expect($to.val()).toEqual('870');
@@ -204,10 +207,12 @@ describe('View test', () => {
 
     thumbEvent.keyCode = left;
 
-    $thumbB.trigger(thumbEvent);
-    $thumbB.trigger(thumbEvent);
-    $thumbB.trigger(thumbEvent);
-    $thumbB.trigger(thumbEvent);
+    for (let i = 0; i < 4; i += 1) {
+      $thumbB.trigger(thumbEvent);
+      thumbEvent.type = 'keyup';
+      $thumbB.trigger(thumbEvent);
+      thumbEvent.type = 'keydown';
+    }
 
     expect($from.val()).toEqual('830');
     expect($to.val()).toEqual('850');
@@ -220,8 +225,12 @@ describe('View test', () => {
       hasTwoValues: false,
     });
 
-    $thumbA.trigger(thumbEvent);
-    $thumbA.trigger(thumbEvent);
+    for (let i = 0; i < 2; i += 1) {
+      $thumbA.trigger(thumbEvent);
+      thumbEvent.type = 'keyup';
+      $thumbA.trigger(thumbEvent);
+      thumbEvent.type = 'keydown';
+    }
 
     expect($from.val()).toEqual('810');
 

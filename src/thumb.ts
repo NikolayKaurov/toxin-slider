@@ -50,7 +50,7 @@ export default class Thumb {
     this.$thumb = $(thumbHTML).append(this.$tooltip);
     this.$wrapper = $wrapper.append(this.$thumb);
 
-    this.$thumb.on('mousedown', { thumb: this }, handleThumbMousedown);
+    this.$thumb.on('mousedown pointerdown', { thumb: this }, handleThumbMousedown);
     this.$thumb.on('keydown', { thumb: this }, handleThumbKeydown);
     this.$thumb.on('keyup', { thumb: this }, handleThumbKeyup);
 
@@ -164,6 +164,8 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
 
   $(document).on('mousemove pointermove', { thumb }, handleThumbMousemove);
   $(document).on('mouseup pointerup', { thumb }, handleThumbMouseup);
+
+  $wrapper.addClass('toxin-slider__inner-wrapper_draggable');
 }
 
 function handleThumbMousemove(event: JQuery.TriggeredEvent) {
@@ -195,7 +197,7 @@ function handleThumbMousemove(event: JQuery.TriggeredEvent) {
 
 function handleThumbMouseup(event: JQuery.TriggeredEvent) {
   const { thumb } = event.data as { thumb: Thumb };
-  const { drag } = thumb;
+  const { drag, $wrapper } = thumb;
 
   $(document).off('mousemove pointermove', handleThumbMousemove);
   $(document).off('mouseup pointerup', handleThumbMouseup);
@@ -203,10 +205,13 @@ function handleThumbMouseup(event: JQuery.TriggeredEvent) {
   drag.position = null;
 
   thumb.sendDragMessage();
+
+  $wrapper.removeClass('toxin-slider__inner-wrapper_draggable');
 }
 
 function handleThumbKeydown(event: JQuery.TriggeredEvent) {
   const { thumb } = event.data as { thumb: Thumb };
+  const { $wrapper } = thumb;
   const { keyCode } = event;
 
   if (keyCode === up || keyCode === right) {
@@ -219,10 +224,15 @@ function handleThumbKeydown(event: JQuery.TriggeredEvent) {
     event.preventDefault();
     thumb.sendMoveMessage();
   }
+
+  $wrapper.addClass('toxin-slider__inner-wrapper_draggable');
 }
 
 function handleThumbKeyup(event: JQuery.TriggeredEvent) {
   const { thumb } = event.data as { thumb: Thumb };
+  const { $wrapper } = thumb;
 
   thumb.moveDirection = MoveDirection.stop;
+
+  $wrapper.removeClass('toxin-slider__inner-wrapper_draggable');
 }

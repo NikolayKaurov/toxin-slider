@@ -214,6 +214,12 @@ describe('Thumb send keyboard message', () => {
     },
   });
 
+  afterEach(() => {
+    triggerEvent.type = 'keyup';
+    movingThumb.$thumb.trigger(triggerEvent);
+    triggerEvent.type = 'keydown';
+  });
+
   test('Key left', () => {
     movingThumb.$thumb.trigger(triggerEvent);
 
@@ -246,9 +252,6 @@ describe('Thumb send keyboard message', () => {
   });
 
   test('Stop', () => {
-    triggerEvent.type = 'keyup';
-    movingThumb.$thumb.trigger(triggerEvent);
-
     expect(movingThumb.getDirection()).toEqual(0);
   });
 });

@@ -6,12 +6,10 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'airbnb-base',
-    'plugin:fsd/all',
   ],
   parser: '@typescript-eslint/parser',
   plugins: [
     '@typescript-eslint',
-    'fsd',
   ],
   overrides: [
     {
@@ -22,7 +20,6 @@ module.exports = {
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
         'airbnb-base',
         'airbnb-typescript/base',
-        'plugin:fsd/all',
       ],
       parserOptions: {
         ecmaVersion: 'latest',

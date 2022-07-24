@@ -20,11 +20,11 @@ export default class View {
 
   thumbB: Thumb;
 
-  progressBar: ProgressBar;
+  readonly progressBar: ProgressBar;
 
-  scale: Scale;
+  readonly scale: Scale;
 
-  private readonly bar: Bar;
+  readonly bar: Bar;
 
   state: ViewState = {
     start: 0,

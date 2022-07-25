@@ -33,13 +33,13 @@ export default class Scale {
   }
 
   update(state: ScaleState) {
-    const scaleChange = (
+    const isNewState = (
       (this.state.start !== state.start)
       || (this.state.end !== state.end)
       || (this.state.step !== state.step)
     );
 
-    if (scaleChange) {
+    if (isNewState) {
       this.$scale.empty().append(getInnerScale(state));
       this.state = { ...this.state, ...state };
     }
@@ -49,6 +49,8 @@ export default class Scale {
     } else {
       this.$scale.removeClass('toxin-slider__scale_hidden');
     }
+
+    return this;
   }
 }
 
@@ -111,14 +113,14 @@ function getInnerScale(options: {
 
     const $item = $(itemHTML);
 
-    const specialCase = (cycleValue === end - modulo) && (cycleValue !== end);
+    const isSpecialCase = (cycleValue === end - modulo) && (cycleValue !== end);
     const outOfScale = (
       cycleValue > start && cycleValue > end
     ) || (
       cycleValue < start && cycleValue < end
     );
 
-    if (specialCase) {
+    if (isSpecialCase) {
       $item
         .addClass('toxin-slider__scale-item_penult')
         .css(

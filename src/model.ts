@@ -62,9 +62,9 @@ export default class Model {
     if (isMoveMessage(message)) {
       const { moveDirection, value } = message;
 
-      const specialCase = (modulo !== 0) && (value === end) && (moveDirection === -1);
+      const isSpecialCase = (modulo !== 0) && (value === end) && (moveDirection === -1);
 
-      const newValue = specialCase
+      const newValue = isSpecialCase
         ? end - modulo
         : value + step * moveDirection;
 

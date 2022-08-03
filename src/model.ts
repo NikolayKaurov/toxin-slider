@@ -1,33 +1,39 @@
+import BigNumber from 'bignumber.js';
+
+import { Message, ModelState, Options } from './toxin-slider-interface';
+
 export default class Model {
   state: ModelState = {
-    start: 0,
-    end: 0,
-    step: 0,
-    from: 0,
-    to: 0,
+    start: new BigNumber(0),
+    end: new BigNumber(0),
+    step: new BigNumber(0),
+    from: new BigNumber(0),
+    to: new BigNumber(0),
     hasTwoValues: false,
   };
 
-  private modulo = 0;
+  private modulo = new BigNumber(0);
 
-  constructor(state: ModelState) {
-    this.update(state);
+  // private stepSign: -1 | 1 = 1;
+
+  constructor(options: Options) {
+    this.update(options);
   }
 
   update(message: Message): ModelState {
     const {
-      start = 0,
-      end = 0,
-      step = 0,
-      from = 0,
-      to = 0,
-      hasTwoValues = false,
+      start,
+      end,
+      step,
+      from,
+      to,
+      hasTwoValues,
     } = this.state;
     const { modulo } = this;
 
-    const assignToNearest = (between: number) => {
+    const assignToNearest = (between: BigNumber) => {
       if (hasTwoValues) {
-        if (Math.abs(from - between) < Math.abs(to - between)) {
+        if (from.minus(between).abs().comparedTo(to.minus(between).abs()) === -1) {
           this.state.from = between;
         } else {
           this.state.to = between;
@@ -37,9 +43,9 @@ export default class Model {
       }
     };
 
-    const assignToCongruent = (between: number, comparable: number) => {
+    const assignToCongruent = (between: BigNumber, comparable: BigNumber) => {
       if (hasTwoValues) {
-        if (comparable === from) {
+        if (comparable.isEqualTo(from)) {
           this.state.from = between;
         } else {
           this.state.to = between;
@@ -48,6 +54,15 @@ export default class Model {
         this.state.from = between;
       }
     };
+
+    switch (message.typeMessage) {
+      case 'barMessage':
+        const { size, clickPoint } = message;
+
+        const newValue = this.normalizeValue(
+          end.minus(start).multipliedBy(clickPoint).dividedBy(size).plus(start),
+        );
+    }
 
     if (isBarMessage(message)) {
       const { size, clickPoint } = message;
@@ -130,44 +145,47 @@ export default class Model {
     return this;
   }
 
-  normalizeValue(raw: number): number {
-    const {
-      start = 0,
-      end = 0,
-      step = 0,
-    } = this.state;
+  normalizeValue(raw: BigNumber): BigNumber {
+    const { start, end, step } = this.state;
     const { modulo } = this;
 
-    if (start > end) {
-      if (raw > start) {
-        return start;
+    if (start.isGreaterThan(end)) {
+      if (raw.isGreaterThan(start)) {
+        return new BigNumber(start);
       }
 
-      if (raw < end) {
-        return end;
+      if (raw.isLessThan(end)) {
+        return new BigNumber(end);
       }
 
-      if (step !== 0) {
-        if (raw < (end - modulo / 2)) {
-          return end;
+      if (!step.isZero()) {
+        if (raw.isLessThan(end.minus(modulo.dividedBy(2)))) {
+          return new BigNumber(end);
         }
 
-        if (raw < (end - modulo)) {
-          return end - modulo;
+        const endMinusModulo = end.minus(modulo);
+
+        if (raw.isLessThan(endMinusModulo)) {
+          return endMinusModulo;
         }
 
-        return start + step * Math.round((raw - start) / step);
+        return raw
+          .minus(start)
+          .dividedBy(step)
+          .integerValue()
+          .multipliedBy(step)
+          .plus(start);
       }
 
       return raw;
     }
 
-    if (raw < start) {
-      return start;
+    if (raw.isLessThan(start)) {
+      return new BigNumber(start);
     }
 
-    if (raw > end) {
-      return end;
+    if (raw.isGreaterThan(end)) {
+      return new BigNumber(end);
     }
 
     if (step !== 0) {

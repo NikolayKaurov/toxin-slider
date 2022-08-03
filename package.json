@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bignumber.js": "^9.0.2",
     "jquery": "^3.6.0"
   },
   "devDependencies": {

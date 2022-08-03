@@ -1,82 +1,97 @@
+import BigNumber from 'bignumber.js';
+
 interface JQuery {
   toxinSlider: ToxinSlider;
 }
 
 interface ToxinSlider {
-  (state: ViewState): JQuery;
+  (options: Options): JQuery;
 }
 
 interface ThumbState {
-  value: number;
-  position: number;
+  value: BigNumber;
+  position: BigNumber;
   isVertical: boolean;
   hidden: boolean;
   tooltipHidden: boolean;
-  units?: string;
+  units: string;
 }
 
 interface DragData {
   position: DragPosition;
-  innerOffset: number;
-  wrapperPosition: number;
-  wrapperSize: number;
-  minRestriction: number;
-  maxRestriction: number;
+  innerOffset: BigNumber;
+  wrapperPosition: BigNumber;
+  wrapperSize: BigNumber;
+  minRestriction: BigNumber;
+  maxRestriction: BigNumber;
 }
 
-type DragPosition = number | null;
+type DragPosition = BigNumber | null;
 
 interface DragMessage {
-  innerOffset: number;
-  wrapperSize: number;
-  value: number;
+  typeMessage: 'dragMessage';
+  innerOffset: BigNumber;
+  wrapperSize: BigNumber;
+  value: BigNumber;
 }
 
 interface MoveMessage {
-  moveDirection: number;
-  value: number;
+  typeMessage: 'moveMessage';
+  moveDirection: MoveDirection;
+  value: BigNumber;
 }
 
+type MoveDirection = -1 | 0 | 1;
+
 interface ProgressBarState {
-  min: number;
-  max: number;
+  min: BigNumber;
+  max: BigNumber;
   isVertical: boolean;
   hidden: boolean;
 }
 
 interface BarMessage {
-  size: number;
-  clickPoint: number;
+  typeMessage: 'barMessage';
+  size: BigNumber;
+  clickPoint: BigNumber;
 }
 
 interface ScaleState {
-  start: number;
-  end: number;
-  step: number;
+  start: BigNumber;
+  end: BigNumber;
+  step: BigNumber;
   hidden: boolean;
-  units?: string;
+  units: string;
 }
 
 interface ScaleMessage {
-  scaleValue: number;
+  typeMessage: 'scaleMessage';
+  scaleValue: BigNumber;
 }
 
 interface ModelState {
-  start?: number;
-  end?: number;
-  step?: number;
-  from?: number;
-  to?: number;
-  hasTwoValues?: boolean;
+  start: BigNumber;
+  end: BigNumber;
+  step: BigNumber;
+  from: BigNumber;
+  to: BigNumber;
+  hasTwoValues: boolean;
 }
 
-interface ViewState extends ModelState {
+interface Options {
+  typeMessage: 'options';
+  start?: number | string;
+  end?: number | string;
+  step?: number | string;
+  from?: number | string;
+  to?: number | string;
+  hasTwoValues?: boolean;
   isVertical?: boolean;
   progressBarHidden?: boolean;
   tooltipHidden?: boolean;
   scaleHidden?: boolean;
-  units?: string;
   name?: string;
+  units?: string;
 }
 
-type Message = ViewState | BarMessage | DragMessage | MoveMessage | ScaleMessage;
+type Message = Options | BarMessage | DragMessage | MoveMessage | ScaleMessage;

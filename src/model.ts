@@ -1,39 +1,46 @@
 import BigNumber from 'bignumber.js';
 
-import { Message, ModelState, Options } from './toxin-slider-interface';
+import {
+  SliderState,
+  Options,
+  Message,
+  BarMessage, MoveMessage, DragMessage,
+} from './toxin-slider-interface';
 
 export default class Model {
-  state: ModelState = {
+  state: SliderState = {
     start: new BigNumber(0),
     end: new BigNumber(0),
     step: new BigNumber(0),
     from: new BigNumber(0),
     to: new BigNumber(0),
     hasTwoValues: false,
+    isVertical: false,
+    progressBarHidden: false,
+    tooltipHidden: false,
+    scaleHidden: false,
+    name: 'undefined-name',
+    units: '',
   };
 
-  private modulo = new BigNumber(0);
+  private endMinusModulo = new BigNumber(0);
 
-  // private stepSign: -1 | 1 = 1;
+  private endMinusHalfModulo = new BigNumber(0);
+
+  private scope = new BigNumber(0);
+
+  private direction: 1 | -1 = 1;
 
   constructor(options: Options) {
     this.update(options);
   }
 
-  update(message: Message): ModelState {
-    const {
-      start,
-      end,
-      step,
-      from,
-      to,
-      hasTwoValues,
-    } = this.state;
-    const { modulo } = this;
+  update(message: Message): SliderState {
+    const { from, to, hasTwoValues } = this.state;
 
     const assignToNearest = (between: BigNumber) => {
       if (hasTwoValues) {
-        if (from.minus(between).abs().comparedTo(to.minus(between).abs()) === -1) {
+        if (from.minus(between).abs().isLessThan(to.minus(between).abs())) {
           this.state.from = between;
         } else {
           this.state.to = between;
@@ -57,67 +64,48 @@ export default class Model {
 
     switch (message.typeMessage) {
       case 'barMessage':
-        const { size, clickPoint } = message;
-
-        const newValue = this.normalizeValue(
-          end.minus(start).multipliedBy(clickPoint).dividedBy(size).plus(start),
-        );
+        assignToNearest(this.getValueFromBar(message));
+        return this.state;
+      case 'scaleMessage':
+        assignToNearest(message.scaleValue);
+        return this.state;
+      case 'moveMessage':
+        assignToCongruent(this.getValueFromMove(message), message.value);
+        return this.sortValues();
+      case 'dragMessage':
+        assignToCongruent(this.getValueFromDrag(message), message.value);
+        return this.sortValues();
+      case 'options':
+        return this
+          .setOptions(message)
+          .normalizeState();
+      default:
+        return message;
     }
-
-    if (isBarMessage(message)) {
-      const { size, clickPoint } = message;
-
-      const newValue = this.normalizeValue((clickPoint * (end - start)) / size + start);
-
-      assignToNearest(newValue);
-
-      return this.sortValues();
-    }
-
-    if (isMoveMessage(message)) {
-      const { moveDirection, value } = message;
-
-      const isSpecialCase = (modulo !== 0) && (value === end) && (moveDirection === -1);
-
-      const newValue = isSpecialCase
-        ? end - modulo
-        : value + step * moveDirection;
-
-      assignToCongruent(this.normalizeValue(newValue), value);
-
-      return this.sortValues();
-    }
-
-    if (isScaleMessage(message)) {
-      const { scaleValue } = message;
-
-      assignToNearest(scaleValue);
-
-      return this.sortValues();
-    }
-
-    if (!isDragMessage(message)) {
-      this.state = { ...this.state, ...message };
-
-      return this.normalizeState();
-    }
-
-    const { innerOffset, wrapperSize, value } = message;
-
-    const newValue = this.normalizeValue((innerOffset * (end - start)) / wrapperSize + start);
-
-    assignToCongruent(newValue, value);
-
-    return this.sortValues();
   }
 
-  normalizeState(): ModelState {
+  private normalizeState(): SliderState {
     const {
-      from = 0,
-      to = 0,
+      start,
+      end,
+      from,
+      to,
     } = this.state;
 
-    this.modulo = this.normalizeStep().getModulo();
+    this.scope = end.minus(start);
+
+    if (this.scope.isNegative()) {
+      this.direction = -1;
+    } else {
+      this.direction = 1;
+    }
+
+    const { endMinusModulo, endMinusHalfModulo } = this
+      .normalizeStep()
+      .getModuloValues();
+
+    this.endMinusModulo = endMinusModulo;
+    this.endMinusHalfModulo = endMinusHalfModulo;
 
     this.state.from = this.normalizeValue(from);
     this.state.to = this.normalizeValue(to);
@@ -125,31 +113,25 @@ export default class Model {
     return this.sortValues();
   }
 
-  normalizeStep(): Model {
-    const {
-      start = 0,
-      end = 0,
-      step = 0,
-    } = this.state;
+  private normalizeStep(): Model {
+    const { step } = this.state;
+    const { scope } = this;
 
-    if (Math.abs(step) > Math.abs(end - start)) {
-      this.state.step = end - start;
-    } else {
-      const isCorrectStepSign = (end > start && step > 0) || (end < start && step < 0);
+    const unsignedScope = scope.abs();
+    const unsignedStep = step.abs();
 
-      if (!isCorrectStepSign) {
-        this.state.step = -1 * step;
-      }
-    }
+    this.state.step = unsignedStep.isGreaterThan(unsignedScope)
+      ? unsignedScope
+      : unsignedStep;
 
     return this;
   }
 
-  normalizeValue(raw: BigNumber): BigNumber {
+  private normalizeValue(raw: BigNumber): BigNumber {
     const { start, end, step } = this.state;
-    const { modulo } = this;
+    const { endMinusModulo, endMinusHalfModulo, direction } = this;
 
-    if (start.isGreaterThan(end)) {
+    if (direction === -1) {
       if (raw.isGreaterThan(start)) {
         return new BigNumber(start);
       }
@@ -159,14 +141,12 @@ export default class Model {
       }
 
       if (!step.isZero()) {
-        if (raw.isLessThan(end.minus(modulo.dividedBy(2)))) {
+        if (raw.isLessThan(endMinusHalfModulo)) {
           return new BigNumber(end);
         }
 
-        const endMinusModulo = end.minus(modulo);
-
         if (raw.isLessThan(endMinusModulo)) {
-          return endMinusModulo;
+          return new BigNumber(endMinusModulo);
         }
 
         return raw
@@ -188,36 +168,36 @@ export default class Model {
       return new BigNumber(end);
     }
 
-    if (step !== 0) {
-      if (raw > (end - modulo / 2)) {
-        return end;
+    if (!step.isZero()) {
+      if (raw.isGreaterThan(endMinusHalfModulo)) {
+        return new BigNumber(end);
       }
 
-      if (raw > (end - modulo)) {
-        return end - modulo;
+      if (raw.isGreaterThan(endMinusModulo)) {
+        return new BigNumber(endMinusModulo);
       }
 
-      return start + step * Math.round((raw - start) / step);
+      return raw
+        .minus(start)
+        .dividedBy(step)
+        .integerValue()
+        .multipliedBy(step)
+        .plus(start);
     }
 
     return raw;
   }
 
-  sortValues(): ModelState {
-    const {
-      start = 0,
-      end = 0,
-      from = 0,
-      to = 0,
-      hasTwoValues = false,
-    } = this.state;
+  private sortValues(): SliderState {
+    const { from, to, hasTwoValues } = this.state;
+    const { direction } = this;
 
     if (hasTwoValues) {
-      if (start > end) {
-        if (from < to) {
+      if (direction === -1) {
+        if (from.isLessThan(to)) {
           [this.state.from, this.state.to] = [to, from];
         }
-      } else if (from > to) {
+      } else if (from.isGreaterThan(to)) {
         [this.state.from, this.state.to] = [to, from];
       }
     }
@@ -225,33 +205,126 @@ export default class Model {
     return this.state;
   }
 
-  getModulo(): number {
-    const {
-      start = 0,
-      end = 0,
-      step = 0,
-    } = this.state;
+  private getModuloValues(): { endMinusModulo: BigNumber; endMinusHalfModulo: BigNumber } {
+    const { end, step } = this.state;
+    const { scope } = this;
 
-    if (step === 0) {
-      return 0;
+    if (step.isZero()) {
+      return {
+        endMinusModulo: new BigNumber(end),
+        endMinusHalfModulo: new BigNumber(end),
+      };
     }
 
-    return end - start - step * Math.floor((end - start) / step);
+    const modulo = scope.modulo(step);
+
+    const endMinusModulo = end.minus(modulo);
+    const endMinusHalfModulo = end.minus(modulo.dividedBy(2));
+
+    return { endMinusModulo, endMinusHalfModulo };
   }
-}
 
-function isDragMessage(message: Message): message is DragMessage {
-  return (message as DragMessage).innerOffset !== undefined;
-}
+  private getValueFromBar(message: BarMessage): BigNumber {
+    const { size, clickPoint } = message;
+    const { start } = this.state;
+    const { scope } = this;
 
-function isBarMessage(message: Message): message is BarMessage {
-  return (message as BarMessage).size !== undefined;
-}
+    return this.normalizeValue(
+      scope.multipliedBy(clickPoint).dividedBy(size).plus(start),
+    );
+  }
 
-function isMoveMessage(message: Message): message is MoveMessage {
-  return (message as MoveMessage).moveDirection !== undefined;
-}
+  private getValueFromMove(message: MoveMessage): BigNumber {
+    const { moveDirection, value } = message;
+    const { step, end } = this.state;
+    const { direction, endMinusModulo } = this;
 
-function isScaleMessage(message: Message): message is ScaleMessage {
-  return (message as ScaleMessage).scaleValue !== undefined;
+    const isSpecialCase = (!endMinusModulo.isEqualTo(end))
+      && (value.isEqualTo(end))
+      && (moveDirection === -1);
+
+    return isSpecialCase
+      ? new BigNumber(endMinusModulo)
+      : this.normalizeValue(
+        value.plus(step.multipliedBy(direction).multipliedBy(moveDirection)),
+      );
+  }
+
+  private getValueFromDrag(message: DragMessage): BigNumber {
+    const { innerOffset, wrapperSize } = message;
+    const { start } = this.state;
+    const { scope } = this;
+
+    return this.normalizeValue(
+      scope.multipliedBy(innerOffset).dividedBy(wrapperSize).plus(start),
+    );
+  }
+
+  private setOptions(options: Options): Model {
+    const {
+      start,
+      end,
+      step,
+      from,
+      to,
+      hasTwoValues,
+      isVertical,
+      progressBarHidden,
+      tooltipHidden,
+      scaleHidden,
+      name,
+      units,
+    } = options;
+    const { state } = this;
+
+    if (start !== undefined) {
+      state.start = new BigNumber(start);
+    }
+
+    if (end !== undefined) {
+      state.end = new BigNumber(end);
+    }
+
+    if (step !== undefined) {
+      state.step = new BigNumber(step);
+    }
+
+    if (from !== undefined) {
+      state.from = new BigNumber(from);
+    }
+
+    if (to !== undefined) {
+      state.to = new BigNumber(to);
+    }
+
+    if (hasTwoValues !== undefined) {
+      state.hasTwoValues = hasTwoValues;
+    }
+
+    if (isVertical !== undefined) {
+      state.isVertical = isVertical;
+    }
+
+    if (progressBarHidden !== undefined) {
+      state.progressBarHidden = progressBarHidden;
+    }
+
+    if (tooltipHidden !== undefined) {
+      state.tooltipHidden = tooltipHidden;
+    }
+
+    if (scaleHidden !== undefined) {
+      state.scaleHidden = scaleHidden;
+    }
+
+    if (name !== undefined) {
+      state.name = name;
+    }
+
+    if (units !== undefined) {
+      state.units = units;
+    }
+
+    return this;
+  }
 }

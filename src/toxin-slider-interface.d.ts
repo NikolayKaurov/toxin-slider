@@ -69,13 +69,19 @@ interface ScaleMessage {
   scaleValue: BigNumber;
 }
 
-interface ModelState {
+interface SliderState {
   start: BigNumber;
   end: BigNumber;
   step: BigNumber;
   from: BigNumber;
   to: BigNumber;
   hasTwoValues: boolean;
+  isVertical: boolean;
+  progressBarHidden: boolean;
+  tooltipHidden: boolean;
+  scaleHidden: boolean;
+  name: string;
+  units: string;
 }
 
 interface Options {

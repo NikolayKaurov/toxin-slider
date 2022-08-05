@@ -1,4 +1,7 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
+
+import { ScaleState } from './toxin-slider-interface';
 
 const scaleHTML = '<div class="toxin-slider__scale"></div>';
 const itemHTML = '<div class="toxin-slider__scale-item"></div>';
@@ -9,9 +12,9 @@ export default class Scale {
   readonly $scale: JQuery;
 
   state: ScaleState = {
-    start: NaN,
-    end: NaN,
-    step: NaN,
+    start: new BigNumber(NaN),
+    end: new BigNumber(NaN),
+    step: new BigNumber(NaN),
     hidden: false,
     units: '',
   };
@@ -22,27 +25,23 @@ export default class Scale {
     this.$scale = $(scaleHTML);
     $wrapper.append(this.$scale);
 
-    this.$scale.on(
-      'mousedown',
-      '.toxin-slider__scale-value',
-      { $scale: this.$scale },
-      handleScaleMousedown,
-    );
+    this.$scale.on('mousedown', '.toxin-slider__scale-value', this, handleScaleMousedown);
 
     this.update(state);
   }
 
   update(state: ScaleState) {
-    const isNewState = (
+    const scaleShouldBeUpdated = (
       (this.state.start !== state.start)
       || (this.state.end !== state.end)
       || (this.state.step !== state.step)
     );
 
-    if (isNewState) {
+    if (scaleShouldBeUpdated) {
       this.$scale.empty().append(getInnerScale(state));
-      this.state = { ...this.state, ...state };
     }
+
+    this.state = { ...this.state, ...state };
 
     if (state.hidden) {
       this.$scale.addClass('toxin-slider__scale_hidden');
@@ -55,29 +54,49 @@ export default class Scale {
 }
 
 function handleScaleMousedown(event: JQuery.TriggeredEvent) {
-  const { $scale } = event.data as { $scale: JQuery };
-  const scaleValue = Number($(event.target).attr('data-value'));
+  if (!(event.data instanceof Scale)) {
+    return;
+  }
 
-  $scale.trigger('toxin-slider.update', { scaleValue });
+  const { $scale } = event.data;
+  const scaleValue = new BigNumber($(event.target).attr('data-value') ?? '');
+
+  $scale.trigger('toxin-slider.update', {
+    scaleValue,
+    typeMessage: 'scaleMessage',
+  });
 }
 
-function getInnerScale(options: {
-  start: number;
-  end: number;
-  step: number;
-  units?: string;
-}): JQuery {
+function getInnerScale(state: ScaleState): JQuery {
   const {
     start,
     end,
     step,
-    units = '',
-  } = options;
+    units,
+  } = state;
+
+  const scope = end.minus(start);
+
+  const direction = scope.isNegative() ? -1 : 1;
 
   /* If the step is zero, the scale consists of extreme values only */
-  const scaleStep = step === 0 ? end - start : step;
+  const scaleStep = step.isZero()
+    ? new BigNumber(scope)
+    : new BigNumber(step).multipliedBy(direction);
 
-  const modulo = step === 0 ? 0 : end - start - step * Math.floor((end - start) / step);
+  const modulo = step.isZero()
+    ? new BigNumber(0)
+    : scope.modulo(step);
+
+  const endMinusModulo = end.minus(modulo);
+
+  /* const format = {
+    decimalSeparator: ',',
+    groupSeparator: ' ',
+    groupSize: 3,
+    suffix: units,
+  };
+  BigNumber.config({ FORMAT: format }); */
 
   let cycleValue = start;
   const $innerScale = $(innerWrapperHTML)
@@ -85,39 +104,34 @@ function getInnerScale(options: {
       $(itemHTML)
         .append(
           $(valueHTML)
-            .text(
-              `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
-            )
-            .attr('data-value', cycleValue),
+            .text(cycleValue.toFormat())
+            .attr('data-value', cycleValue.toNumber()),
         )
         // an invisible element is needed as a spacer
         .append(
           $(valueHTML)
-            .text(
-              `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
-            )
+            .text(cycleValue.toFormat())
             .addClass('toxin-slider__scale-value_invisible'),
         )
         .css(
           {
-            'flex-grow': Math.abs(scaleStep),
-            'flex-basis': '0',
+            'flex-grow': scaleStep.abs().toNumber(),
+            'flex-basis': 0,
           },
         ),
     );
 
-  let i = 1;
-
   do {
-    cycleValue = start + scaleStep * i;
+    cycleValue = cycleValue.plus(scaleStep);
 
     const $item = $(itemHTML);
 
-    const isSpecialCase = (cycleValue === end - modulo) && (cycleValue !== end);
+    const isSpecialCase = (cycleValue.isEqualTo(endMinusModulo)) && (!cycleValue.isEqualTo(end));
+
     const outOfScale = (
-      cycleValue > start && cycleValue > end
+      cycleValue.isGreaterThan(start) && cycleValue.isGreaterThan(end)
     ) || (
-      cycleValue < start && cycleValue < end
+      cycleValue.isLessThan(start) && cycleValue.isLessThan(end)
     );
 
     if (isSpecialCase) {
@@ -125,35 +139,33 @@ function getInnerScale(options: {
         .addClass('toxin-slider__scale-item_penult')
         .css(
           {
-            'flex-grow': Math.abs(scaleStep),
-            'flex-basis': '0',
+            'flex-grow': scaleStep.abs().toNumber(),
+            'flex-basis': 0,
           },
         );
-    } else if (cycleValue === end) {
+    } else if (cycleValue.isEqualTo(end)) {
       $item.css({
-        'flex-grow': Math.abs(scaleStep),
-        'flex-basis': '0',
+        'flex-grow': scaleStep.abs().toNumber(),
+        'flex-basis': 0,
       });
     } else if (outOfScale) {
-      cycleValue = end;
+      cycleValue = new BigNumber(end);
       $item.css({
-        'flex-grow': Math.abs(2 * modulo),
-        'flex-basis': '0',
+        'flex-grow': modulo.abs().multipliedBy(2).toNumber(),
+        'flex-basis': 0,
       });
     } else {
       $item.css({
-        'flex-grow': Math.abs(2 * scaleStep),
-        'flex-basis': '0',
+        'flex-grow': scaleStep.abs().multipliedBy(2).toNumber(),
+        'flex-basis': 0,
       });
     }
 
     // an invisible element is needed as a spacer
-    if (cycleValue === end) {
+    if (cycleValue.isEqualTo(end)) {
       $item.append(
         $(valueHTML)
-          .text(
-            `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
-          )
+          .text(cycleValue.toFormat())
           .addClass('toxin-slider__scale-value_invisible'),
       );
     }
@@ -163,15 +175,11 @@ function getInnerScale(options: {
         $item
           .append(
             $(valueHTML)
-              .text(
-                `${new Intl.NumberFormat('ru-RU').format(cycleValue)}${units}`,
-              )
-              .attr('data-value', cycleValue),
+              .text(cycleValue.toFormat())
+              .attr('data-value', cycleValue.toNumber()),
           ),
       );
-
-    i += 1;
-  } while (cycleValue !== end);
+  } while (!cycleValue.isEqualTo(end));
 
   return $innerScale;
 }

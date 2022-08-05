@@ -1,4 +1,7 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
+
+import { ProgressBarState } from './toxin-slider-interface';
 
 const progressBarHTML = '<div class="toxin-slider__progress-bar"></div>';
 
@@ -15,14 +18,23 @@ export default class ProgressBar {
   }
 
   update(state: ProgressBarState): ProgressBar {
+    const {
+      min,
+      max,
+      isVertical,
+      hidden,
+    } = state;
+
+    const hundred = new BigNumber(100);
+
     this.$progressBar.css(
       'transform',
-      state.isVertical
-        ? `translate(-50%, ${100 - state.max}%) scaleY(${state.max - state.min}%)`
-        : `translate(${state.min}%, -50%) scaleX(${state.max - state.min}%)`,
+      isVertical
+        ? `translate(-50%, ${hundred.minus(max).toNumber()}%) scaleY(${max.minus(min).toNumber()}%)`
+        : `translate(${min.toNumber()}%, -50%) scaleX(${max.minus(min).toNumber()}%)`,
     );
 
-    if (state.hidden) {
+    if (hidden) {
       this.$progressBar.addClass('toxin-slider__progress-bar_hidden');
     } else {
       this.$progressBar.removeClass('toxin-slider__progress-bar_hidden');

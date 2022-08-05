@@ -94,11 +94,7 @@ export default class Model {
 
     this.scope = end.minus(start);
 
-    if (this.scope.isNegative()) {
-      this.direction = -1;
-    } else {
-      this.direction = 1;
-    }
+    this.direction = this.scope.isNegative() ? -1 : 1;
 
     const { endMinusModulo, endMinusHalfModulo } = this
       .normalizeStep()

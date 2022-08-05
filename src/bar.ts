@@ -46,24 +46,25 @@ function handleBarMousedown(event: JQuery.TriggeredEvent) {
     ? ($bar.offset()?.top ?? 0) - window.scrollY + rawSize - (event?.clientY ?? 0)
     : (event?.clientX ?? 0) + window.scrollX - ($bar.offset()?.left ?? 0);
 
-  const size = new BigNumber(rawSize);
-  const normalizedSize = size.minus(thumbLength);
-  const clickPoint = new BigNumber(rawClickPoint);
+  const size = new BigNumber(rawSize).minus(thumbLength);
 
-  $bar.trigger('toxin-slider.update', {
-    size: normalizedSize,
-    clickPoint: normalizeClickPoint(),
-  });
+  const clickPoint = (() => {
+    const temp = new BigNumber(rawClickPoint);
 
-  function normalizeClickPoint(): BigNumber {
-    if (clickPoint.isLessThan(halfThumbLength)) {
+    if (temp.isLessThan(halfThumbLength)) {
       return new BigNumber(0);
     }
 
-    if (clickPoint.isGreaterThan(size.minus(halfThumbLength))) {
-      return new BigNumber(normalizedSize);
+    if (temp.isGreaterThan(size.plus(halfThumbLength))) {
+      return new BigNumber(size);
     }
 
-    return clickPoint.minus(halfThumbLength);
-  }
+    return temp.minus(halfThumbLength);
+  })();
+
+  $bar.trigger('toxin-slider.update', {
+    size,
+    clickPoint,
+    typeMessage: 'barMessage',
+  });
 }

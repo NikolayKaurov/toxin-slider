@@ -1,4 +1,7 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
+
+import { ThumbState, DragData, MoveDirection } from './toxin-slider-interface';
 
 const thumbHTML = '<div class="toxin-slider__thumb" tabindex="0"></div>';
 const tooltipHTML = '<div class="toxin-slider__thumb-tooltip"></div>';
@@ -8,11 +11,11 @@ const up = 38;
 const right = 39;
 const down = 40;
 
-enum MoveDirection {
-  back = -1,
-  stop,
-  forward,
-}
+const moveDirection: { back: MoveDirection; stop: MoveDirection; forward: MoveDirection; } = {
+  back: -1,
+  stop: 0,
+  forward: 1,
+};
 
 export default class Thumb {
   readonly $wrapper: JQuery;
@@ -22,8 +25,8 @@ export default class Thumb {
   readonly $tooltip: JQuery;
 
   state: ThumbState = {
-    value: 0,
-    position: 0,
+    value: new BigNumber(0),
+    position: new BigNumber(0),
     isVertical: false,
     hidden: false,
     tooltipHidden: false,
@@ -31,17 +34,17 @@ export default class Thumb {
   };
 
   drag: DragData = {
-    position: null as DragPosition,
-    innerOffset: 0,
-    wrapperPosition: 0,
-    wrapperSize: 0,
-    minRestriction: 0,
-    maxRestriction: 0,
+    position: null,
+    innerOffset: new BigNumber(0),
+    wrapperPosition: new BigNumber(0),
+    wrapperSize: new BigNumber(0),
+    minRestriction: new BigNumber(0),
+    maxRestriction: new BigNumber(0),
   };
 
   /* This property describes thumb movement using the KEYBOARD
   and is named using the word MOVE instead of DRAG by design. */
-  moveDirection: MoveDirection = MoveDirection.stop;
+  moveDirection: MoveDirection = moveDirection.stop;
 
   constructor(options: { $wrapper: JQuery; state: ThumbState }) {
     const { $wrapper, state } = options;
@@ -50,9 +53,9 @@ export default class Thumb {
     this.$thumb = $(thumbHTML).append(this.$tooltip);
     this.$wrapper = $wrapper.append(this.$thumb);
 
-    this.$thumb.on('mousedown pointerdown', { thumb: this }, handleThumbMousedown);
-    this.$thumb.on('keydown', { thumb: this }, handleThumbKeydown);
-    this.$thumb.on('keyup', { thumb: this }, handleThumbKeyup);
+    this.$thumb.on('mousedown pointerdown', this, handleThumbMousedown);
+    this.$thumb.on('keydown', this, handleThumbKeydown);
+    this.$thumb.on('keyup', this, handleThumbKeyup);
 
     this.update(state);
   }
@@ -60,17 +63,31 @@ export default class Thumb {
   update(state: ThumbState): Thumb {
     this.state = { ...this.state, ...state };
 
+    const {
+      value,
+      hidden,
+      tooltipHidden,
+    } = state;
+
     this.position();
 
-    this.$tooltip.text(`${new Intl.NumberFormat('ru-RU').format(state.value)}${state.units ?? ''}`);
+    /* const format = {
+      decimalSeparator: ',',
+      groupSeparator: ' ',
+      groupSize: 3,
+      suffix: units,
+    };
+    BigNumber.config({ FORMAT: format }); */
 
-    if (state.hidden) {
+    this.$tooltip.text(value.toFormat());
+
+    if (hidden) {
       this.$thumb.addClass('toxin-slider__thumb_hidden');
     } else {
       this.$thumb.removeClass('toxin-slider__thumb_hidden');
     }
 
-    if (state.tooltipHidden) {
+    if (tooltipHidden) {
       this.$tooltip.addClass('toxin-slider__thumb-tooltip_hidden');
     } else {
       this.$tooltip.removeClass('toxin-slider__thumb-tooltip_hidden');
@@ -79,7 +96,7 @@ export default class Thumb {
     return this;
   }
 
-  getPosition(): number {
+  getPosition(): BigNumber {
     return this.drag.position === null ? this.state.position : this.drag.position;
   }
 
@@ -91,6 +108,7 @@ export default class Thumb {
     this.$thumb.trigger(
       'toxin-slider.update',
       {
+        typeMessage: 'dragMessage',
         innerOffset: this.drag.innerOffset,
         wrapperSize: this.drag.wrapperSize,
         value: this.state.value,
@@ -104,6 +122,7 @@ export default class Thumb {
     this.$thumb.trigger(
       'toxin-slider.update',
       {
+        typeMessage: 'moveMessage',
         moveDirection: this.getDirection(),
         value: this.state.value,
       },
@@ -116,8 +135,10 @@ export default class Thumb {
     const axis = this.state.isVertical ? 'Y' : 'X';
     const position = this.getPosition();
 
+    const hundred = new BigNumber(100);
+
     this.$thumb.css('transform', `translate${axis}(${
-      axis === 'X' ? (position - 100) : (-1 * position)
+      axis === 'X' ? (position.minus(hundred).toNumber()) : (position.negated().toNumber())
     }%)`);
 
     return this;

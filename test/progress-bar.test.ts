@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
 
 import ProgressBar from '../src/progress-bar';
 
@@ -14,8 +15,8 @@ describe('Progress-bar test', () => {
     const progressBarA = new ProgressBar({
       $wrapper,
       state: {
-        min: 62,
-        max: 71,
+        min: new BigNumber(62),
+        max: new BigNumber(71),
         isVertical: true,
         hidden: true,
       },
@@ -28,8 +29,8 @@ describe('Progress-bar test', () => {
 
   test('Progress-bar update test', () => {
     const state = {
-      min: 0,
-      max: 0,
+      min: new BigNumber(0),
+      max: new BigNumber(0),
       isVertical: true,
       hidden: true,
     };
@@ -37,14 +38,14 @@ describe('Progress-bar test', () => {
     const progressBarB = new ProgressBar({ $wrapper, state });
 
     for (let i = 0; i < 10; i += 1) {
-      state.min = Math.round(Math.random() * 100);
-      state.max = Math.round(Math.random() * 100);
+      state.min = new BigNumber(Math.round(Math.random() * 100));
+      state.max = new BigNumber(Math.round(Math.random() * 100));
       state.hidden = Math.round(Math.random()) === 0;
       state.isVertical = Math.round(Math.random()) === 0;
 
       const axis = state.isVertical ? 'Y' : 'X';
 
-      if (state.min > state.max) {
+      if (state.min.isGreaterThan(state.max)) {
         [state.min, state.max] = [state.max, state.min];
       }
 
@@ -52,11 +53,11 @@ describe('Progress-bar test', () => {
 
       expect(progressBarB.$progressBar.css('transform'))
         .toEqual(`translate(${
-          axis === 'X' ? state.min : -50
+          axis === 'X' ? state.min.toNumber() : -50
         }%, ${
-          axis === 'X' ? -50 : 100 - state.max
+          axis === 'X' ? -50 : 100 - state.max.toNumber()
         }%) scale${axis}(${
-          state.max - state.min
+          state.max.minus(state.min).toNumber()
         }%)`);
 
       expect(progressBarB.$progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(state.hidden);

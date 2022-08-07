@@ -1,12 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-import {
-  SliderState,
-  Options,
-  Message,
-  BarMessage, MoveMessage, DragMessage,
-} from './toxin-slider-interface';
-
 export default class Model {
   state: SliderState = {
     start: new BigNumber(0),
@@ -82,6 +75,38 @@ export default class Model {
       default:
         return message;
     }
+  }
+
+  getOptions(): OutsideOptions {
+    const {
+      start,
+      end,
+      step,
+      from,
+      to,
+      hasTwoValues,
+      isVertical,
+      progressBarHidden,
+      tooltipHidden,
+      scaleHidden,
+      name,
+      units,
+    } = this.state;
+
+    return {
+      hasTwoValues,
+      isVertical,
+      progressBarHidden,
+      tooltipHidden,
+      scaleHidden,
+      name,
+      units,
+      start: start.toNumber(),
+      end: end.toNumber(),
+      step: step.toNumber(),
+      from: from.toNumber(),
+      to: to.toNumber(),
+    };
   }
 
   private normalizeState(): SliderState {

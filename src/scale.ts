@@ -1,12 +1,17 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import { ScaleState } from './toxin-slider-interface';
-
 const scaleHTML = '<div class="toxin-slider__scale"></div>';
 const itemHTML = '<div class="toxin-slider__scale-item"></div>';
 const valueHTML = '<div class="toxin-slider__scale-value js-toxin-slider__scale-value"></div>';
 const innerWrapperHTML = '<div class="toxin-slider__scale-inner-wrapper"></div>';
+
+const format = {
+  decimalSeparator: ',',
+  groupSeparator: ' ',
+  groupSize: 3,
+  suffix: '',
+};
 
 export default class Scale {
   readonly $scale: JQuery;
@@ -31,10 +36,18 @@ export default class Scale {
   }
 
   update(state: ScaleState) {
+    const {
+      start,
+      end,
+      step,
+      units,
+    } = this.state;
+
     const scaleShouldBeUpdated = (
-      (this.state.start !== state.start)
-      || (this.state.end !== state.end)
-      || (this.state.step !== state.step)
+      !start.isEqualTo(state.start)
+      || !end.isEqualTo(state.end)
+      || !step.isEqualTo(state.step)
+      || (units !== state.units)
     );
 
     if (scaleShouldBeUpdated) {
@@ -90,13 +103,7 @@ function getInnerScale(state: ScaleState): JQuery {
 
   const endMinusModulo = end.minus(modulo);
 
-  /* const format = {
-    decimalSeparator: ',',
-    groupSeparator: ' ',
-    groupSize: 3,
-    suffix: units,
-  };
-  BigNumber.config({ FORMAT: format }); */
+  format.suffix = units;
 
   let cycleValue = start;
   const $innerScale = $(innerWrapperHTML)
@@ -104,13 +111,13 @@ function getInnerScale(state: ScaleState): JQuery {
       $(itemHTML)
         .append(
           $(valueHTML)
-            .text(cycleValue.toFormat())
+            .text(cycleValue.toFormat(format))
             .attr('data-value', cycleValue.toNumber()),
         )
         // an invisible element is needed as a spacer
         .append(
           $(valueHTML)
-            .text(cycleValue.toFormat())
+            .text(cycleValue.toFormat(format))
             .addClass('toxin-slider__scale-value_invisible'),
         )
         .css(
@@ -165,7 +172,7 @@ function getInnerScale(state: ScaleState): JQuery {
     if (cycleValue.isEqualTo(end)) {
       $item.append(
         $(valueHTML)
-          .text(cycleValue.toFormat())
+          .text(cycleValue.toFormat(format))
           .addClass('toxin-slider__scale-value_invisible'),
       );
     }
@@ -175,7 +182,7 @@ function getInnerScale(state: ScaleState): JQuery {
         $item
           .append(
             $(valueHTML)
-              .text(cycleValue.toFormat())
+              .text(cycleValue.toFormat(format))
               .attr('data-value', cycleValue.toNumber()),
           ),
       );

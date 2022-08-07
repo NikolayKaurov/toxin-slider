@@ -5,19 +5,16 @@ import View from '../src/view';
 import Controller from '../src/controller';
 
 describe('Controller test', () => {
-  const model = new Model({});
+  const model = new Model({ typeMessage: 'options' });
   const view = new View({
     $outerWrapper: $(),
-    state: {
-      start: 33,
-      end: 79,
-    },
+    state: model.state,
   });
   const controller = new Controller({ model, view });
 
   test('Controller creation test', () => {
-    expect(typeof controller.model).toBe('object');
-    expect(typeof controller.view).toBe('object');
+    expect(controller.model instanceof Model).toBe(true);
+    expect(controller.view instanceof View).toBe(true);
   });
 
   test('Handle update test', () => {
@@ -27,7 +24,7 @@ describe('Controller test', () => {
       end: 223,
     });
 
-    expect(controller.view.state.start).toEqual(92);
-    expect(controller.view.state.end).toEqual(223);
+    expect(controller.model.state.start.toNumber()).toEqual(92);
+    expect(controller.model.state.end.toNumber()).toEqual(223);
   });
 });

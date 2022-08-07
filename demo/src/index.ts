@@ -19,7 +19,7 @@ const $progressBarHidden1 = $('input[name="progressBarHidden-1"]', $config1);
 const $tooltipHidden1 = $('input[name="tooltipHidden-1"]', $config1);
 
 $container1.on('toxin-slider.slide', handleContainer1Slide);
-function handleContainer1Slide(event: JQuery.TriggeredEvent, state: ViewState) {
+function handleContainer1Slide(event: JQuery.TriggeredEvent, options: OutsideOptions) {
   const {
     start = 0,
     end = 0,
@@ -31,13 +31,13 @@ function handleContainer1Slide(event: JQuery.TriggeredEvent, state: ViewState) {
     progressBarHidden = false,
     tooltipHidden = false,
     scaleHidden = false,
-  } = state;
+  } = options;
 
-  $start1.val(Math.round(start * 1000) / 1000);
-  $end1.val(Math.round(end * 1000) / 1000);
-  $step1.val(Math.round(step * 1000) / 1000);
-  $from1.val(Math.round(from * 1000) / 1000);
-  $to1.val(Math.round(to * 1000) / 1000);
+  $start1.val(Math.round(Number(start) * 1000) / 1000);
+  $end1.val(Math.round(Number(end) * 1000) / 1000);
+  $step1.val(Math.round(Number(step) * 1000) / 1000);
+  $from1.val(Math.round(Number(from) * 1000) / 1000);
+  $to1.val(Math.round(Number(to) * 1000) / 1000);
   $to1.prop('disabled', !hasTwoValues);
   $hasTwoValues1.prop('checked', hasTwoValues);
   $isVertical1.prop('checked', isVertical);
@@ -77,7 +77,7 @@ const $progressBarHidden2 = $('input[name="progressBarHidden-2"]', $config2);
 const $tooltipHidden2 = $('input[name="tooltipHidden-2"]', $config2);
 
 $container2.on('toxin-slider.slide', handleContainer2Slide);
-function handleContainer2Slide(event: JQuery.TriggeredEvent, state: ViewState) {
+function handleContainer2Slide(event: JQuery.TriggeredEvent, options: OutsideOptions) {
   const {
     start = 0,
     end = 0,
@@ -89,13 +89,13 @@ function handleContainer2Slide(event: JQuery.TriggeredEvent, state: ViewState) {
     progressBarHidden = false,
     tooltipHidden = false,
     scaleHidden = false,
-  } = state;
+  } = options;
 
-  $start2.val(Math.round(start * 1000) / 1000);
-  $end2.val(Math.round(end * 1000) / 1000);
-  $step2.val(Math.round(step * 1000) / 1000);
-  $from2.val(Math.round(from * 1000) / 1000);
-  $to2.val(Math.round(to * 1000) / 1000);
+  $start2.val(Math.round(Number(start) * 1000) / 1000);
+  $end2.val(Math.round(Number(end) * 1000) / 1000);
+  $step2.val(Math.round(Number(step) * 1000) / 1000);
+  $from2.val(Math.round(Number(from) * 1000) / 1000);
+  $to2.val(Math.round(Number(to) * 1000) / 1000);
   $to2.prop('disabled', !hasTwoValues);
   $hasTwoValues2.prop('checked', hasTwoValues);
   $isVertical2.prop('checked', isVertical);
@@ -135,7 +135,7 @@ const $progressBarHidden3 = $('input[name="progressBarHidden-3"]', $config3);
 const $tooltipHidden3 = $('input[name="tooltipHidden-3"]', $config3);
 
 $container3.on('toxin-slider.slide', handleContainer3Slide);
-function handleContainer3Slide(event: JQuery.TriggeredEvent, state: ViewState) {
+function handleContainer3Slide(event: JQuery.TriggeredEvent, options: OutsideOptions) {
   const {
     start = 0,
     end = 0,
@@ -147,13 +147,13 @@ function handleContainer3Slide(event: JQuery.TriggeredEvent, state: ViewState) {
     progressBarHidden = false,
     tooltipHidden = false,
     scaleHidden = false,
-  } = state;
+  } = options;
 
-  $start3.val(Math.round(start * 1000) / 1000);
-  $end3.val(Math.round(end * 1000) / 1000);
-  $step3.val(Math.round(step * 1000) / 1000);
-  $from3.val(Math.round(from * 1000) / 1000);
-  $to3.val(Math.round(to * 1000) / 1000);
+  $start3.val(Math.round(Number(start) * 1000) / 1000);
+  $end3.val(Math.round(Number(end) * 1000) / 1000);
+  $step3.val(Math.round(Number(step) * 1000) / 1000);
+  $from3.val(Math.round(Number(from) * 1000) / 1000);
+  $to3.val(Math.round(Number(to) * 1000) / 1000);
   $to3.prop('disabled', !hasTwoValues);
   $hasTwoValues3.prop('checked', hasTwoValues);
   $isVertical3.prop('checked', isVertical);
@@ -193,7 +193,7 @@ const $progressBarHidden4 = $('input[name="progressBarHidden-4"]', $config4);
 const $tooltipHidden4 = $('input[name="tooltipHidden-4"]', $config4);
 
 $container4.on('toxin-slider.slide', handleContainer4Slide);
-function handleContainer4Slide(event: JQuery.TriggeredEvent, state: ViewState) {
+function handleContainer4Slide(event: JQuery.TriggeredEvent, options: OutsideOptions) {
   const {
     start = 0,
     end = 0,
@@ -205,13 +205,13 @@ function handleContainer4Slide(event: JQuery.TriggeredEvent, state: ViewState) {
     progressBarHidden = false,
     tooltipHidden = false,
     scaleHidden = false,
-  } = state;
+  } = options;
 
-  $start4.val(Math.round(start * 1000) / 1000);
-  $end4.val(Math.round(end * 1000) / 1000);
-  $step4.val(Math.round(step * 1000) / 1000);
-  $from4.val(Math.round(from * 1000) / 1000);
-  $to4.val(Math.round(to * 1000) / 1000);
+  $start4.val(Math.round(Number(start) * 1000) / 1000);
+  $end4.val(Math.round(Number(end) * 1000) / 1000);
+  $step4.val(Math.round(Number(step) * 1000) / 1000);
+  $from4.val(Math.round(Number(from) * 1000) / 1000);
+  $to4.val(Math.round(Number(to) * 1000) / 1000);
   $to4.prop('disabled', !hasTwoValues);
   $hasTwoValues4.prop('checked', hasTwoValues);
   $isVertical4.prop('checked', isVertical);

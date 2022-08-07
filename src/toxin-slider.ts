@@ -4,19 +4,24 @@ import Model from './model';
 import View from './view';
 import Controller from './controller';
 
-$.fn.toxinSlider = function toxinSlider(this: JQuery, state: ViewState): JQuery {
+$.fn.toxinSlider = function toxinSlider(this: JQuery, outsideOptions: OutsideOptions): JQuery {
   return this.each((index, outerWrapper) => {
     const $outerWrapper = $(outerWrapper);
     const $toxinSlider = $('.js-toxin-slider', $outerWrapper);
 
-    if ($toxinSlider.length > 0) {
-      $toxinSlider.trigger('toxin-slider.update', state);
-    } else {
-      const { name = '' } = state;
-      const sliderName = index > 0 ? `${name}-${index}` : name;
-      const sliderState = { ...state, ...{ name: sliderName } };
+    const options: Options = {
+      typeMessage: 'options',
+      ...outsideOptions,
+    };
 
-      const model = new Model(sliderState);
+    if ($toxinSlider.length > 0) {
+      $toxinSlider.trigger('toxin-slider.update', options);
+    } else {
+      const { name = 'undefined-name' } = options;
+      const sliderName = index > 0 ? `${name}-${index}` : name;
+      const sliderOptions = { ...options, ...{ name: sliderName } };
+
+      const model = new Model(sliderOptions);
 
       const view = new View({
         $outerWrapper,

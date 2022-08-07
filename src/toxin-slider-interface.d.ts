@@ -1,16 +1,16 @@
-import BigNumber from 'bignumber.js';
+interface ToxinSlider {
+  (outsideOptions: OutsideOptions): JQuery;
+}
 
 interface JQuery {
   toxinSlider: ToxinSlider;
 }
 
-interface ToxinSlider {
-  (options: Options): JQuery;
-}
+type Big = import('bignumber.js').BigNumber;
 
 interface ThumbState {
-  value: BigNumber;
-  position: BigNumber;
+  value: Big;
+  position: Big;
   isVertical: boolean;
   hidden: boolean;
   tooltipHidden: boolean;
@@ -19,62 +19,62 @@ interface ThumbState {
 
 interface DragData {
   position: DragPosition;
-  innerOffset: BigNumber;
-  wrapperPosition: BigNumber;
-  wrapperSize: BigNumber;
-  minRestriction: BigNumber;
-  maxRestriction: BigNumber;
+  innerOffset: Big;
+  wrapperPosition: Big;
+  wrapperSize: Big;
+  minRestriction: Big;
+  maxRestriction: Big;
 }
 
-type DragPosition = BigNumber | null;
+type DragPosition = Big | null;
 
 interface DragMessage {
   typeMessage: 'dragMessage';
-  innerOffset: BigNumber;
-  wrapperSize: BigNumber;
-  value: BigNumber;
+  innerOffset: Big;
+  wrapperSize: Big;
+  value: Big;
 }
 
 interface MoveMessage {
   typeMessage: 'moveMessage';
   moveDirection: MoveDirection;
-  value: BigNumber;
+  value: Big;
 }
 
 type MoveDirection = -1 | 0 | 1;
 
 interface ProgressBarState {
-  min: BigNumber;
-  max: BigNumber;
+  min: Big;
+  max: Big;
   isVertical: boolean;
   hidden: boolean;
 }
 
 interface BarMessage {
   typeMessage: 'barMessage';
-  size: BigNumber;
-  clickPoint: BigNumber;
+  size: Big;
+  clickPoint: Big;
 }
 
 interface ScaleState {
-  start: BigNumber;
-  end: BigNumber;
-  step: BigNumber;
+  start: Big;
+  end: Big;
+  step: Big;
   hidden: boolean;
   units: string;
 }
 
 interface ScaleMessage {
   typeMessage: 'scaleMessage';
-  scaleValue: BigNumber;
+  scaleValue: Big;
 }
 
 interface SliderState {
-  start: BigNumber;
-  end: BigNumber;
-  step: BigNumber;
-  from: BigNumber;
-  to: BigNumber;
+  start: Big;
+  end: Big;
+  step: Big;
+  from: Big;
+  to: Big;
   hasTwoValues: boolean;
   isVertical: boolean;
   progressBarHidden: boolean;
@@ -84,8 +84,7 @@ interface SliderState {
   units: string;
 }
 
-interface Options {
-  typeMessage: 'options';
+interface OutsideOptions {
   start?: number | string;
   end?: number | string;
   step?: number | string;
@@ -98,6 +97,10 @@ interface Options {
   scaleHidden?: boolean;
   name?: string;
   units?: string;
+}
+
+interface Options extends OutsideOptions {
+  typeMessage: 'options';
 }
 
 type Message = Options | BarMessage | DragMessage | MoveMessage | ScaleMessage;

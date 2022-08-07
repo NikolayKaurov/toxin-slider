@@ -1,10 +1,11 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
 
 import Bar from '../src/bar';
 
 describe('Bar test', () => {
-  const sizeX = 100;
-  const sizeY = 150;
+  const sizeX = new BigNumber(100);
+  const sizeY = new BigNumber(150);
 
   const $wrapper = $('<div></div>');
 
@@ -28,24 +29,25 @@ describe('Bar test', () => {
   test('Bar send clicking message test', () => {
     /* This constant should be duplicated in the stylesheet ../src/toxin-slider.scss: $thumb-length
     and the file ../src/bar.ts: const thumbLength */
-    const thumbLength = 16;
-    const halfThumbLength = thumbLength / 2;
+    const thumbLength = new BigNumber(16);
+    const halfThumbLength = thumbLength.dividedBy(2);
 
     bar.$bar.css({
-      width: `${sizeX}px`,
-      height: `${sizeY}px`,
+      width: `${sizeX.toNumber()}px`,
+      height: `${sizeY.toNumber()}px`,
     });
 
-    const clickPointX = Math.round(Math.random() * sizeX);
-    const clickPointY = Math.round(Math.random() * sizeY);
+    const clickPointX = Math.round(Math.random() * sizeX.toNumber());
+    const clickPointY = Math.round(Math.random() * sizeY.toNumber());
 
     const triggerEvent = $.Event('mousedown');
     triggerEvent.clientX = clickPointX;
-    triggerEvent.clientY = sizeY - clickPointY;
+    triggerEvent.clientY = sizeY.toNumber() - clickPointY;
 
     let receivedMessage: BarMessage = {
-      size: -1,
-      clickPoint: -1,
+      typeMessage: 'barMessage',
+      size: new BigNumber(-1),
+      clickPoint: new BigNumber(-1),
     };
 
     $wrapper.on('toxin-slider.update', handleBarClicking);
@@ -57,35 +59,39 @@ describe('Bar test', () => {
     bar.update(false);
     bar.$bar.trigger(triggerEvent);
 
-    expect(receivedMessage.size).toEqual(sizeX - thumbLength);
-    expect(receivedMessage.clickPoint).toEqual(normalizeClickPoint(clickPointX, sizeX));
+    expect(receivedMessage.size.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
+    expect(receivedMessage.clickPoint.isEqualTo(
+      normalizeClickPoint(new BigNumber(clickPointX), sizeX),
+    )).toEqual(true);
 
-    triggerEvent.clientX = halfThumbLength - 1;
+    triggerEvent.clientX = halfThumbLength.minus(1).toNumber();
     bar.$bar.trigger(triggerEvent);
 
-    expect(receivedMessage.clickPoint).toEqual(0);
+    expect(receivedMessage.clickPoint.isEqualTo(0)).toEqual(true);
 
-    triggerEvent.clientX = sizeX;
+    triggerEvent.clientX = sizeX.toNumber();
     bar.$bar.trigger(triggerEvent);
 
-    expect(receivedMessage.clickPoint).toEqual(sizeX - thumbLength);
+    expect(receivedMessage.clickPoint.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
 
     bar.update(true);
     bar.$bar.trigger(triggerEvent);
 
-    expect(receivedMessage.size).toEqual(sizeY - thumbLength);
-    expect(receivedMessage.clickPoint).toEqual(normalizeClickPoint(clickPointY, sizeY));
+    expect(receivedMessage.size.isEqualTo(sizeY.minus(thumbLength))).toEqual(true);
+    expect(receivedMessage.clickPoint.isEqualTo(
+      normalizeClickPoint(new BigNumber(clickPointY), sizeY),
+    )).toEqual(true);
 
-    function normalizeClickPoint(point: number, size: number): number {
-      if (point < halfThumbLength) {
-        return 0;
+    function normalizeClickPoint(point: BigNumber, size: BigNumber): BigNumber {
+      if (point.isLessThan(halfThumbLength)) {
+        return new BigNumber(0);
       }
 
-      if (point > size - halfThumbLength) {
-        return size - thumbLength;
+      if (point.isGreaterThan(size.minus(halfThumbLength))) {
+        return size.minus(thumbLength);
       }
 
-      return point - halfThumbLength;
+      return point.minus(halfThumbLength);
     }
   });
 });

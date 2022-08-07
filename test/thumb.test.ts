@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
 
 import Thumb from '../src/thumb';
 
@@ -14,11 +15,12 @@ describe('Thumb setup test', () => {
     const thumbA = new Thumb({
       $wrapper,
       state: {
-        value: 0,
-        position: 0,
+        value: new BigNumber(0),
+        position: new BigNumber(0),
         isVertical: false,
         hidden: false,
         tooltipHidden: false,
+        units: '',
       },
     });
 
@@ -29,11 +31,12 @@ describe('Thumb setup test', () => {
     const thumbB = new Thumb({
       $wrapper,
       state: {
-        value: 17,
-        position: 91,
+        value: new BigNumber(17),
+        position: new BigNumber(91),
         isVertical: true,
         hidden: true,
         tooltipHidden: true,
+        units: '',
       },
     });
 
@@ -46,11 +49,12 @@ describe('Thumb setup test', () => {
     const thumb = new Thumb({
       $wrapper,
       state: {
-        value: 0,
-        position: 0,
+        value: new BigNumber(0),
+        position: new BigNumber(0),
         isVertical: false,
         hidden: false,
         tooltipHidden: false,
+        units: '',
       },
     });
 
@@ -65,11 +69,12 @@ describe('Thumb setup test', () => {
       const tooltipHidden = Math.round(Math.random()) === 0;
 
       thumb.update({
-        value,
-        position,
         isVertical,
         hidden,
         tooltipHidden,
+        value: new BigNumber(value),
+        position: new BigNumber(position),
+        units: '',
       });
 
       expect($tooltip.text()).toEqual(value.toString(10));
@@ -94,11 +99,12 @@ describe('Thumb drag test', () => {
   $('body').append($wrapper);
 
   const state = {
-    value: 0,
-    position: 0,
+    value: new BigNumber(0),
+    position: new BigNumber(0),
     isVertical: false,
     hidden: false,
     tooltipHidden: false,
+    units: '',
   };
 
   const draggingThumb = new Thumb({ $wrapper, state });
@@ -131,7 +137,7 @@ describe('Thumb drag test', () => {
       event.clientX = wrapperSizeX + position * (wrapperSizeX / 100);
       $draggingThumb.trigger(event);
 
-      expect(draggingThumb.getPosition()).toEqual(position);
+      expect(draggingThumb.getPosition().toNumber()).toEqual(position);
       expect($draggingThumb.css('transform')).toEqual(`translateX(${position - 100}%)`);
     }
   });
@@ -140,7 +146,7 @@ describe('Thumb drag test', () => {
     event.clientX = wrapperSizeX / 2;
     $draggingThumb.trigger(event);
 
-    expect(draggingThumb.getPosition()).toEqual(0);
+    expect(draggingThumb.getPosition().toNumber()).toEqual(0);
     expect($draggingThumb.css('transform')).toEqual('translateX(-100%)');
   });
 
@@ -148,7 +154,7 @@ describe('Thumb drag test', () => {
     event.clientX = wrapperSizeX * 3;
     $draggingThumb.trigger(event);
 
-    expect(draggingThumb.getPosition()).toEqual(100);
+    expect(draggingThumb.getPosition().toNumber()).toEqual(100);
     expect($draggingThumb.css('transform')).toEqual('translateX(0%)');
 
     state.isVertical = true;
@@ -161,7 +167,7 @@ describe('Thumb drag test', () => {
       event.clientY = 2 * wrapperSizeY - position * (wrapperSizeY / 100);
       $draggingThumb.trigger(event);
 
-      expect(draggingThumb.getPosition()).toEqual(position);
+      expect(draggingThumb.getPosition().toNumber()).toEqual(position);
       expect($draggingThumb.css('transform')).toEqual(`translateY(${-position}%)`);
     }
   });
@@ -170,7 +176,7 @@ describe('Thumb drag test', () => {
     event.clientY = wrapperSizeY / 2;
     $draggingThumb.trigger(event);
 
-    expect(draggingThumb.getPosition()).toEqual(100);
+    expect(draggingThumb.getPosition().toNumber()).toEqual(100);
     expect($draggingThumb.css('transform')).toEqual('translateY(-100%)');
   });
 
@@ -178,7 +184,7 @@ describe('Thumb drag test', () => {
     event.clientY = wrapperSizeY * 3;
     $draggingThumb.trigger(event);
 
-    expect(draggingThumb.getPosition()).toEqual(0);
+    expect(draggingThumb.getPosition().toNumber()).toEqual(0);
     expect($draggingThumb.css('transform')).toEqual('translateY(0%)');
   });
 });
@@ -192,7 +198,11 @@ describe('Thumb send keyboard message', () => {
   const $wrapper = $('<div></div>');
   $('body').append($wrapper);
 
-  let receivedMessage: MoveMessage = { moveDirection: 0, value: 0 };
+  let receivedMessage: MoveMessage = {
+    typeMessage: 'moveMessage',
+    moveDirection: 0,
+    value: new BigNumber(0),
+  };
 
   function handleMoveMessage(event: JQuery.TriggeredEvent, message: MoveMessage) {
     receivedMessage = message;
@@ -206,11 +216,12 @@ describe('Thumb send keyboard message', () => {
   const movingThumb = new Thumb({
     $wrapper,
     state: {
-      value: 43,
-      position: 0,
+      value: new BigNumber(43),
+      position: new BigNumber(0),
       isVertical: false,
       hidden: false,
       tooltipHidden: false,
+      units: '',
     },
   });
 
@@ -223,7 +234,7 @@ describe('Thumb send keyboard message', () => {
   test('Key left', () => {
     movingThumb.$thumb.trigger(triggerEvent);
 
-    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.value.toNumber()).toEqual(43);
     expect(receivedMessage.moveDirection).toEqual(-1);
   });
 
@@ -231,7 +242,7 @@ describe('Thumb send keyboard message', () => {
     triggerEvent.keyCode = up;
     movingThumb.$thumb.trigger(triggerEvent);
 
-    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.value.toNumber()).toEqual(43);
     expect(receivedMessage.moveDirection).toEqual(1);
   });
 
@@ -239,7 +250,7 @@ describe('Thumb send keyboard message', () => {
     triggerEvent.keyCode = down;
     movingThumb.$thumb.trigger(triggerEvent);
 
-    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.value.toNumber()).toEqual(43);
     expect(receivedMessage.moveDirection).toEqual(-1);
   });
 
@@ -247,7 +258,7 @@ describe('Thumb send keyboard message', () => {
     triggerEvent.keyCode = right;
     movingThumb.$thumb.trigger(triggerEvent);
 
-    expect(receivedMessage.value).toEqual(43);
+    expect(receivedMessage.value.toNumber()).toEqual(43);
     expect(receivedMessage.moveDirection).toEqual(1);
   });
 

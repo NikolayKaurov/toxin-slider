@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
 /*  This constant should be duplicated in the stylesheet ./toxin-slider.scss: $thumb-length

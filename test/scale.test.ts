@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
 
 import Scale from '../src/scale';
 
@@ -8,9 +9,9 @@ describe('Scale creation test', () => {
   const scale = new Scale({
     $wrapper,
     state: {
-      start: 1,
-      end: 11,
-      step: 3,
+      start: new BigNumber(1),
+      end: new BigNumber(11),
+      step: new BigNumber(3),
       hidden: false,
       units: '$',
     },
@@ -28,20 +29,20 @@ describe('Scale creation test', () => {
 
   test('Scale update test', () => {
     scale.update({
-      start: 10,
-      end: 30,
-      step: 5,
+      start: new BigNumber(10),
+      end: new BigNumber(30),
+      step: new BigNumber(5),
       hidden: false,
+      units: '',
     });
     // common scale text: '10' + '10' + '15' + '20' + '25' + '30' + '30'
     // the first and last element contain invisible double-spacers
-    // eslint-disable-next-line fsd/jq-cache-dom-elements
     expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('10101520253030');
 
     scale.update({
-      start: 23,
-      end: 2,
-      step: -4,
+      start: new BigNumber(23),
+      end: new BigNumber(2),
+      step: new BigNumber(-4),
       hidden: true,
       units: '%',
     });
@@ -55,7 +56,8 @@ describe('Scale creation test', () => {
     const triggerEvent = $.Event('mousedown');
 
     let receivedMessage: ScaleMessage = {
-      scaleValue: NaN,
+      typeMessage: 'scaleMessage',
+      scaleValue: new BigNumber(NaN),
     };
 
     $wrapper.on('toxin-slider.update', handleScaleClicking);
@@ -66,6 +68,6 @@ describe('Scale creation test', () => {
 
     $($('.js-toxin-slider__scale-value', $scale).get()[4]).trigger(triggerEvent);
 
-    expect(receivedMessage.scaleValue).toEqual(11);
+    expect(receivedMessage.scaleValue.toNumber()).toEqual(11);
   });
 });

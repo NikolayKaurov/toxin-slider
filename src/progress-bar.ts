@@ -1,8 +1,6 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import { ProgressBarState } from './toxin-slider-interface';
-
 const progressBarHTML = '<div class="toxin-slider__progress-bar"></div>';
 
 export default class ProgressBar {

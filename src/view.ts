@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import BigNumber from 'bignumber.js';
 
 import Thumb from './thumb';
 import ProgressBar from './progress-bar';
@@ -26,43 +27,27 @@ export default class View {
 
   readonly bar: Bar;
 
-  state: ViewState = {
-    start: 0,
-    end: 0,
-    step: 0,
-    from: 0,
-    to: 0,
-    hasTwoValues: false,
-    isVertical: false,
-    progressBarHidden: false,
-    scaleHidden: false,
-    tooltipHidden: false,
-    units: '',
-    name: 'undefined-name',
-  };
-
-  constructor(options: { $outerWrapper: JQuery, state: ViewState }) {
+  constructor(options: { $outerWrapper: JQuery, state: SliderState }) {
     const { $outerWrapper, state } = options;
 
-    this.state = { ...this.state, ...state };
     const {
-      start = 0,
-      end = 0,
-      step = 0,
-      from = 0,
-      to = 0,
-      hasTwoValues = false,
-      isVertical = false,
-      progressBarHidden = false,
-      tooltipHidden = false,
-      scaleHidden = false,
-      units = '',
-      name = 'undefined-name',
-    } = this.state;
+      start,
+      end,
+      step,
+      from,
+      to,
+      hasTwoValues,
+      isVertical,
+      progressBarHidden,
+      tooltipHidden,
+      scaleHidden,
+      units,
+      name,
+    } = state;
 
     const $innerWrapper = $(innerWrapperHTML);
 
-    const { min, max } = this.calculateRange();
+    const { min, max } = calculateRange(state);
 
     this.thumbA = new Thumb({
       $wrapper: $innerWrapper,
@@ -115,10 +100,10 @@ export default class View {
 
     this.$from = $(inputHTML)
       .attr('name', `${name}-from`)
-      .val(from);
+      .val(from.toNumber());
     this.$to = $(inputHTML)
       .attr('name', `${name}-to`)
-      .val(to);
+      .val(to.toNumber());
 
     this.$toxinSlider
       .append($innerWrapper)
@@ -138,27 +123,26 @@ export default class View {
 
     $outerWrapper.append(this.$toxinSlider);
 
-    this.$toxinSlider.trigger('toxin-slider.slide', this.state);
+    this.$toxinSlider.trigger('toxin-slider.slide', state);
   }
 
-  update(state: ViewState): View {
-    this.state = { ...this.state, ...state };
+  update(state: SliderState): View {
     const {
-      start = 0,
-      end = 0,
-      step = 0,
-      from = 0,
-      to = 0,
-      hasTwoValues = false,
-      isVertical = false,
-      progressBarHidden = false,
-      tooltipHidden = false,
-      scaleHidden = false,
-      units = '',
-    } = this.state;
+      start,
+      end,
+      step,
+      from,
+      to,
+      hasTwoValues,
+      isVertical,
+      progressBarHidden,
+      tooltipHidden,
+      scaleHidden,
+      units,
+    } = state;
 
-    this.$from.val(from);
-    this.$to.val(to);
+    this.$from.val(from.toNumber());
+    this.$to.val(to.toNumber());
 
     if (!hasTwoValues && !progressBarHidden) {
       this.$toxinSlider.addClass('toxin-slider_range_single');
@@ -172,7 +156,10 @@ export default class View {
       this.$toxinSlider.removeClass('toxin-slider_direction_vertical');
     }
 
-    const { min, max } = this.sortThumbs().calculateRange();
+    this.sortThumbs(state);
+
+    const { min, max } = calculateRange(state);
+
     const {
       thumbA,
       thumbB,
@@ -219,43 +206,14 @@ export default class View {
     return this;
   }
 
-  calculateRange(): { min: number; max: number; } {
-    const {
-      start = 0,
-      end = 0,
-      from = 0,
-      to = 0,
-      hasTwoValues = false,
-    } = this.state;
-
-    const scope = end - start;
-
-    if (scope === 0) {
-      return {
-        min: 0,
-        max: 0,
-      };
-    }
-
-    const min = hasTwoValues
-      ? (100 * (from - start)) / scope
-      : 0;
-
-    const max = hasTwoValues
-      ? (100 * (to - start)) / scope
-      : (100 * (from - start)) / scope;
-
-    return { min, max };
-  }
-
-  sortThumbs(): View {
-    const { hasTwoValues = false } = this.state;
+  sortThumbs(state: SliderState): View {
+    const { hasTwoValues } = state;
     const { thumbA, thumbB } = this;
 
     if (hasTwoValues) {
-      if (thumbA.getPosition() > thumbB.getPosition()) {
+      if (thumbA.getPosition().isGreaterThan(thumbB.getPosition())) {
         [this.thumbA, this.thumbB] = [thumbB, thumbA];
-      } else if (thumbA.getPosition() === thumbB.getPosition()) {
+      } else if (thumbA.getPosition().isEqualTo(thumbB.getPosition())) {
         if (thumbA.getDirection() > thumbB.getDirection()) {
           [this.thumbA, this.thumbB] = [thumbB, thumbA];
         }
@@ -264,4 +222,33 @@ export default class View {
 
     return this;
   }
+}
+
+function calculateRange(state: SliderState): { min: BigNumber; max: BigNumber; } {
+  const {
+    start,
+    end,
+    from,
+    to,
+    hasTwoValues,
+  } = state;
+
+  const scope = end.minus(start);
+
+  if (scope.isZero()) {
+    return {
+      min: new BigNumber(0),
+      max: new BigNumber(0),
+    };
+  }
+
+  const min = hasTwoValues
+    ? from.minus(start).multipliedBy(100).dividedBy(scope)
+    : new BigNumber(0);
+
+  const max = hasTwoValues
+    ? to.minus(start).multipliedBy(100).dividedBy(scope)
+    : from.minus(start).multipliedBy(100).dividedBy(scope);
+
+  return { min, max };
 }

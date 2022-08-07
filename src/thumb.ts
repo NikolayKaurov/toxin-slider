@@ -1,7 +1,12 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import { ThumbState, DragData, MoveDirection } from './toxin-slider-interface';
+const format = {
+  decimalSeparator: ',',
+  groupSeparator: ' ',
+  groupSize: 3,
+  suffix: '',
+};
 
 const thumbHTML = '<div class="toxin-slider__thumb" tabindex="0"></div>';
 const tooltipHTML = '<div class="toxin-slider__thumb-tooltip"></div>';
@@ -67,19 +72,14 @@ export default class Thumb {
       value,
       hidden,
       tooltipHidden,
+      units,
     } = state;
 
     this.position();
 
-    /* const format = {
-      decimalSeparator: ',',
-      groupSeparator: ' ',
-      groupSize: 3,
-      suffix: units,
-    };
-    BigNumber.config({ FORMAT: format }); */
+    format.suffix = units;
 
-    this.$tooltip.text(value.toFormat());
+    this.$tooltip.text(value.toFormat(format));
 
     if (hidden) {
       this.$thumb.addClass('toxin-slider__thumb_hidden');
@@ -146,78 +146,89 @@ export default class Thumb {
 }
 
 function handleThumbMousedown(event: JQuery.TriggeredEvent) {
-  const { thumb } = event.data as { thumb: Thumb };
+  if (!(event.data instanceof Thumb)) {
+    return;
+  }
+
   const {
     $thumb,
     $wrapper,
     state,
     drag,
-  } = thumb;
+  } = event.data;
 
   if (state.isVertical) {
-    drag.wrapperPosition = $wrapper.offset()?.top ?? 0;
-    drag.wrapperSize = $wrapper.outerHeight() ?? 0;
+    drag.wrapperPosition = new BigNumber($wrapper.offset()?.top ?? 0);
+    drag.wrapperSize = new BigNumber($wrapper.outerHeight() ?? 0);
   } else {
-    drag.wrapperPosition = $wrapper.offset()?.left ?? 0;
-    drag.wrapperSize = $wrapper.outerWidth() ?? 0;
+    drag.wrapperPosition = new BigNumber($wrapper.offset()?.left ?? 0);
+    drag.wrapperSize = new BigNumber($wrapper.outerWidth() ?? 0);
   }
 
   const thumbPosition = state.isVertical
-    ? ($thumb.offset()?.top ?? 0)
-    : ($thumb.offset()?.left ?? 0);
+    ? new BigNumber($thumb.offset()?.top ?? 0)
+    : new BigNumber($thumb.offset()?.left ?? 0);
 
   const thumbSize = state.isVertical
-    ? ($thumb.outerHeight() ?? 0)
-    : ($thumb.outerWidth() ?? 0);
+    ? new BigNumber($thumb.outerHeight() ?? 0)
+    : new BigNumber($thumb.outerWidth() ?? 0);
 
   const mousePosition = state.isVertical
-    ? (event.clientY ?? 0)
-    : (event.clientX ?? 0);
+    ? new BigNumber(event.clientY ?? 0)
+    : new BigNumber(event.clientX ?? 0);
 
-  const grabPoint = mousePosition - thumbPosition - thumbSize;
+  const grabPoint = mousePosition.minus(thumbPosition).minus(thumbSize);
 
-  drag.minRestriction = grabPoint + drag.wrapperPosition;
-  drag.maxRestriction = drag.minRestriction + drag.wrapperSize;
+  drag.minRestriction = grabPoint.plus(drag.wrapperPosition);
+  drag.maxRestriction = drag.minRestriction.plus(drag.wrapperSize);
 
   drag.innerOffset = state.isVertical
-    ? drag.wrapperPosition - thumbPosition
-    : thumbPosition + thumbSize - drag.wrapperPosition;
+    ? drag.wrapperPosition.minus(thumbPosition)
+    : thumbPosition.plus(thumbSize).minus(drag.wrapperPosition);
 
-  $(document).on('mousemove pointermove', { thumb }, handleThumbMousemove);
-  $(document).on('mouseup pointerup', { thumb }, handleThumbMouseup);
+  $(document).on('mousemove pointermove', event.data, handleThumbMousemove);
+  $(document).on('mouseup pointerup', event.data, handleThumbMouseup);
 
   $wrapper.addClass('toxin-slider__inner-wrapper_draggable');
 }
 
 function handleThumbMousemove(event: JQuery.TriggeredEvent) {
-  const { thumb } = event.data as { thumb: Thumb };
+  if (!(event.data instanceof Thumb)) {
+    return;
+  }
+
+  const thumb = event.data;
   const { state, drag } = thumb;
 
   const mousePosition = state.isVertical
-    ? (event.clientY ?? 0)
-    : (event.clientX ?? 0);
+    ? new BigNumber(event.clientY ?? 0)
+    : new BigNumber(event.clientX ?? 0);
 
-  if (mousePosition < drag.minRestriction) {
+  if (mousePosition.isLessThan(drag.minRestriction)) {
     drag.innerOffset = state.isVertical
-      ? drag.wrapperSize
-      : 0;
-  } else if (mousePosition > drag.maxRestriction) {
+      ? new BigNumber(drag.wrapperSize)
+      : new BigNumber(0);
+  } else if (mousePosition.isGreaterThan(drag.maxRestriction)) {
     drag.innerOffset = state.isVertical
-      ? 0
-      : drag.wrapperSize;
+      ? new BigNumber(0)
+      : new BigNumber(drag.wrapperSize);
   } else {
     drag.innerOffset = state.isVertical
-      ? drag.maxRestriction - mousePosition
-      : mousePosition - drag.minRestriction;
+      ? drag.maxRestriction.minus(mousePosition)
+      : mousePosition.minus(drag.minRestriction);
   }
 
-  drag.position = (100 * drag.innerOffset) / drag.wrapperSize;
+  drag.position = drag.innerOffset.multipliedBy(100).dividedBy(drag.wrapperSize);
 
   thumb.sendDragMessage();
 }
 
 function handleThumbMouseup(event: JQuery.TriggeredEvent) {
-  const { thumb } = event.data as { thumb: Thumb };
+  if (!(event.data instanceof Thumb)) {
+    return;
+  }
+
+  const thumb = event.data;
   const { drag, $wrapper } = thumb;
 
   $(document).off('mousemove pointermove', handleThumbMousemove);
@@ -231,17 +242,21 @@ function handleThumbMouseup(event: JQuery.TriggeredEvent) {
 }
 
 function handleThumbKeydown(event: JQuery.TriggeredEvent) {
-  const { thumb } = event.data as { thumb: Thumb };
+  if (!(event.data instanceof Thumb)) {
+    return;
+  }
+
+  const thumb = event.data;
   const { $wrapper } = thumb;
   const { keyCode } = event;
 
   if (keyCode === up || keyCode === right) {
-    thumb.moveDirection = MoveDirection.forward;
+    thumb.moveDirection = moveDirection.forward;
   } else if (keyCode === down || keyCode === left) {
-    thumb.moveDirection = MoveDirection.back;
+    thumb.moveDirection = moveDirection.back;
   }
 
-  if (thumb.getDirection() !== MoveDirection.stop) {
+  if (thumb.getDirection() !== moveDirection.stop) {
     event.preventDefault();
     thumb.sendMoveMessage();
   }
@@ -250,10 +265,14 @@ function handleThumbKeydown(event: JQuery.TriggeredEvent) {
 }
 
 function handleThumbKeyup(event: JQuery.TriggeredEvent) {
-  const { thumb } = event.data as { thumb: Thumb };
+  if (!(event.data instanceof Thumb)) {
+    return;
+  }
+
+  const thumb = event.data;
   const { $wrapper } = thumb;
 
-  thumb.moveDirection = MoveDirection.stop;
+  thumb.moveDirection = moveDirection.stop;
 
   $wrapper.removeClass('toxin-slider__inner-wrapper_draggable');
 }

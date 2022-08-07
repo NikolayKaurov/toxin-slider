@@ -1,6 +1,5 @@
 import Model from './model';
 import View from './view';
-import { Message } from './toxin-slider-interface';
 
 export default class Controller {
   readonly model;
@@ -26,7 +25,7 @@ function handleSliderUpdate(event: JQuery.TriggeredEvent, message: Message) {
   const { model, view } = event.data;
   const { $toxinSlider } = view;
 
-  view.update({ ...view.state, ...model.update(message) });
+  view.update(model.update(message));
 
-  $toxinSlider.trigger('toxin-slider.slide', view.state);
+  $toxinSlider.trigger('toxin-slider.slide', model.getOptions());
 }

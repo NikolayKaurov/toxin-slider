@@ -379,8 +379,8 @@ describe('View test', () => {
     expect($to.val()).toEqual('900');
 
     $toxinSlider.trigger(event, {
-      typeMessage: 'options',
-      scaleValue: 860,
+      typeMessage: 'scaleMessage',
+      scaleValue: new BigNumber(860),
     });
 
     expect($from.val()).toEqual('860');

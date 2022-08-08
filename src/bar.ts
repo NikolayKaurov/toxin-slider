@@ -40,27 +40,27 @@ function handleBarMousedown(event: JQuery.TriggeredEvent) {
   const { $bar, isVertical } = event.data;
 
   const rawSize = isVertical
-    ? ($bar.outerHeight() ?? 0)
-    : ($bar.outerWidth() ?? 0);
+    ? new BigNumber($bar.outerHeight() ?? 0)
+    : new BigNumber($bar.outerWidth() ?? 0);
 
   const rawClickPoint = isVertical
-    ? ($bar.offset()?.top ?? 0) - window.scrollY + rawSize - (event?.clientY ?? 0)
-    : (event?.clientX ?? 0) + window.scrollX - ($bar.offset()?.left ?? 0);
+    ? new BigNumber(
+      ($bar.offset()?.top ?? 0) - window.scrollY + rawSize.toNumber() - (event?.clientY ?? 0),
+    )
+    : new BigNumber((event?.clientX ?? 0) + window.scrollX - ($bar.offset()?.left ?? 0));
 
-  const size = new BigNumber(rawSize).minus(thumbLength);
+  const size = rawSize.minus(thumbLength);
 
   const clickPoint = (() => {
-    const temp = new BigNumber(rawClickPoint);
-
-    if (temp.isLessThan(halfThumbLength)) {
+    if (rawClickPoint.isLessThan(halfThumbLength)) {
       return new BigNumber(0);
     }
 
-    if (temp.isGreaterThan(size.plus(halfThumbLength))) {
+    if (rawClickPoint.isGreaterThan(size.plus(halfThumbLength))) {
       return new BigNumber(size);
     }
 
-    return temp.minus(halfThumbLength);
+    return rawClickPoint.minus(halfThumbLength);
   })();
 
   $bar.trigger('toxin-slider.update', {

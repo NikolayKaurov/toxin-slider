@@ -1,6 +1,7 @@
 import { babel } from '@rollup/plugin-babel';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default {
   input: './src/toxin-slider.ts',
@@ -18,5 +19,6 @@ export default {
     babel({ babelHelpers: 'bundled' }),
     typescript(),
     terser(),
+    nodeResolve(),
   ],
 };

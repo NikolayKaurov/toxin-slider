@@ -99,8 +99,12 @@ export default class View {
     });
 
     this.$from = $(inputHTML)
-      .attr('name', `${name}-from`)
+      .attr(
+        'name',
+        hasTwoValues ? `${name}-from` : `${name}`,
+      )
       .val(from.toNumber());
+
     this.$to = $(inputHTML)
       .attr('name', `${name}-to`)
       .val(to.toNumber());
@@ -139,10 +143,19 @@ export default class View {
       tooltipHidden,
       scaleHidden,
       units,
+      name,
     } = state;
 
-    this.$from.val(from.toNumber());
-    this.$to.val(to.toNumber());
+    this.$from
+      .attr(
+        'name',
+        hasTwoValues ? `${name}-from` : `${name}`,
+      )
+      .val(from.toNumber());
+
+    this.$to
+      .attr('name', `${name}-to`)
+      .val(to.toNumber());
 
     if (!hasTwoValues && !progressBarHidden) {
       this.$toxinSlider.addClass('toxin-slider_range_single');

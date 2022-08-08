@@ -3,46 +3,72 @@ import BigNumber from 'bignumber.js';
 
 import Bar from '../src/bar';
 
-describe('Bar test', () => {
-  const sizeX = new BigNumber(100);
-  const sizeY = new BigNumber(150);
-
+describe('Bar', () => {
   const $wrapper = $('<div></div>');
 
   const bar = new Bar({ $wrapper, isVertical: false });
 
   $('body').append($wrapper);
 
-  test('Bar creation test', () => {
-    expect($wrapper.html()).toEqual('<div class="toxin-slider__bar"></div>');
-    expect(typeof bar.update).toBe('function');
+  const $bar = $('div.toxin-slider__bar', $wrapper);
+
+  describe('when created', () => {
+    test('should append its html-element to the wrapper', () => {
+      // expect($wrapper.html()).toEqual('<div class="toxin-slider__bar"></div>');
+      expect($bar.length).toEqual(1);
+    });
+
+    test('must have a method "update"', () => {
+      expect(typeof bar.update).toBe('function');
+    });
+
+    test('must have a property "isVertical"', () => {
+      expect(typeof bar.isVertical).toBe('boolean');
+    });
+
+    test('must store its jquery-object', () => {
+      expect(typeof bar.$bar).toBe('object');
+    });
   });
 
-  test('Bar update test', () => {
-    for (let i = 0; i < 3; i += 1) {
-      const isVertical = Math.random() > 0.5;
+  describe('when updated', () => {
+    let isVertical = Math.random() > 0.5;
+
+    beforeEach(() => {
       bar.update(isVertical);
+    });
+
+    afterEach(() => {
+      isVertical = !isVertical;
+    });
+
+    test('should update the property "isVertical"', () => {
       expect(bar.isVertical).toEqual(isVertical);
-    }
+    });
+
+    test('should update the property "isVertical" (repeat with inverted property)', () => {
+      expect(bar.isVertical).toEqual(isVertical);
+    });
   });
 
-  test('Bar send clicking message test', () => {
-    /* This constant should be duplicated in the stylesheet ../src/toxin-slider.scss: $thumb-length
-    and the file ../src/bar.ts: const thumbLength */
+  describe('when clicked on', () => {
+    /*  This constant should be duplicated in the stylesheet ../src/toxin-slider.scss: $thumb-length
+        and the file ../src/bar.ts: const thumbLength */
     const thumbLength = new BigNumber(16);
     const halfThumbLength = thumbLength.dividedBy(2);
 
-    bar.$bar.css({
-      width: `${sizeX.toNumber()}px`,
-      height: `${sizeY.toNumber()}px`,
-    });
+    const sizeX = new BigNumber(100);
+    const sizeY = new BigNumber(150);
 
     const clickPointX = Math.round(Math.random() * sizeX.toNumber());
     const clickPointY = Math.round(Math.random() * sizeY.toNumber());
 
     const triggerEvent = $.Event('mousedown');
-    triggerEvent.clientX = clickPointX;
-    triggerEvent.clientY = sizeY.toNumber() - clickPointY;
+
+    bar.$bar.css({
+      width: `${sizeX.toNumber()}px`,
+      height: `${sizeY.toNumber()}px`,
+    });
 
     let receivedMessage: BarMessage = {
       typeMessage: 'barMessage',
@@ -52,35 +78,73 @@ describe('Bar test', () => {
 
     $wrapper.on('toxin-slider.update', handleBarClicking);
 
+    describe('in vertical state', () => {
+      beforeEach(() => {
+        bar.update(true);
+      });
+
+      test('should send the correct message if clicked anywhere', () => {
+        triggerEvent.clientY = sizeY.toNumber() - clickPointY;
+        bar.$bar.trigger(triggerEvent);
+
+        expect(receivedMessage.size.isEqualTo(sizeY.minus(thumbLength))).toEqual(true);
+        expect(receivedMessage.clickPoint.isEqualTo(
+          normalizeClickPoint(new BigNumber(clickPointY), sizeY),
+        )).toEqual(true);
+      });
+
+      test('should send the correct message if the click is near the start', () => {
+        triggerEvent.clientY = sizeY.minus(halfThumbLength).plus(1).toNumber();
+        bar.$bar.trigger(triggerEvent);
+
+        expect(receivedMessage.size.isEqualTo(sizeY.minus(thumbLength))).toEqual(true);
+        expect(receivedMessage.clickPoint.isEqualTo(0)).toEqual(true);
+      });
+
+      test('should send the correct message if the click is near the end', () => {
+        triggerEvent.clientY = 0;
+        bar.$bar.trigger(triggerEvent);
+
+        expect(receivedMessage.size.isEqualTo(sizeY.minus(thumbLength))).toEqual(true);
+        expect(receivedMessage.clickPoint.isEqualTo(sizeY.minus(thumbLength))).toEqual(true);
+      });
+    });
+
+    describe('in horizontal state', () => {
+      beforeEach(() => {
+        bar.update(false);
+      });
+
+      test('should send the correct message if clicked anywhere', () => {
+        triggerEvent.clientX = clickPointX;
+        bar.$bar.trigger(triggerEvent);
+
+        expect(receivedMessage.size.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
+        expect(receivedMessage.clickPoint.isEqualTo(
+          normalizeClickPoint(new BigNumber(clickPointX), sizeX),
+        )).toEqual(true);
+      });
+
+      test('should send the correct message if the click is near the start', () => {
+        triggerEvent.clientX = halfThumbLength.minus(1).toNumber();
+        bar.$bar.trigger(triggerEvent);
+
+        expect(receivedMessage.size.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
+        expect(receivedMessage.clickPoint.isEqualTo(0)).toEqual(true);
+      });
+
+      test('should send the correct message if the click is near the end', () => {
+        triggerEvent.clientX = sizeX.toNumber();
+        bar.$bar.trigger(triggerEvent);
+
+        expect(receivedMessage.size.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
+        expect(receivedMessage.clickPoint.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
+      });
+    });
+
     function handleBarClicking(event: JQuery.TriggeredEvent, message: BarMessage) {
       receivedMessage = message;
     }
-
-    bar.update(false);
-    bar.$bar.trigger(triggerEvent);
-
-    expect(receivedMessage.size.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
-    expect(receivedMessage.clickPoint.isEqualTo(
-      normalizeClickPoint(new BigNumber(clickPointX), sizeX),
-    )).toEqual(true);
-
-    triggerEvent.clientX = halfThumbLength.minus(1).toNumber();
-    bar.$bar.trigger(triggerEvent);
-
-    expect(receivedMessage.clickPoint.isEqualTo(0)).toEqual(true);
-
-    triggerEvent.clientX = sizeX.toNumber();
-    bar.$bar.trigger(triggerEvent);
-
-    expect(receivedMessage.clickPoint.isEqualTo(sizeX.minus(thumbLength))).toEqual(true);
-
-    bar.update(true);
-    bar.$bar.trigger(triggerEvent);
-
-    expect(receivedMessage.size.isEqualTo(sizeY.minus(thumbLength))).toEqual(true);
-    expect(receivedMessage.clickPoint.isEqualTo(
-      normalizeClickPoint(new BigNumber(clickPointY), sizeY),
-    )).toEqual(true);
 
     function normalizeClickPoint(point: BigNumber, size: BigNumber): BigNumber {
       if (point.isLessThan(halfThumbLength)) {

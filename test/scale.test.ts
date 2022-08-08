@@ -42,7 +42,7 @@ describe('Scale creation test', () => {
     scale.update({
       start: new BigNumber(23),
       end: new BigNumber(2),
-      step: new BigNumber(-4),
+      step: new BigNumber(4),
       hidden: true,
       units: '%',
     });

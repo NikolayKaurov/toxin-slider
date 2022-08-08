@@ -30,7 +30,7 @@ export default class Scale {
     this.$scale = $(scaleHTML);
     $wrapper.append(this.$scale);
 
-    this.$scale.on('mousedown', '.toxin-slider__scale-value', this, handleScaleMousedown);
+    this.$scale.on('mousedown', '.js-toxin-slider__scale-value', this, handleScaleMousedown);
 
     this.update(state);
   }
@@ -151,21 +151,24 @@ function getInnerScale(state: ScaleState): JQuery {
           },
         );
     } else if (cycleValue.isEqualTo(end)) {
-      $item.css({
-        'flex-grow': scaleStep.abs().toNumber(),
-        'flex-basis': 0,
-      });
+      $item
+        .css({
+          'flex-grow': scaleStep.abs().toNumber(),
+          'flex-basis': 0,
+        });
     } else if (outOfScale) {
       cycleValue = new BigNumber(end);
-      $item.css({
-        'flex-grow': modulo.abs().multipliedBy(2).toNumber(),
-        'flex-basis': 0,
-      });
+      $item
+        .css({
+          'flex-grow': modulo.abs().multipliedBy(2).toNumber(),
+          'flex-basis': 0,
+        });
     } else {
-      $item.css({
-        'flex-grow': scaleStep.abs().multipliedBy(2).toNumber(),
-        'flex-basis': 0,
-      });
+      $item
+        .css({
+          'flex-grow': scaleStep.abs().multipliedBy(2).toNumber(),
+          'flex-basis': 0,
+        });
     }
 
     // an invisible element is needed as a spacer

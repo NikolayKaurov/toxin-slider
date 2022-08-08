@@ -25,7 +25,7 @@ describe('Thumb setup test', () => {
     });
 
     expect($wrapper.html()).toEqual('<div class="toxin-slider__thumb" tabindex="0" style="transform: translateX(-100%);"><div class="toxin-slider__thumb-tooltip">0</div></div>');
-    expect(thumbA.getPosition()).toEqual(0);
+    expect(thumbA.getPosition().toNumber()).toEqual(0);
     expect(thumbA.getDirection()).toEqual(0);
 
     const thumbB = new Thumb({
@@ -41,7 +41,7 @@ describe('Thumb setup test', () => {
     });
 
     expect($wrapper.html()).toEqual('<div class="toxin-slider__thumb" tabindex="0" style="transform: translateX(-100%);"><div class="toxin-slider__thumb-tooltip">0</div></div><div class="toxin-slider__thumb toxin-slider__thumb_hidden" tabindex="0" style="transform: translateY(-91%);"><div class="toxin-slider__thumb-tooltip toxin-slider__thumb-tooltip_hidden">17</div></div>');
-    expect(thumbB.getPosition()).toEqual(91);
+    expect(thumbB.getPosition().toNumber()).toEqual(91);
     expect(thumbB.getDirection()).toEqual(0);
   });
 

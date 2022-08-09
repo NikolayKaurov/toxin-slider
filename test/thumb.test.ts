@@ -3,266 +3,304 @@ import BigNumber from 'bignumber.js';
 
 import Thumb from '../src/thumb';
 
-describe('Thumb setup test', () => {
+describe('Thumb', () => {
   const $wrapper = $('<div></div>');
   $('body').append($wrapper);
 
-  beforeEach(() => {
-    $wrapper.html('');
+  const value = new BigNumber(17);
+  const position = new BigNumber(91);
+
+  const thumb = new Thumb({
+    $wrapper,
+    state: {
+      value,
+      position,
+      isVertical: true,
+      hidden: true,
+      tooltipHidden: true,
+      units: 'units',
+    },
   });
 
-  test('Thumb creation test', () => {
-    const thumbA = new Thumb({
-      $wrapper,
-      state: {
-        value: new BigNumber(0),
-        position: new BigNumber(0),
-        isVertical: false,
-        hidden: false,
-        tooltipHidden: false,
-        units: '',
-      },
+  const $thumb = $('div.js-toxin-slider__thumb', $wrapper);
+  const $tooltip = $('div.js-toxin-slider__thumb-tooltip', $wrapper);
+
+  describe('after creation', () => {
+    test('should append its html-element to the wrapper', () => {
+      expect($thumb.length).toEqual(1);
     });
 
-    expect($wrapper.html()).toEqual('<div class="toxin-slider__thumb" tabindex="0" style="transform: translateX(-100%);"><div class="toxin-slider__thumb-tooltip">0</div></div>');
-    expect(thumbA.getPosition().toNumber()).toEqual(0);
-    expect(thumbA.getDirection()).toEqual(0);
+    test('must have a method "update"', () => {
+      expect(typeof thumb.update).toBe('function');
+    });
 
-    const thumbB = new Thumb({
-      $wrapper,
-      state: {
-        value: new BigNumber(17),
-        position: new BigNumber(91),
+    test('must be in the correct state', () => {
+      expect(thumb.state).toEqual({
+        value,
+        position,
         isVertical: true,
         hidden: true,
         tooltipHidden: true,
-        units: '',
-      },
+        units: 'units',
+      });
     });
-
-    expect($wrapper.html()).toEqual('<div class="toxin-slider__thumb" tabindex="0" style="transform: translateX(-100%);"><div class="toxin-slider__thumb-tooltip">0</div></div><div class="toxin-slider__thumb toxin-slider__thumb_hidden" tabindex="0" style="transform: translateY(-91%);"><div class="toxin-slider__thumb-tooltip toxin-slider__thumb-tooltip_hidden">17</div></div>');
-    expect(thumbB.getPosition().toNumber()).toEqual(91);
-    expect(thumbB.getDirection()).toEqual(0);
   });
 
-  test('Thumb update test', () => {
-    const thumb = new Thumb({
-      $wrapper,
-      state: {
-        value: new BigNumber(0),
-        position: new BigNumber(0),
-        isVertical: false,
-        hidden: false,
-        tooltipHidden: false,
-        units: '',
-      },
-    });
+  describe('after update', () => {
+    const newValue = Math.round(Math.random() * 100);
+    const newPosition = Math.round(Math.random() * 100);
+    let isVertical = Math.round(Math.random()) === 0;
+    let axis = isVertical ? 'Y' : 'X';
+    let hidden = Math.round(Math.random()) === 0;
+    let tooltipHidden = Math.round(Math.random()) === 0;
 
-    const { $thumb, $tooltip } = thumb;
-
-    for (let i = 0; i < 10; i += 1) {
-      const value = Math.round(Math.random() * 100);
-      const position = Math.round(Math.random() * 100);
-      const isVertical = Math.round(Math.random()) === 0;
-      const axis = isVertical ? 'Y' : 'X';
-      const hidden = Math.round(Math.random()) === 0;
-      const tooltipHidden = Math.round(Math.random()) === 0;
-
+    beforeEach(() => {
       thumb.update({
         isVertical,
         hidden,
         tooltipHidden,
-        value: new BigNumber(value),
-        position: new BigNumber(position),
-        units: '',
+        value: new BigNumber(newValue),
+        position: new BigNumber(newPosition),
+        units: '$',
       });
+    });
 
-      expect($tooltip.text()).toEqual(value.toString(10));
+    afterEach(() => {
+      isVertical = !isVertical;
+      axis = isVertical ? 'Y' : 'X';
+      hidden = !hidden;
+      tooltipHidden = !tooltipHidden;
+    });
+
+    test('should show value in tooltip', () => {
+      expect($tooltip.text()).toEqual(`${newValue}$`);
+    });
+
+    test('should be properly positioned', () => {
       expect($thumb.css('transform')).toEqual(`translate${axis}(${
-        axis === 'X' ? position - 100 : -position
+        axis === 'X' ? newPosition - 100 : -1 * newPosition
       }%)`);
+    });
+
+    test('should be properly positioned on the other axis', () => {
+      expect($thumb.css('transform')).toEqual(`translate${axis}(${
+        axis === 'X' ? newPosition - 100 : -1 * newPosition
+      }%)`);
+    });
+
+    test('should hide or show', () => {
       expect($thumb.hasClass('toxin-slider__thumb_hidden')).toEqual(hidden);
+    });
+
+    test('should hide or show (repeat with inversion)', () => {
+      expect($thumb.hasClass('toxin-slider__thumb_hidden')).toEqual(hidden);
+    });
+
+    test('should hide or show the tooltip', () => {
       expect($tooltip.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(tooltipHidden);
-    }
+    });
+
+    test('should hide or show the tooltip (repeat with inversion)', () => {
+      expect($tooltip.hasClass('toxin-slider__thumb-tooltip_hidden')).toEqual(tooltipHidden);
+    });
   });
-});
 
-describe('Thumb drag test', () => {
-  const wrapperSizeX = 100;
-  const wrapperSizeY = 100;
+  describe('when dragging with the mouse', () => {
+    const wrapperSizeX = 100;
+    const wrapperSizeY = 200;
 
-  const $wrapper = $('<div></div>')
-    .css({
+    $wrapper.css({
       width: `${wrapperSizeX}px`,
       height: `${wrapperSizeY}px`,
     });
-  $('body').append($wrapper);
 
-  const state = {
-    value: new BigNumber(0),
-    position: new BigNumber(0),
-    isVertical: false,
-    hidden: false,
-    tooltipHidden: false,
-    units: '',
-  };
+    const event = $.Event('mousedown');
 
-  const draggingThumb = new Thumb({ $wrapper, state });
-  const { $thumb: $draggingThumb } = draggingThumb;
+    const state = { ...thumb.state };
+    const thumbValue = state.value.toNumber();
 
-  const update = () => draggingThumb.update(state);
-  $wrapper.on('toxin-slider.update', update);
+    let receivedMessage: DragMessage = {
+      typeMessage: 'dragMessage',
+      innerOffset: new BigNumber(NaN),
+      wrapperSize: new BigNumber(NaN),
+      value: new BigNumber(NaN),
+    };
 
-  const event = $.Event('mousedown');
+    const update = (triggeredEvent: JQuery.TriggeredEvent, message: DragMessage) => {
+      receivedMessage = message;
+      thumb.update(state);
+    };
+    $wrapper.on('toxin-slider.update', update);
 
-  beforeEach(() => {
-    event.type = 'mousedown';
-    event.clientX = wrapperSizeX;
-    event.clientY = wrapperSizeY;
+    describe('along the horizontal axis', () => {
+      const dragPosition = Math.round(Math.random() * 100);
 
-    $draggingThumb.trigger(event);
+      beforeEach(() => {
+        state.isVertical = false;
+        thumb.update(state);
 
-    event.type = 'mousemove';
+        event.type = 'mousedown';
+        event.clientX = wrapperSizeX;
+        $thumb.trigger(event);
+        event.type = 'mousemove';
+      });
+
+      afterEach(() => {
+        event.type = 'mouseup';
+        $thumb.trigger(event);
+      });
+
+      test('should be correctly positioned', () => {
+        event.clientX = wrapperSizeX + dragPosition * (wrapperSizeX / 100);
+        $thumb.trigger(event);
+
+        expect(thumb.getPosition().toNumber()).toEqual(dragPosition);
+        expect($thumb.css('transform')).toEqual(`translateX(${dragPosition - 100}%)`);
+      });
+
+      test('must send the correct message', () => {
+        expect(receivedMessage.typeMessage).toEqual('dragMessage');
+        expect(receivedMessage.wrapperSize.toNumber()).toEqual(wrapperSizeX);
+        expect(receivedMessage.innerOffset.toNumber()).toEqual(dragPosition * (wrapperSizeX / 100));
+        expect(receivedMessage.value.toNumber()).toEqual(thumbValue);
+      });
+
+      test('must not cross the left border', () => {
+        event.clientX = wrapperSizeX / 2;
+        $thumb.trigger(event);
+
+        expect(thumb.getPosition().toNumber()).toEqual(0);
+        expect($thumb.css('transform')).toEqual('translateX(-100%)');
+      });
+
+      test('must not cross the right border', () => {
+        event.clientX = wrapperSizeX * 3;
+        $thumb.trigger(event);
+
+        expect(thumb.getPosition().toNumber()).toEqual(100);
+        expect($thumb.css('transform')).toEqual('translateX(0%)');
+      });
+    });
+
+    describe('along the vertical axis', () => {
+      const dragPosition = Math.round(Math.random() * 100);
+
+      beforeEach(() => {
+        state.isVertical = true;
+        thumb.update(state);
+
+        event.type = 'mousedown';
+        event.clientY = wrapperSizeY;
+        $thumb.trigger(event);
+        event.type = 'mousemove';
+      });
+
+      afterEach(() => {
+        event.type = 'mouseup';
+        $thumb.trigger(event);
+      });
+
+      test('should be correctly positioned', () => {
+        event.clientY = 2 * wrapperSizeY - dragPosition * (wrapperSizeY / 100);
+        $thumb.trigger(event);
+
+        expect(thumb.getPosition().toNumber()).toEqual(dragPosition);
+        expect($thumb.css('transform')).toEqual(`translateY(${-1 * dragPosition}%)`);
+      });
+
+      test('must send the correct message', () => {
+        expect(receivedMessage.typeMessage).toEqual('dragMessage');
+        expect(receivedMessage.wrapperSize.toNumber()).toEqual(wrapperSizeY);
+        expect(receivedMessage.innerOffset.toNumber()).toEqual(dragPosition * (wrapperSizeY / 100));
+        expect(receivedMessage.value.toNumber()).toEqual(thumbValue);
+      });
+
+      test('must not cross the top border', () => {
+        event.clientY = wrapperSizeY / 2;
+        $thumb.trigger(event);
+
+        expect(thumb.getPosition().toNumber()).toEqual(100);
+        expect($thumb.css('transform')).toEqual('translateY(-100%)');
+      });
+
+      test('must not cross the bottom border', () => {
+        event.clientY = wrapperSizeY * 3;
+        $thumb.trigger(event);
+
+        expect(thumb.getPosition().toNumber()).toEqual(0);
+        expect($thumb.css('transform')).toEqual('translateY(0%)');
+      });
+    });
   });
 
-  afterEach(() => {
-    event.type = 'mouseup';
-    $draggingThumb.trigger(event);
-  });
+  describe('when a key is pressed', () => {
+    const left = 37;
+    const up = 38;
+    const right = 39;
+    const down = 40;
 
-  test('Thumb simple horizontal drag test', () => {
-    for (let i = 0; i < 3; i += 1) {
-      const position = Math.round(Math.random() * 100);
+    const thumbValue = thumb.state.value.toNumber();
 
-      event.clientX = wrapperSizeX + position * (wrapperSizeX / 100);
-      $draggingThumb.trigger(event);
+    let moveMessage: MoveMessage = {
+      typeMessage: 'moveMessage',
+      moveDirection: 0,
+      value: new BigNumber(0),
+    };
 
-      expect(draggingThumb.getPosition().toNumber()).toEqual(position);
-      expect($draggingThumb.css('transform')).toEqual(`translateX(${position - 100}%)`);
+    function handleMoveMessage(triggeredEvent: JQuery.TriggeredEvent, message: MoveMessage) {
+      moveMessage = message;
     }
+
+    $wrapper.on('toxin-slider.update', handleMoveMessage);
+
+    const event = $.Event('keydown');
+
+    afterEach(() => {
+      event.type = 'keyup';
+      thumb.$thumb.trigger(event);
+      event.type = 'keydown';
+    });
+
+    test('should send the correct message (key left)', () => {
+      event.keyCode = left;
+      $thumb.trigger(event);
+
+      expect(moveMessage.typeMessage).toEqual('moveMessage');
+      expect(moveMessage.value.toNumber()).toEqual(thumbValue);
+      expect(moveMessage.moveDirection).toEqual(-1);
+    });
+
+    test('should send the correct message (key up)', () => {
+      event.keyCode = up;
+      $thumb.trigger(event);
+
+      expect(moveMessage.typeMessage).toEqual('moveMessage');
+      expect(moveMessage.value.toNumber()).toEqual(thumbValue);
+      expect(moveMessage.moveDirection).toEqual(1);
+    });
+
+    test('should send the correct message (key down)', () => {
+      event.keyCode = down;
+      $thumb.trigger(event);
+
+      expect(moveMessage.typeMessage).toEqual('moveMessage');
+      expect(moveMessage.value.toNumber()).toEqual(thumbValue);
+      expect(moveMessage.moveDirection).toEqual(-1);
+    });
+
+    test('should send the correct message (key right)', () => {
+      event.keyCode = right;
+      $thumb.trigger(event);
+
+      expect(moveMessage.typeMessage).toEqual('moveMessage');
+      expect(moveMessage.value.toNumber()).toEqual(thumbValue);
+      expect(moveMessage.moveDirection).toEqual(1);
+    });
   });
 
-  test('Thumb horizontal drag over left border test', () => {
-    event.clientX = wrapperSizeX / 2;
-    $draggingThumb.trigger(event);
-
-    expect(draggingThumb.getPosition().toNumber()).toEqual(0);
-    expect($draggingThumb.css('transform')).toEqual('translateX(-100%)');
-  });
-
-  test('Thumb horizontal drag over right border test', () => {
-    event.clientX = wrapperSizeX * 3;
-    $draggingThumb.trigger(event);
-
-    expect(draggingThumb.getPosition().toNumber()).toEqual(100);
-    expect($draggingThumb.css('transform')).toEqual('translateX(0%)');
-
-    state.isVertical = true;
-  });
-
-  test('Thumb simple vertical drag test', () => {
-    for (let i = 0; i < 3; i += 1) {
-      const position = Math.round(Math.random() * 100);
-
-      event.clientY = 2 * wrapperSizeY - position * (wrapperSizeY / 100);
-      $draggingThumb.trigger(event);
-
-      expect(draggingThumb.getPosition().toNumber()).toEqual(position);
-      expect($draggingThumb.css('transform')).toEqual(`translateY(${-position}%)`);
-    }
-  });
-
-  test('Thumb vertical drag over top border test', () => {
-    event.clientY = wrapperSizeY / 2;
-    $draggingThumb.trigger(event);
-
-    expect(draggingThumb.getPosition().toNumber()).toEqual(100);
-    expect($draggingThumb.css('transform')).toEqual('translateY(-100%)');
-  });
-
-  test('Thumb vertical drag over bottom border test', () => {
-    event.clientY = wrapperSizeY * 3;
-    $draggingThumb.trigger(event);
-
-    expect(draggingThumb.getPosition().toNumber()).toEqual(0);
-    expect($draggingThumb.css('transform')).toEqual('translateY(0%)');
-  });
-});
-
-describe('Thumb send keyboard message', () => {
-  const left = 37;
-  const up = 38;
-  const right = 39;
-  const down = 40;
-
-  const $wrapper = $('<div></div>');
-  $('body').append($wrapper);
-
-  let receivedMessage: MoveMessage = {
-    typeMessage: 'moveMessage',
-    moveDirection: 0,
-    value: new BigNumber(0),
-  };
-
-  function handleMoveMessage(event: JQuery.TriggeredEvent, message: MoveMessage) {
-    receivedMessage = message;
-  }
-
-  $wrapper.on('toxin-slider.update', handleMoveMessage);
-
-  const triggerEvent = $.Event('keydown');
-  triggerEvent.keyCode = left;
-
-  const movingThumb = new Thumb({
-    $wrapper,
-    state: {
-      value: new BigNumber(43),
-      position: new BigNumber(0),
-      isVertical: false,
-      hidden: false,
-      tooltipHidden: false,
-      units: '',
-    },
-  });
-
-  afterEach(() => {
-    triggerEvent.type = 'keyup';
-    movingThumb.$thumb.trigger(triggerEvent);
-    triggerEvent.type = 'keydown';
-  });
-
-  test('Key left', () => {
-    movingThumb.$thumb.trigger(triggerEvent);
-
-    expect(receivedMessage.value.toNumber()).toEqual(43);
-    expect(receivedMessage.moveDirection).toEqual(-1);
-  });
-
-  test('Key up', () => {
-    triggerEvent.keyCode = up;
-    movingThumb.$thumb.trigger(triggerEvent);
-
-    expect(receivedMessage.value.toNumber()).toEqual(43);
-    expect(receivedMessage.moveDirection).toEqual(1);
-  });
-
-  test('Key down', () => {
-    triggerEvent.keyCode = down;
-    movingThumb.$thumb.trigger(triggerEvent);
-
-    expect(receivedMessage.value.toNumber()).toEqual(43);
-    expect(receivedMessage.moveDirection).toEqual(-1);
-  });
-
-  test('Key right', () => {
-    triggerEvent.keyCode = right;
-    movingThumb.$thumb.trigger(triggerEvent);
-
-    expect(receivedMessage.value.toNumber()).toEqual(43);
-    expect(receivedMessage.moveDirection).toEqual(1);
-  });
-
-  test('Stop', () => {
-    expect(movingThumb.getDirection()).toEqual(0);
+  describe('when the key is not pressed', () => {
+    test('should report its stop', () => {
+      expect(thumb.getDirection()).toEqual(0);
+    });
   });
 });

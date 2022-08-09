@@ -7,7 +7,7 @@ const thumbLength = new BigNumber(16);
 
 const halfThumbLength = thumbLength.dividedBy(2);
 
-const barHTML = '<div class="toxin-slider__bar"></div>';
+const barHTML = '<div class="toxin-slider__bar js-toxin-slider__bar"></div>';
 
 export default class Bar {
   readonly $bar: JQuery;

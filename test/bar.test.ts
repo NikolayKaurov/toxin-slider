@@ -10,11 +10,10 @@ describe('Bar', () => {
 
   $('body').append($wrapper);
 
-  const $bar = $('div.toxin-slider__bar', $wrapper);
+  const $bar = $('div.js-toxin-slider__bar', $wrapper);
 
   describe('when created', () => {
     test('should append its html-element to the wrapper', () => {
-      // expect($wrapper.html()).toEqual('<div class="toxin-slider__bar"></div>');
       expect($bar.length).toEqual(1);
     });
 

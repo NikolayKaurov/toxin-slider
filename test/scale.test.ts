@@ -3,56 +3,62 @@ import BigNumber from 'bignumber.js';
 
 import Scale from '../src/scale';
 
-describe('Scale creation test', () => {
+describe('Scale', () => {
   const $wrapper = $('<div></div>');
 
-  const scale = new Scale({
-    $wrapper,
-    state: {
-      start: new BigNumber(1),
-      end: new BigNumber(11),
-      step: new BigNumber(3),
-      hidden: false,
-      units: '$',
-    },
-  });
+  const state: ScaleState = {
+    start: new BigNumber(1),
+    end: new BigNumber(11),
+    step: new BigNumber(3),
+    hidden: Math.round(Math.random()) === 0,
+    units: '$',
+  };
 
-  const { $scale } = scale;
+  const scale = new Scale({ $wrapper, state });
 
-  test('Scale creation test', () => {
-    expect(typeof scale.update).toBe('function');
-    expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(false);
-    // common scale text: '1$' + '1$' + '4$' + '7$' + '10$' + '11$' + '11$'
-    // the first and last element contain invisible double-spacers
-    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('1$1$4$7$10$11$11$');
-  });
+  const $scale = $('div.js-toxin-slider__scale', $wrapper);
 
-  test('Scale update test', () => {
-    scale.update({
-      start: new BigNumber(10),
-      end: new BigNumber(30),
-      step: new BigNumber(5),
-      hidden: false,
-      units: '',
+  describe('when created', () => {
+    test('should append its html-element to the wrapper', () => {
+      expect($scale.length).toEqual(1);
     });
-    // common scale text: '10' + '10' + '15' + '20' + '25' + '30' + '30'
-    // the first and last element contain invisible double-spacers
-    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('10101520253030');
 
-    scale.update({
-      start: new BigNumber(23),
-      end: new BigNumber(2),
-      step: new BigNumber(4),
-      hidden: true,
-      units: '%',
+    test('must have a method "update"', () => {
+      expect(typeof scale.update).toBe('function');
     });
-    expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(true);
-    // common scale text: '23%' + '23%' + '19%' + '15%' + '11%' + '7%' + '3%' + '2%' + '2%'
-    // the first and last element contain invisible double-spacers
-    expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('23%23%19%15%11%7%3%2%2%');
+
+    test('should show the correct set of values', () => {
+      expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('1$1$4$7$10$11$11$');
+    });
   });
 
-  test('Scale send message test', () => {
+  describe('when updated', () => {
+    beforeEach(() => {
+      scale.update(state);
+    });
+
+    afterEach(() => {
+      state.start = new BigNumber(10);
+      state.end = new BigNumber(30);
+      state.step = new BigNumber(5);
+      state.hidden = !state.hidden;
+      state.units = '';
+    });
+
+    test('must appear or hide', () => {
+      expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(state.hidden);
+    });
+
+    test('must appear or hide (repeat with inversion)', () => {
+      expect($scale.hasClass('toxin-slider__scale_hidden')).toEqual(state.hidden);
+    });
+
+    test('should show the correct set of new values', () => {
+      expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('10101520253030');
+    });
+  });
+
+  describe('after clicking on the scale division', () => {
     const triggerEvent = $.Event('mousedown');
 
     let receivedMessage: ScaleMessage = {
@@ -66,8 +72,10 @@ describe('Scale creation test', () => {
       receivedMessage = message;
     }
 
-    $($('.js-toxin-slider__scale-value', $scale).get()[4]).trigger(triggerEvent);
+    $($('.js-toxin-slider__scale-value', $scale).get()[3]).trigger(triggerEvent);
 
-    expect(receivedMessage.scaleValue.toNumber()).toEqual(11);
+    test('must send the correct message', () => {
+      expect(receivedMessage.scaleValue.toNumber()).toEqual(7);
+    });
   });
 });

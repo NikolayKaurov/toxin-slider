@@ -88,11 +88,11 @@ describe('Thumb', () => {
       }%)`);
     });
 
-    test('should hide or show', () => {
+    test('should appear or show', () => {
       expect($thumb.hasClass('toxin-slider__thumb_hidden')).toEqual(hidden);
     });
 
-    test('should hide or show (repeat with inversion)', () => {
+    test('should appear or show (repeat with inversion)', () => {
       expect($thumb.hasClass('toxin-slider__thumb_hidden')).toEqual(hidden);
     });
 

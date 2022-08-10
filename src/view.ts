@@ -7,8 +7,8 @@ import Bar from './bar';
 import Scale from './scale';
 
 const toxinSliderHTML = '<div class="toxin-slider js-toxin-slider"></div>';
-const innerWrapperHTML = '<div class="toxin-slider__inner-wrapper"></div>';
-const inputHTML = '<input type="number" class="toxin-slider__input">';
+const innerWrapperHTML = '<div class="toxin-slider__inner-wrapper js-toxin-slider__inner-wrapper"></div>';
+const inputHTML = '<input type="number" class="toxin-slider__input js-toxin-slider__input">';
 
 export default class View {
   readonly $toxinSlider: JQuery;

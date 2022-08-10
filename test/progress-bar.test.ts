@@ -3,55 +3,71 @@ import BigNumber from 'bignumber.js';
 
 import ProgressBar from '../src/progress-bar';
 
-describe('Progress-bar test', () => {
+describe('Progress-bar', () => {
   const $wrapper = $('<div></div>');
   $('body').append($wrapper);
 
-  beforeEach(() => {
-    $wrapper.html('');
-  });
+  let min = new BigNumber(62);
+  let max = new BigNumber(71);
 
-  test('Progress-bar creation test', () => {
-    const progressBarA = new ProgressBar({
-      $wrapper,
-      state: {
-        min: new BigNumber(62),
-        max: new BigNumber(71),
-        isVertical: true,
-        hidden: true,
-      },
-    });
+  if (min.isGreaterThan(max)) {
+    [min, max] = [max, min];
+  }
 
-    expect($wrapper.html()).toEqual('<div class="toxin-slider__progress-bar toxin-slider__progress-bar_hidden" style="transform: translate(-50%, 29%) scaleY(9%);"></div>');
-    expect(progressBarA.$progressBar.css('transform')).toEqual('translate(-50%, 29%) scaleY(9%)');
-    expect(progressBarA.$progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(true);
-  });
-
-  test('Progress-bar update test', () => {
-    const state = {
-      min: new BigNumber(0),
-      max: new BigNumber(0),
+  const progressBar = new ProgressBar({
+    $wrapper,
+    state: {
+      min,
+      max,
       isVertical: true,
       hidden: true,
+    },
+  });
+
+  const $progressBar = $('div.js-toxin-slider__progress-bar', $wrapper);
+
+  describe('after creation', () => {
+    test('should append its html-element to the wrapper', () => {
+      expect($progressBar.length).toEqual(1);
+    });
+
+    test('must have a method "update"', () => {
+      expect(typeof progressBar.update).toBe('function');
+    });
+  });
+
+  describe('after update', () => {
+    const state: ProgressBarState = {
+      min: new BigNumber(Math.round(Math.random() * 100)),
+      max: new BigNumber(Math.round(Math.random() * 100)),
+      isVertical: Math.round(Math.random()) === 0,
+      hidden: Math.round(Math.random()) === 0,
     };
 
-    const progressBarB = new ProgressBar({ $wrapper, state });
+    if (state.min.isGreaterThan(state.max)) {
+      [state.min, state.max] = [state.max, state.min];
+    }
 
-    for (let i = 0; i < 10; i += 1) {
+    let axis = state.isVertical ? 'Y' : 'X';
+
+    beforeEach(() => {
+      progressBar.update(state);
+    });
+
+    afterEach(() => {
       state.min = new BigNumber(Math.round(Math.random() * 100));
       state.max = new BigNumber(Math.round(Math.random() * 100));
-      state.hidden = Math.round(Math.random()) === 0;
-      state.isVertical = Math.round(Math.random()) === 0;
-
-      const axis = state.isVertical ? 'Y' : 'X';
+      state.isVertical = !state.isVertical;
+      axis = state.isVertical ? 'Y' : 'X';
+      state.hidden = !state.hidden;
 
       if (state.min.isGreaterThan(state.max)) {
         [state.min, state.max] = [state.max, state.min];
       }
+    });
 
-      progressBarB.update(state);
-
-      expect(progressBarB.$progressBar.css('transform'))
+    test('should be properly positioned', () => {
+      expect($progressBar.css('transform'))
         .toEqual(`translate(${
           axis === 'X' ? state.min.toNumber() : -50
         }%, ${
@@ -59,8 +75,25 @@ describe('Progress-bar test', () => {
         }%) scale${axis}(${
           state.max.minus(state.min).toNumber()
         }%)`);
+    });
 
-      expect(progressBarB.$progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(state.hidden);
-    }
+    test('should be properly positioned on other axis', () => {
+      expect($progressBar.css('transform'))
+        .toEqual(`translate(${
+          axis === 'X' ? state.min.toNumber() : -50
+        }%, ${
+          axis === 'X' ? -50 : 100 - state.max.toNumber()
+        }%) scale${axis}(${
+          state.max.minus(state.min).toNumber()
+        }%)`);
+    });
+
+    test('must appear or show', () => {
+      expect($progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(state.hidden);
+    });
+
+    test('must appear or show (repeated with inversion)', () => {
+      expect($progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(state.hidden);
+    });
   });
 });

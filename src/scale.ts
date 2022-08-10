@@ -1,10 +1,10 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-const scaleHTML = '<div class="toxin-slider__scale"></div>';
-const itemHTML = '<div class="toxin-slider__scale-item"></div>';
+const scaleHTML = '<div class="toxin-slider__scale js-toxin-slider__scale"></div>';
+const itemHTML = '<div class="toxin-slider__scale-item js-toxin-slider__scale-item"></div>';
 const valueHTML = '<div class="toxin-slider__scale-value js-toxin-slider__scale-value"></div>';
-const innerWrapperHTML = '<div class="toxin-slider__scale-inner-wrapper"></div>';
+const innerWrapperHTML = '<div class="toxin-slider__scale-inner-wrapper js-toxin-slider__scale-inner-wrapper"></div>';
 
 const format = {
   decimalSeparator: ',',

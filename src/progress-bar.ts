@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-const progressBarHTML = '<div class="toxin-slider__progress-bar"></div>';
+const progressBarHTML = '<div class="toxin-slider__progress-bar js-toxin-slider__progress-bar"></div>';
 
 export default class ProgressBar {
   readonly $progressBar: JQuery;

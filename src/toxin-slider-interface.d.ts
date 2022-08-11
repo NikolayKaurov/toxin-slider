@@ -11,6 +11,7 @@ type Big = import('bignumber.js').BigNumber;
 interface ThumbState {
   value: Big;
   position: Big;
+  restriction: Big;
   isVertical: boolean;
   hidden: boolean;
   tooltipHidden: boolean;
@@ -24,6 +25,8 @@ interface DragData {
   wrapperSize: Big;
   minRestriction: Big;
   maxRestriction: Big;
+  restriction: Big;
+  typeRestriction: 'min' | 'max' | null;
 }
 
 type DragPosition = Big | null;
@@ -80,6 +83,7 @@ interface SliderState {
   progressBarHidden: boolean;
   tooltipHidden: boolean;
   scaleHidden: boolean;
+  thumbsAreRestricted: boolean;
   name: string;
   units: string;
 }
@@ -95,6 +99,7 @@ interface OutsideOptions {
   progressBarHidden?: boolean;
   tooltipHidden?: boolean;
   scaleHidden?: boolean;
+  thumbsAreRestricted?: boolean;
   name?: string;
   units?: string;
 }

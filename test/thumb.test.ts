@@ -15,6 +15,7 @@ describe('Thumb', () => {
     state: {
       value,
       position,
+      restriction: new BigNumber(0),
       isVertical: true,
       hidden: true,
       tooltipHidden: true,
@@ -59,6 +60,7 @@ describe('Thumb', () => {
         isVertical,
         hidden,
         tooltipHidden,
+        restriction: new BigNumber(0),
         value: new BigNumber(newValue),
         position: new BigNumber(newPosition),
         units: '$',

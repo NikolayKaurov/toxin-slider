@@ -41,6 +41,7 @@ export default class View {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      thumbsAreRestricted,
       units,
       name,
     } = state;
@@ -57,6 +58,7 @@ export default class View {
         units,
         value: from,
         position: min,
+        restriction: thumbsAreRestricted ? max : new BigNumber(0),
         hidden: !hasTwoValues,
       },
     });
@@ -69,6 +71,7 @@ export default class View {
         units,
         value: hasTwoValues ? to : from,
         position: max,
+        restriction: thumbsAreRestricted ? min : new BigNumber(0),
         hidden: false,
       },
     });
@@ -142,6 +145,7 @@ export default class View {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      thumbsAreRestricted,
       units,
       name,
     } = state;
@@ -187,6 +191,7 @@ export default class View {
       units,
       value: from,
       position: min,
+      restriction: thumbsAreRestricted ? max : new BigNumber(0),
       hidden: !hasTwoValues,
     });
 
@@ -196,6 +201,7 @@ export default class View {
       units,
       value: hasTwoValues ? to : from,
       position: max,
+      restriction: thumbsAreRestricted ? min : new BigNumber(0),
       hidden: false,
     });
 

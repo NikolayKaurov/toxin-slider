@@ -12,6 +12,7 @@ export default class Model {
     progressBarHidden: false,
     tooltipHidden: false,
     scaleHidden: false,
+    thumbsAreRestricted: false,
     name: 'undefined-name',
     units: '',
   };
@@ -89,6 +90,7 @@ export default class Model {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      thumbsAreRestricted,
       name,
       units,
     } = this.state;
@@ -99,6 +101,7 @@ export default class Model {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      thumbsAreRestricted,
       name,
       units,
       start: start.toNumber(),
@@ -293,6 +296,7 @@ export default class Model {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      thumbsAreRestricted,
       name,
       units,
     } = options;
@@ -336,6 +340,10 @@ export default class Model {
 
     if (scaleHidden !== undefined) {
       state.scaleHidden = scaleHidden;
+    }
+
+    if (thumbsAreRestricted !== undefined) {
+      state.thumbsAreRestricted = thumbsAreRestricted;
     }
 
     if (name !== undefined) {

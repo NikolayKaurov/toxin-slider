@@ -15,6 +15,7 @@ describe('View', () => {
     progressBarHidden: false,
     tooltipHidden: false,
     scaleHidden: false,
+    thumbsAreRestricted: false,
     name: 'test',
     units: 'mm.',
   };

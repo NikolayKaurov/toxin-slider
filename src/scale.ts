@@ -13,6 +13,8 @@ const format = {
   suffix: '',
 };
 
+const decimalPlaces = 3;
+
 export default class Scale {
   readonly $scale: JQuery;
 
@@ -111,13 +113,13 @@ function getInnerScale(state: ScaleState): JQuery {
       $(itemHTML)
         .append(
           $(valueHTML)
-            .text(cycleValue.toFormat(format))
+            .text(cycleValue.toFormat(decimalPlaces, format))
             .attr('data-value', cycleValue.toNumber()),
         )
         // an invisible element is needed as a spacer
         .append(
           $(valueHTML)
-            .text(cycleValue.toFormat(format))
+            .text(cycleValue.toFormat(decimalPlaces, format))
             .addClass('toxin-slider__scale-value_invisible'),
         )
         .css(
@@ -175,7 +177,7 @@ function getInnerScale(state: ScaleState): JQuery {
     if (cycleValue.isEqualTo(end)) {
       $item.append(
         $(valueHTML)
-          .text(cycleValue.toFormat(format))
+          .text(cycleValue.toFormat(decimalPlaces, format))
           .addClass('toxin-slider__scale-value_invisible'),
       );
     }
@@ -185,7 +187,7 @@ function getInnerScale(state: ScaleState): JQuery {
         $item
           .append(
             $(valueHTML)
-              .text(cycleValue.toFormat(format))
+              .text(cycleValue.toFormat(decimalPlaces, format))
               .attr('data-value', cycleValue.toNumber()),
           ),
       );

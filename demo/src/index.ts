@@ -247,6 +247,7 @@ $container1.toxinSlider({
   units: '',
   scaleHidden: true,
   name: 'slider-1',
+  thumbsAreRestricted: true,
 });
 
 $container2.toxinSlider({

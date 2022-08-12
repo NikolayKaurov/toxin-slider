@@ -11,6 +11,7 @@ describe('Scale', () => {
     end: new BigNumber(11),
     step: new BigNumber(3),
     hidden: Math.round(Math.random()) === 0,
+    isVertical: false,
     units: '$',
   };
 

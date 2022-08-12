@@ -8,12 +8,12 @@ const innerWrapperHTML = '<div class="toxin-slider__scale-inner-wrapper js-toxin
 
 const format = {
   decimalSeparator: ',',
-  groupSeparator: ' ',
+  groupSeparator: ' ',
   groupSize: 3,
   suffix: '',
 };
 
-const decimalPlaces = 3;
+const decimalPlaces = 5;
 
 export default class Scale {
   readonly $scale: JQuery;
@@ -22,6 +22,7 @@ export default class Scale {
     start: new BigNumber(NaN),
     end: new BigNumber(NaN),
     step: new BigNumber(NaN),
+    isVertical: false,
     hidden: false,
     units: '',
   };
@@ -31,6 +32,10 @@ export default class Scale {
 
     this.$scale = $(scaleHTML);
     $wrapper.append(this.$scale);
+
+    /* const font = this.$scale.css('font-size');
+    const width = this.$scale.outerWidth() ?? 0;
+    const height = this.$scale.outerHeight() ?? 0; */
 
     this.$scale.on('mousedown', '.js-toxin-slider__scale-value', this, handleScaleMousedown);
 
@@ -113,19 +118,18 @@ function getInnerScale(state: ScaleState): JQuery {
       $(itemHTML)
         .append(
           $(valueHTML)
-            .text(cycleValue.toFormat(decimalPlaces, format))
+            .text(cycleValue.dp(decimalPlaces).toFormat(format))
             .attr('data-value', cycleValue.toNumber()),
         )
         // an invisible element is needed as a spacer
         .append(
           $(valueHTML)
-            .text(cycleValue.toFormat(decimalPlaces, format))
+            .text(cycleValue.dp(decimalPlaces).toFormat(format))
             .addClass('toxin-slider__scale-value_invisible'),
         )
         .css(
           {
             'flex-grow': scaleStep.abs().toNumber(),
-            'flex-basis': 0,
           },
         ),
     );
@@ -149,27 +153,23 @@ function getInnerScale(state: ScaleState): JQuery {
         .css(
           {
             'flex-grow': scaleStep.abs().toNumber(),
-            'flex-basis': 0,
           },
         );
     } else if (cycleValue.isEqualTo(end)) {
       $item
         .css({
           'flex-grow': scaleStep.abs().toNumber(),
-          'flex-basis': 0,
         });
     } else if (outOfScale) {
       cycleValue = new BigNumber(end);
       $item
         .css({
           'flex-grow': modulo.abs().multipliedBy(2).toNumber(),
-          'flex-basis': 0,
         });
     } else {
       $item
         .css({
           'flex-grow': scaleStep.abs().multipliedBy(2).toNumber(),
-          'flex-basis': 0,
         });
     }
 
@@ -177,7 +177,7 @@ function getInnerScale(state: ScaleState): JQuery {
     if (cycleValue.isEqualTo(end)) {
       $item.append(
         $(valueHTML)
-          .text(cycleValue.toFormat(decimalPlaces, format))
+          .text(cycleValue.dp(decimalPlaces).toFormat(format))
           .addClass('toxin-slider__scale-value_invisible'),
       );
     }
@@ -187,7 +187,7 @@ function getInnerScale(state: ScaleState): JQuery {
         $item
           .append(
             $(valueHTML)
-              .text(cycleValue.toFormat(decimalPlaces, format))
+              .text(cycleValue.dp(decimalPlaces).toFormat(format))
               .attr('data-value', cycleValue.toNumber()),
           ),
       );

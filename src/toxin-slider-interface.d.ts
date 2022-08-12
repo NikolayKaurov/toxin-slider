@@ -26,7 +26,6 @@ interface DragData {
   minRestriction: Big;
   maxRestriction: Big;
   restriction: Big;
-  typeRestriction: 'min' | 'max' | null;
 }
 
 type DragPosition = Big | null;
@@ -64,6 +63,7 @@ interface ScaleState {
   end: Big;
   step: Big;
   hidden: boolean;
+  isVertical: boolean;
   units: string;
 }
 

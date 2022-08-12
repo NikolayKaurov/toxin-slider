@@ -3,12 +3,12 @@ import BigNumber from 'bignumber.js';
 
 const format = {
   decimalSeparator: ',',
-  groupSeparator: ' ',
+  groupSeparator: ' ',
   groupSize: 3,
   suffix: '',
 };
 
-const decimalPlaces = 3;
+const decimalPlaces = 5;
 
 const thumbHTML = '<div class="toxin-slider__thumb js-toxin-slider__thumb" tabindex="0"></div>';
 const tooltipHTML = '<div class="toxin-slider__thumb-tooltip js-toxin-slider__thumb-tooltip"></div>';
@@ -49,12 +49,13 @@ export default class Thumb {
     minRestriction: new BigNumber(0),
     maxRestriction: new BigNumber(0),
     restriction: new BigNumber(0),
-    typeRestriction: null,
   };
 
   /* This property describes thumb movement using the KEYBOARD
   and is named using the word MOVE instead of DRAG by design. */
   moveDirection: MoveDirection = moveDirection.stop;
+
+  typeRestriction: 'min' | 'max' | null = null;
 
   constructor(options: { $wrapper: JQuery; state: ThumbState }) {
     const { $wrapper, state } = options;
@@ -84,7 +85,7 @@ export default class Thumb {
 
     format.suffix = units;
 
-    this.$tooltip.text(value.toFormat(decimalPlaces, format));
+    this.$tooltip.text(value.dp(decimalPlaces).toFormat(format));
 
     if (hidden) {
       this.$thumb.addClass('toxin-slider__thumb_hidden');
@@ -137,9 +138,9 @@ export default class Thumb {
   }
 
   applyRestriction(): Thumb {
-    const { state, drag } = this;
+    const { state, typeRestriction } = this;
 
-    if (drag.typeRestriction !== null) {
+    if (typeRestriction !== null) {
       return this;
     }
 
@@ -148,9 +149,9 @@ export default class Thumb {
     }
 
     if (this.getPosition().isLessThan(state.restriction)) {
-      drag.typeRestriction = 'max';
+      this.typeRestriction = 'max';
     } else {
-      drag.typeRestriction = 'min';
+      this.typeRestriction = 'min';
     }
 
     return this;
@@ -216,7 +217,7 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
       drag.wrapperSize.multipliedBy(state.restriction).dividedBy(100),
     );
 
-  drag.typeRestriction = null;
+  thumb.typeRestriction = null;
   thumb.applyRestriction();
 
   drag.innerOffset = state.isVertical
@@ -241,14 +242,14 @@ function handleThumbMousemove(event: JQuery.TriggeredEvent) {
     ? new BigNumber(event.clientY ?? 0)
     : new BigNumber(event.clientX ?? 0);
 
-  const isInternalMinRestrictionCrossed = drag.typeRestriction === 'min'
+  const isInternalMinRestrictionCrossed = thumb.typeRestriction === 'min'
     && (
       state.isVertical
         ? mousePosition.isGreaterThan(drag.restriction)
         : mousePosition.isLessThan(drag.restriction)
     );
 
-  const isInternalMaxRestrictionCrossed = drag.typeRestriction === 'max'
+  const isInternalMaxRestrictionCrossed = thumb.typeRestriction === 'max'
     && (
       state.isVertical
         ? mousePosition.isLessThan(drag.restriction)
@@ -292,7 +293,7 @@ function handleThumbMouseup(event: JQuery.TriggeredEvent) {
   $(document).off('mouseup pointerup', handleThumbMouseup);
 
   drag.position = null;
-  drag.typeRestriction = null;
+  thumb.typeRestriction = null;
 
   thumb.sendDragMessage();
 
@@ -305,13 +306,13 @@ function handleThumbKeydown(event: JQuery.TriggeredEvent) {
   }
 
   const thumb = event.data;
-  const { $wrapper, state, drag } = thumb;
+  const { $wrapper, state, typeRestriction } = thumb;
   const { keyCode } = event;
 
   thumb.applyRestriction();
 
   if (keyCode === up || keyCode === right) {
-    const isForwardOpen = drag.typeRestriction !== 'max'
+    const isForwardOpen = typeRestriction !== 'max'
       || !state.restriction.isEqualTo(state.position);
 
     thumb.moveDirection = isForwardOpen
@@ -320,7 +321,7 @@ function handleThumbKeydown(event: JQuery.TriggeredEvent) {
 
     event.preventDefault();
   } else if (keyCode === down || keyCode === left) {
-    const isBackOpen = drag.typeRestriction !== 'min'
+    const isBackOpen = typeRestriction !== 'min'
       || !state.restriction.isEqualTo(state.position);
 
     thumb.moveDirection = isBackOpen

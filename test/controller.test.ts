@@ -63,6 +63,7 @@ describe('Controller', () => {
         progressBarHidden: false,
         tooltipHidden: false,
         scaleHidden: false,
+        thumbsAreRestricted: false,
         units: '',
         name: 'undefined-name',
       });

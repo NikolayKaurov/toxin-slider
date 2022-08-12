@@ -244,7 +244,7 @@ $container1.toxinSlider({
   from: 1,
   to: 10,
   hasTwoValues: true,
-  units: '',
+  units: ' коп.',
   scaleHidden: true,
   name: 'slider-1',
   thumbsAreRestricted: true,
@@ -257,7 +257,7 @@ $container2.toxinSlider({
   from: 20,
   to: 10,
   isVertical: true,
-  units: '°C',
+  units: ' °C',
   tooltipHidden: true,
   name: 'thermometer',
 });

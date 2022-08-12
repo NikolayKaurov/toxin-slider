@@ -117,6 +117,10 @@ export default class View {
       .append(this.$from)
       .append(this.$to);
 
+    $outerWrapper.append(this.$toxinSlider);
+
+    /*  The scale is appended to the slider AFTER appending the slider to the outer wrapper
+        so that when the scale is displayed, the font size and scale dimensions can be computed */
     this.scale = new Scale({
       $wrapper: this.$toxinSlider,
       state: {
@@ -124,11 +128,10 @@ export default class View {
         end,
         step,
         units,
+        isVertical,
         hidden: scaleHidden,
       },
     });
-
-    $outerWrapper.append(this.$toxinSlider);
 
     this.$toxinSlider.trigger('toxin-slider.slide', state);
   }
@@ -219,6 +222,7 @@ export default class View {
       end,
       step,
       units,
+      isVertical,
       hidden: scaleHidden,
     });
 

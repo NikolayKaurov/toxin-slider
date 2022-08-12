@@ -9,13 +9,14 @@ describe('Thumb', () => {
 
   const value = new BigNumber(17);
   const position = new BigNumber(91);
+  const restriction = new BigNumber(100);
 
   const thumb = new Thumb({
     $wrapper,
     state: {
       value,
       position,
-      restriction: new BigNumber(0),
+      restriction,
       isVertical: true,
       hidden: true,
       tooltipHidden: true,
@@ -39,6 +40,7 @@ describe('Thumb', () => {
       expect(thumb.state).toEqual({
         value,
         position,
+        restriction,
         isVertical: true,
         hidden: true,
         tooltipHidden: true,

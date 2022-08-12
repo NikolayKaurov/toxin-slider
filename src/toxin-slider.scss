@@ -20,9 +20,11 @@
   width: 100%;
   height: min-content;
   position: relative;
+
+  /* font-size must be specified in PIXELS in order to correctly calculate the density of elements in the scale */
   font-size: $thumb-thickness;
   font-family: Montserrat, Arial, sans-serif;
-  color: black;
+  color: rgba(31 32 65 / 75%);
 
   &__inner-wrapper {
     position: relative;
@@ -93,6 +95,10 @@
       transform: translateX(-50%);
       bottom: calc($thumb-thickness * 0.25);
       line-height: 1.5em;
+      padding: 5px;
+      border-radius: 5px;
+      background: white;
+      border: 1px solid rgba(31 32 65 / 25%);
 
       &_hidden {
         visibility: hidden;
@@ -169,6 +175,7 @@
       align-items: center;
       overflow: hidden;
       height: 1.5em;
+      flex-basis: 0;
 
       &:first-child {
         overflow: visible;

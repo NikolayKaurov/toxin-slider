@@ -282,6 +282,7 @@ describe('Model', () => {
         scaleHidden: false,
         tooltipHidden: false,
         progressBarHidden: false,
+        thumbsAreRestricted: false,
         name: 'test-slider',
         units: '%',
       });
@@ -297,6 +298,7 @@ describe('Model', () => {
         scaleHidden: false,
         tooltipHidden: false,
         progressBarHidden: false,
+        thumbsAreRestricted: false,
         name: 'test-slider',
         units: '%',
       });
@@ -313,6 +315,7 @@ describe('Model', () => {
         scaleHidden: true,
         tooltipHidden: true,
         progressBarHidden: true,
+        thumbsAreRestricted: true,
         name: 'slider-test',
         units: 'тугриков',
       });
@@ -328,6 +331,7 @@ describe('Model', () => {
         scaleHidden: true,
         tooltipHidden: true,
         progressBarHidden: true,
+        thumbsAreRestricted: true,
         name: 'slider-test',
         units: 'тугриков',
       });

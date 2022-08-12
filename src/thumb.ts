@@ -208,10 +208,15 @@ function handleThumbMousedown(event: JQuery.TriggeredEvent) {
 
   drag.minRestriction = grabPoint.plus(drag.wrapperPosition);
   drag.maxRestriction = drag.minRestriction.plus(drag.wrapperSize);
-  drag.restriction = drag.minRestriction.plus(
-    drag.wrapperSize.multipliedBy(state.restriction).dividedBy(100),
-  );
+  drag.restriction = state.isVertical
+    ? drag.maxRestriction.minus(
+      drag.wrapperSize.multipliedBy(state.restriction).dividedBy(100),
+    )
+    : drag.minRestriction.plus(
+      drag.wrapperSize.multipliedBy(state.restriction).dividedBy(100),
+    );
 
+  drag.typeRestriction = null;
   thumb.applyRestriction();
 
   drag.innerOffset = state.isVertical
@@ -236,13 +241,21 @@ function handleThumbMousemove(event: JQuery.TriggeredEvent) {
     ? new BigNumber(event.clientY ?? 0)
     : new BigNumber(event.clientX ?? 0);
 
-  const innerMinRestriction = drag.typeRestriction === 'min'
-    && mousePosition.isLessThan(drag.restriction);
+  const isInternalMinRestrictionCrossed = drag.typeRestriction === 'min'
+    && (
+      state.isVertical
+        ? mousePosition.isGreaterThan(drag.restriction)
+        : mousePosition.isLessThan(drag.restriction)
+    );
 
-  const innerMaxRestriction = drag.typeRestriction === 'max'
-    && mousePosition.isGreaterThan(drag.restriction);
+  const isInternalMaxRestrictionCrossed = drag.typeRestriction === 'max'
+    && (
+      state.isVertical
+        ? mousePosition.isLessThan(drag.restriction)
+        : mousePosition.isGreaterThan(drag.restriction)
+    );
 
-  if (innerMinRestriction || innerMaxRestriction) {
+  if (isInternalMinRestrictionCrossed || isInternalMaxRestrictionCrossed) {
     drag.innerOffset = state.isVertical
       ? drag.maxRestriction.minus(drag.restriction)
       : drag.restriction.minus(drag.minRestriction);
@@ -292,17 +305,32 @@ function handleThumbKeydown(event: JQuery.TriggeredEvent) {
   }
 
   const thumb = event.data;
-  const { $wrapper } = thumb;
+  const { $wrapper, state, drag } = thumb;
   const { keyCode } = event;
 
+  thumb.applyRestriction();
+
   if (keyCode === up || keyCode === right) {
-    thumb.moveDirection = moveDirection.forward;
+    const isForwardOpen = drag.typeRestriction !== 'max'
+      || !state.restriction.isEqualTo(state.position);
+
+    thumb.moveDirection = isForwardOpen
+      ? moveDirection.forward
+      : moveDirection.stop;
+
+    event.preventDefault();
   } else if (keyCode === down || keyCode === left) {
-    thumb.moveDirection = moveDirection.back;
+    const isBackOpen = drag.typeRestriction !== 'min'
+      || !state.restriction.isEqualTo(state.position);
+
+    thumb.moveDirection = isBackOpen
+      ? moveDirection.back
+      : moveDirection.stop;
+
+    event.preventDefault();
   }
 
   if (thumb.getDirection() !== moveDirection.stop) {
-    event.preventDefault();
     thumb.sendMoveMessage();
   }
 

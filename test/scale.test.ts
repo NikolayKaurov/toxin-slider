@@ -6,6 +6,13 @@ import Scale from '../src/scale';
 describe('Scale', () => {
   const $wrapper = $('<div></div>');
 
+  $wrapper.css({
+    width: '1000px',
+    height: '1000px',
+    'font-size': '10px',
+    'line-height': '15px',
+  });
+
   const state: ScaleState = {
     start: new BigNumber(1),
     end: new BigNumber(11),

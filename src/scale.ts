@@ -15,7 +15,11 @@ const format = {
 
 const decimalPlaces = 5;
 
-const fontWidth = 0.5; // font width to height ratio
+// font width to height ratio
+const fontWidth = 0.5;
+
+// If the scale step is zero, the number of scale divisions is a power of 2, maximum 16
+const defaultNumDivisions = 16;
 
 export default class Scale {
   readonly $scale: JQuery;
@@ -59,7 +63,6 @@ export default class Scale {
 
     if (scaleShouldBeUpdated) {
       this.state = { ...state };
-      console.log(this.state);
       this.$scale.empty().append(this.getInnerScale());
     }
 
@@ -72,129 +75,6 @@ export default class Scale {
     return this;
   }
 
-  getScaleStep(): BigNumber {
-    const {
-      start,
-      end,
-      step,
-      isVertical,
-    } = this.state;
-
-    const scope = end.minus(start);
-
-    const direction = scope.isNegative() ? -1 : 1;
-
-    const unsignedScope = scope.abs();
-
-    if (step.isZero()) {
-      return unsignedScope;
-    }
-
-    const size = isVertical
-      ? new BigNumber(this.$scale.outerHeight() ?? 0)
-      : new BigNumber(this.$scale.outerWidth() ?? 0);
-
-    const maxValueSize = this.getMaxValueSize();
-    console.log(`maxValueSize: ${maxValueSize.toNumber()}`);
-
-    const numberDivisionsInPrimeFactors = getPrimeFactors(
-      unsignedScope.dividedToIntegerBy(step),
-    );
-
-    const numberDivisions = () => numberDivisionsInPrimeFactors.reduce(
-      (multiplication: BigNumber, factor: BigNumber) => multiplication.multipliedBy(factor),
-      new BigNumber(1),
-    );
-
-    const stepShouldBeIncreased = () => size.dividedBy(numberDivisions()).isLessThan(maxValueSize)
-      && numberDivisionsInPrimeFactors.length > 0;
-
-    while (stepShouldBeIncreased()) {
-      numberDivisionsInPrimeFactors.pop();
-    }
-
-    return unsignedScope.minus(unsignedScope.modulo(step))
-      .dividedBy(numberDivisions())
-      .multipliedBy(direction);
-  }
-
-  getMaxValueSize(): BigNumber {
-    const { isVertical } = this.state;
-    const { $scale } = this;
-
-    if (isVertical) {
-      return new BigNumber(parseInt($scale.css('line-height'), 10));
-    }
-
-    return this.getMaxValueLength()
-      .multipliedBy(
-        new BigNumber(parseInt($scale.css('font-size'), 10))
-          .multipliedBy(fontWidth),
-      );
-  }
-
-  getMaxValueLength(): BigNumber {
-    const {
-      start,
-      end,
-      step,
-      units,
-    } = this.state;
-
-    const hasMinus = start.isNegative() || end.isNegative()
-      ? 1
-      : 0;
-
-    const unitsLength = units.length;
-
-    const startAbs = start.abs();
-    const endAbs = end.abs();
-    // step is considered greater than or equal to zero
-
-    const startInteger = startAbs.integerValue(BigNumber.ROUND_FLOOR);
-    const endInteger = endAbs.integerValue(BigNumber.ROUND_FLOOR);
-    const stepInteger = step.integerValue(BigNumber.ROUND_FLOOR);
-
-    const integerLength = startInteger.isGreaterThan(endInteger)
-      ? startInteger.toFormat(format).length
-      : endInteger.toFormat(format).length;
-
-    const startFractionLength = startAbs.minus(startInteger)
-      .dp(decimalPlaces)
-      .toFormat(format)
-      .length - 1; // Zero at the beginning of a fraction does not count
-    const endFractionLength = endAbs.minus(endInteger)
-      .dp(decimalPlaces)
-      .toFormat(format)
-      .length - 1;
-    const stepFractionLength = step.minus(stepInteger)
-      .dp(decimalPlaces)
-      .toFormat(format)
-      .length - 1;
-
-    const fractionLength = (() => {
-      if (startFractionLength > endFractionLength) {
-        if (startFractionLength > stepFractionLength) {
-          return startFractionLength;
-        }
-
-        return stepFractionLength;
-      }
-
-      if (endFractionLength > stepFractionLength) {
-        return endFractionLength;
-      }
-
-      return stepFractionLength;
-    })();
-
-    return new BigNumber(integerLength)
-      .plus(fractionLength)
-      .plus(hasMinus)
-      .plus(unitsLength)
-      .plus(1); // One additional character, as a space between scale values
-  }
-
   getInnerScale(): JQuery {
     const {
       start,
@@ -203,16 +83,9 @@ export default class Scale {
       units,
     } = this.state;
 
-    const scope = end.minus(start);
-
-    // const direction = scope.isNegative() ? -1 : 1;
-
-    /* If the step is zero, the scale consists of extreme values only */
-    /* const scaleStep = step.isZero()
-      ? new BigNumber(scope)
-      : step.multipliedBy(direction); */
     const scaleStep = this.getScaleStep();
-    // console.log(this.getScaleStep().toNumber());
+
+    const scope = end.minus(start);
 
     const modulo = step.isZero()
       ? new BigNumber(0)
@@ -305,6 +178,131 @@ export default class Scale {
 
     return $innerScale;
   }
+
+  getScaleStep(): BigNumber {
+    const {
+      start,
+      end,
+      step,
+      isVertical,
+    } = this.state;
+
+    const scope = end.minus(start);
+
+    const direction = scope.isNegative() ? -1 : 1;
+
+    const unsignedScope = scope.abs();
+
+    const size = isVertical
+      ? new BigNumber(this.$scale.outerHeight() ?? 0)
+      : new BigNumber(this.$scale.outerWidth() ?? 0);
+
+    const maxValueSize = this.getMaxValueSize();
+
+    let numberDivisions = size.dividedToIntegerBy(maxValueSize.isLessThan(1) ? 1 : maxValueSize);
+
+    if (numberDivisions.isLessThan(1)) {
+      numberDivisions = new BigNumber(1);
+    }
+
+    const perfectNumberDivisions = step.isZero()
+      ? new BigNumber(defaultNumDivisions) // If the slider step is 0, the scale step is forced
+      : unsignedScope.dividedToIntegerBy(step);
+
+    if (perfectNumberDivisions.isLessThanOrEqualTo(numberDivisions)) {
+      numberDivisions = new BigNumber(perfectNumberDivisions);
+    } else {
+      while (!perfectNumberDivisions.modulo(numberDivisions).isZero()) {
+        numberDivisions = numberDivisions.minus(1);
+      }
+    }
+
+    return unsignedScope.minus(step.isZero() ? 0 : unsignedScope.modulo(step))
+      .dividedBy(numberDivisions)
+      .multipliedBy(direction);
+  }
+
+  getMaxValueSize(): BigNumber {
+    const { isVertical } = this.state;
+    const { $scale } = this;
+
+    const lineHeight = parseInt($scale.css('line-height'), 10);
+    const fontSize = parseInt($scale.css('font-size'), 10);
+
+    if (isVertical) {
+      return new BigNumber(Number.isNaN(lineHeight) ? 1 : lineHeight);
+    }
+
+    return this.getMaxValueLength()
+      .multipliedBy(new BigNumber(Number.isNaN(fontSize) ? 1 : fontSize))
+      .multipliedBy(fontWidth);
+  }
+
+  getMaxValueLength(): BigNumber {
+    const {
+      start,
+      end,
+      step,
+      units,
+    } = this.state;
+
+    const hasMinus = start.isNegative() || end.isNegative()
+      ? 1
+      : 0;
+
+    const unitsLength = units.length;
+
+    const startAbs = start.abs();
+    const endAbs = end.abs();
+    // step is considered greater than or equal to zero
+    const stepAbs = step.isZero()
+      // If the slider step is 0, the scale step is forced
+      ? end.minus(start).abs().dividedBy(defaultNumDivisions)
+      : step;
+
+    const startInteger = startAbs.integerValue(BigNumber.ROUND_FLOOR);
+    const endInteger = endAbs.integerValue(BigNumber.ROUND_FLOOR);
+    const stepInteger = stepAbs.integerValue(BigNumber.ROUND_FLOOR);
+
+    const integerLength = startInteger.isGreaterThan(endInteger)
+      ? startInteger.toFormat(format).length
+      : endInteger.toFormat(format).length;
+
+    const startFractionLength = startAbs.minus(startInteger)
+      .dp(decimalPlaces)
+      .toFormat(format)
+      .length - 1; // Zero at the beginning of a fraction does not count
+    const endFractionLength = endAbs.minus(endInteger)
+      .dp(decimalPlaces)
+      .toFormat(format)
+      .length - 1;
+    const stepFractionLength = stepAbs.minus(stepInteger)
+      .dp(decimalPlaces)
+      .toFormat(format)
+      .length - 1;
+
+    const fractionLength = (() => {
+      if (startFractionLength > endFractionLength) {
+        if (startFractionLength > stepFractionLength) {
+          return startFractionLength;
+        }
+
+        return stepFractionLength;
+      }
+
+      if (endFractionLength > stepFractionLength) {
+        return endFractionLength;
+      }
+
+      return stepFractionLength;
+    })();
+
+    return new BigNumber(integerLength)
+      .plus(fractionLength)
+      .plus(hasMinus)
+      .plus(unitsLength)
+      .plus(1); // One additional character, as a space between scale values
+  }
 }
 
 function handleScaleMousedown(event: JQuery.TriggeredEvent) {
@@ -319,24 +317,4 @@ function handleScaleMousedown(event: JQuery.TriggeredEvent) {
     scaleValue,
     typeMessage: 'scaleMessage',
   });
-}
-
-/*  It is considered that the function argument is an integer and greater than 0. */
-function getPrimeFactors(base: BigNumber): BigNumber[] {
-  let divisor = new BigNumber(2);
-  let quotient = new BigNumber(base);
-
-  const result: BigNumber[] = [];
-
-  while (quotient.isGreaterThan(1)) {
-    while (quotient.modulo(divisor).isEqualTo(0)) {
-      result.push(new BigNumber(divisor));
-      quotient = quotient.dividedBy(divisor);
-    }
-    divisor = divisor.isEqualTo(2)
-      ? new BigNumber(3)
-      : divisor.plus(2);
-  }
-
-  return result.reverse();
 }

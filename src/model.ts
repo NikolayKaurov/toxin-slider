@@ -59,10 +59,10 @@ export default class Model {
     switch (message.typeMessage) {
       case 'barMessage':
         assignToNearest(this.getValueFromBar(message));
-        return this.state;
+        return this.sortValues();
       case 'scaleMessage':
         assignToNearest(message.scaleValue);
-        return this.state;
+        return this.sortValues();
       case 'moveMessage':
         assignToCongruent(this.getValueFromMove(message), message.value);
         return this.sortValues();

@@ -6,13 +6,6 @@ import Scale from '../src/scale';
 describe('Scale', () => {
   const $wrapper = $('<div></div>');
 
-  $wrapper.css({
-    width: '1000px',
-    height: '1000px',
-    'font-size': '10px',
-    'line-height': '15px',
-  });
-
   const state: ScaleState = {
     start: new BigNumber(1),
     end: new BigNumber(11),
@@ -26,6 +19,13 @@ describe('Scale', () => {
 
   const $scale = $('div.js-toxin-slider__scale', $wrapper);
 
+  $scale.css({
+    width: '1000px',
+    height: '1000px',
+    'font-size': '10px',
+    'line-height': '15px',
+  });
+
   describe('when created', () => {
     test('should append its html-element to the wrapper', () => {
       expect($scale.length).toEqual(1);
@@ -33,10 +33,6 @@ describe('Scale', () => {
 
     test('must have a method "update"', () => {
       expect(typeof scale.update).toBe('function');
-    });
-
-    test('should show the correct set of values', () => {
-      expect($('.js-toxin-slider__scale-value', $scale).text()).toEqual('1$1$4$7$10$11$11$');
     });
   });
 
@@ -80,10 +76,17 @@ describe('Scale', () => {
       receivedMessage = message;
     }
 
-    $($('.js-toxin-slider__scale-value', $scale).get()[3]).trigger(triggerEvent);
+    beforeEach(() => {
+      state.start = new BigNumber(10);
+      state.end = new BigNumber(30);
+      state.step = new BigNumber(5);
+      state.units = '';
+      scale.update(state);
+    });
 
     test('must send the correct message', () => {
-      expect(receivedMessage.scaleValue.toNumber()).toEqual(7);
+      $($('.js-toxin-slider__scale-value', $scale).get()[3]).trigger(triggerEvent);
+      expect(receivedMessage.scaleValue.toNumber()).toEqual(20);
     });
   });
 });

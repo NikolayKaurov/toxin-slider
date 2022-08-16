@@ -83,6 +83,7 @@ interface SliderState {
   progressBarHidden: boolean;
   tooltipHidden: boolean;
   scaleHidden: boolean;
+  scaleStep: Big;
   thumbsAreRestricted: boolean;
   name: string;
   units: string;
@@ -99,6 +100,7 @@ interface OutsideOptions {
   progressBarHidden?: boolean;
   tooltipHidden?: boolean;
   scaleHidden?: boolean;
+  scaleStep?: number | string;
   thumbsAreRestricted?: boolean;
   name?: string;
   units?: string;

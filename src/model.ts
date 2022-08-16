@@ -12,6 +12,7 @@ export default class Model {
     progressBarHidden: false,
     tooltipHidden: false,
     scaleHidden: false,
+    scaleStep: new BigNumber(0),
     thumbsAreRestricted: false,
     name: 'undefined-name',
     units: '',
@@ -90,6 +91,7 @@ export default class Model {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      scaleStep,
       thumbsAreRestricted,
       name,
       units,
@@ -109,6 +111,7 @@ export default class Model {
       step: step.toNumber(),
       from: from.toNumber(),
       to: to.toNumber(),
+      scaleStep: scaleStep.toNumber(),
     };
   }
 
@@ -138,15 +141,26 @@ export default class Model {
   }
 
   private normalizeStep(): Model {
-    const { step } = this.state;
+    const { step, scaleStep } = this.state;
     const { scope } = this;
 
     const unsignedScope = scope.abs();
     const unsignedStep = step.abs();
+    const unsignedScaleStep = scaleStep.abs();
 
     this.state.step = unsignedStep.isGreaterThan(unsignedScope)
       ? unsignedScope
       : unsignedStep;
+
+    const isCorrectScaleStep = unsignedScaleStep.isGreaterThan(this.state.step)
+      && unsignedScaleStep.isLessThanOrEqualTo(unsignedScope)
+      && unsignedScaleStep.modulo(this.state.step).isZero();
+
+    if (isCorrectScaleStep) {
+      this.state.scaleStep = unsignedScaleStep;
+    } else {
+      this.state.scaleStep = new BigNumber(this.state.step);
+    }
 
     return this;
   }
@@ -296,6 +310,7 @@ export default class Model {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      scaleStep,
       thumbsAreRestricted,
       name,
       units,
@@ -340,6 +355,10 @@ export default class Model {
 
     if (scaleHidden !== undefined) {
       state.scaleHidden = scaleHidden;
+    }
+
+    if (scaleStep !== undefined) {
+      state.scaleStep = new BigNumber(scaleStep);
     }
 
     if (thumbsAreRestricted !== undefined) {

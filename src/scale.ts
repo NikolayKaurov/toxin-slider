@@ -93,6 +93,30 @@ export default class Scale {
 
     const endMinusModulo = end.minus(modulo);
 
+    const growCoef = (() => {
+      if (!modulo.isZero()) {
+        const coef = new BigNumber(1).dividedBy(modulo).abs();
+
+        if (coef.isGreaterThan(1)) {
+          return coef;
+        }
+
+        return new BigNumber(1);
+      }
+
+      if (!scaleStep.isZero()) {
+        const coef = new BigNumber(1).dividedBy(scaleStep).abs();
+
+        if (coef.isGreaterThan(1)) {
+          return coef;
+        }
+
+        return new BigNumber(1);
+      }
+
+      return new BigNumber(1);
+    })();
+
     const fmt = { ...format, ...{ suffix: units } };
 
     let cycleValue = new BigNumber(start);
@@ -112,7 +136,7 @@ export default class Scale {
           )
           .css(
             {
-              'flex-grow': scaleStep.abs().toNumber(),
+              'flex-grow': scaleStep.multipliedBy(growCoef).abs().toNumber(),
             },
           ),
       );
@@ -135,24 +159,24 @@ export default class Scale {
           .addClass('toxin-slider__scale-item_penult')
           .css(
             {
-              'flex-grow': scaleStep.abs().toNumber(),
+              'flex-grow': scaleStep.multipliedBy(growCoef).abs().toNumber(),
             },
           );
       } else if (cycleValue.isEqualTo(end)) {
         $item
           .css({
-            'flex-grow': scaleStep.abs().toNumber(),
+            'flex-grow': scaleStep.multipliedBy(growCoef).abs().toNumber(),
           });
       } else if (outOfScale) {
         cycleValue = new BigNumber(end);
         $item
           .css({
-            'flex-grow': modulo.abs().multipliedBy(2).toNumber(),
+            'flex-grow': modulo.multipliedBy(growCoef).abs().multipliedBy(2).toNumber(),
           });
       } else {
         $item
           .css({
-            'flex-grow': scaleStep.abs().multipliedBy(2).toNumber(),
+            'flex-grow': scaleStep.multipliedBy(growCoef).abs().multipliedBy(2).toNumber(),
           });
       }
 

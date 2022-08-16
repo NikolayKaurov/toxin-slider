@@ -15,6 +15,7 @@ describe('View', () => {
     progressBarHidden: false,
     tooltipHidden: false,
     scaleHidden: false,
+    scaleStep: new BigNumber(25),
     thumbsAreRestricted: false,
     name: 'test',
     units: 'mm.',
@@ -31,6 +32,13 @@ describe('View', () => {
   const $slider = $('div.js-toxin-slider', $outerWrapper);
   const $from = $('input.js-toxin-slider__input[name="test-from"]', $outerWrapper);
   const $to = $('input.js-toxin-slider__input[name="test-to"]', $outerWrapper);
+
+  $scale.css({
+    width: '1000px',
+    height: '1000px',
+    'font-size': '10px',
+    'line-height': '15px',
+  });
 
   describe('after creation', () => {
     test('should create slider html-element', () => {
@@ -70,11 +78,6 @@ describe('View', () => {
         .toEqual('translate(-50%, 50%) scaleY(25%)');
     });
 
-    test('must pass the correct parameters to the scale', () => {
-      expect($('.js-toxin-slider__scale-value', $scale).text())
-        .toEqual('14mm.14mm.39mm.64mm.89mm.114mm.114mm.');
-    });
-
     test('must correctly position the thumbs', () => {
       expect(view.thumbA.getPosition().toNumber()).toEqual(25);
       expect(view.thumbB.getPosition().toNumber()).toEqual(50);
@@ -98,6 +101,7 @@ describe('View', () => {
       state.progressBarHidden = true;
       state.tooltipHidden = true;
       state.scaleHidden = true;
+      state.scaleStep = new BigNumber(30);
       state.name = 'test';
       state.units = ' sec.';
 
@@ -165,6 +169,7 @@ describe('View', () => {
       state.progressBarHidden = false;
       state.tooltipHidden = false;
       state.scaleHidden = false;
+      state.scaleStep = new BigNumber(40);
       state.name = 'test';
       state.units = 'руб.';
 

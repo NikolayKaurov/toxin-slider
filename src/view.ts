@@ -33,7 +33,6 @@ export default class View {
     const {
       start,
       end,
-      step,
       from,
       to,
       hasTwoValues,
@@ -41,6 +40,7 @@ export default class View {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      scaleStep,
       thumbsAreRestricted,
       units,
       name,
@@ -126,10 +126,10 @@ export default class View {
       state: {
         start,
         end,
-        step,
         units,
         isVertical,
         hidden: scaleHidden,
+        step: scaleStep,
       },
     });
 
@@ -140,7 +140,6 @@ export default class View {
     const {
       start,
       end,
-      step,
       from,
       to,
       hasTwoValues,
@@ -148,6 +147,7 @@ export default class View {
       progressBarHidden,
       tooltipHidden,
       scaleHidden,
+      scaleStep,
       thumbsAreRestricted,
       units,
       name,
@@ -220,10 +220,10 @@ export default class View {
     scale.update({
       start,
       end,
-      step,
       units,
       isVertical,
       hidden: scaleHidden,
+      step: scaleStep,
     });
 
     return this;

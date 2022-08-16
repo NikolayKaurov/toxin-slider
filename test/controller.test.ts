@@ -45,6 +45,7 @@ describe('Controller', () => {
         from: 93,
         to: 95,
         end: 100,
+        scaleStep: 4,
       });
 
       expect(Number($from.val())).toEqual(94);
@@ -63,6 +64,7 @@ describe('Controller', () => {
         progressBarHidden: false,
         tooltipHidden: false,
         scaleHidden: false,
+        scaleStep: 4,
         thumbsAreRestricted: false,
         units: '',
         name: 'undefined-name',

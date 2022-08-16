@@ -52,6 +52,7 @@ describe('Thumb', () => {
   describe('after update', () => {
     const newValue = Math.round(Math.random() * 100);
     const newPosition = Math.round(Math.random() * 100);
+    const newRestriction = Math.round(Math.random() * 100);
     let isVertical = Math.round(Math.random()) === 0;
     let axis = isVertical ? 'Y' : 'X';
     let hidden = Math.round(Math.random()) === 0;
@@ -62,9 +63,9 @@ describe('Thumb', () => {
         isVertical,
         hidden,
         tooltipHidden,
-        restriction: new BigNumber(0),
         value: new BigNumber(newValue),
         position: new BigNumber(newPosition),
+        restriction: new BigNumber(newRestriction),
         units: '$',
       });
     });
@@ -90,6 +91,10 @@ describe('Thumb', () => {
       expect($thumb.css('transform')).toEqual(`translate${axis}(${
         axis === 'X' ? newPosition - 100 : -1 * newPosition
       }%)`);
+    });
+
+    test('must have the correct restriction', () => {
+      expect(thumb.state.restriction.toNumber()).toEqual(newRestriction);
     });
 
     test('should appear or show', () => {
@@ -235,6 +240,110 @@ describe('Thumb', () => {
         expect($thumb.css('transform')).toEqual('translateY(0%)');
       });
     });
+
+    describe('if right restriction is set', () => {
+      beforeEach(() => {
+        state.isVertical = false;
+        state.position = new BigNumber(0);
+        state.restriction = new BigNumber(65);
+        thumb.update(state);
+
+        event.type = 'mousedown';
+        event.clientX = wrapperSizeX;
+        $thumb.trigger(event);
+        event.type = 'mousemove';
+        event.clientX = wrapperSizeX + wrapperSizeX * 0.75;
+        $thumb.trigger(event);
+      });
+
+      test('must not cross the restriction on the right', () => {
+        expect(thumb.getPosition().toNumber()).toEqual(65);
+        expect($thumb.css('transform')).toEqual('translateX(-35%)');
+      });
+
+      afterEach(() => {
+        event.type = 'mouseup';
+        $thumb.trigger(event);
+      });
+    });
+
+    describe('if left restriction is set', () => {
+      beforeEach(() => {
+        state.isVertical = false;
+        state.position = new BigNumber(50);
+        state.restriction = new BigNumber(35);
+        thumb.update(state);
+
+        event.type = 'mousedown';
+        event.clientX = wrapperSizeX + wrapperSizeX / 2;
+        $thumb.trigger(event);
+        event.type = 'mousemove';
+        event.clientX = wrapperSizeX + wrapperSizeX * 0.1;
+        $thumb.trigger(event);
+      });
+
+      test('must not cross the restriction on the left', () => {
+        expect(thumb.getPosition().toNumber()).toEqual(35);
+        expect($thumb.css('transform')).toEqual('translateX(-65%)');
+      });
+
+      afterEach(() => {
+        event.type = 'mouseup';
+        $thumb.trigger(event);
+      });
+    });
+
+    describe('if bottom restriction is set', () => {
+      beforeEach(() => {
+        state.isVertical = true;
+        state.position = new BigNumber(100);
+        state.restriction = new BigNumber(45);
+        thumb.update(state);
+
+        event.type = 'mousedown';
+        event.clientY = wrapperSizeY;
+        $thumb.trigger(event);
+        event.type = 'mousemove';
+        event.clientY = 2 * wrapperSizeY - wrapperSizeY * 0.4;
+        $thumb.trigger(event);
+      });
+
+      test('must not cross the bottom restriction', () => {
+        expect(thumb.getPosition().toNumber()).toEqual(45);
+        expect($thumb.css('transform')).toEqual('translateY(-45%)');
+      });
+
+      afterEach(() => {
+        event.type = 'mouseup';
+        $thumb.trigger(event);
+      });
+    });
+
+    describe('if top restriction is set', () => {
+      beforeEach(() => {
+        state.isVertical = true;
+        state.position = new BigNumber(0);
+        state.restriction = new BigNumber(85);
+        thumb.update(state);
+
+        event.type = 'mousedown';
+        event.clientY = 2 * wrapperSizeY;
+        $thumb.trigger(event);
+        event.type = 'mousemove';
+        event.clientY = wrapperSizeY + wrapperSizeY * 0.1;
+        $thumb.trigger(event);
+      });
+
+      test('must not cross the top restriction', () => {
+        expect(thumb.getPosition().toNumber()).toEqual(85);
+        expect($thumb.css('transform')).toEqual('translateY(-85%)');
+      });
+
+      afterEach(() => {
+        event.type = 'mouseup';
+        $thumb.trigger(event);
+      });
+    });
   });
 
   describe('when a key is pressed', () => {
@@ -260,6 +369,12 @@ describe('Thumb', () => {
     const event = $.Event('keydown');
 
     afterEach(() => {
+      moveMessage = {
+        typeMessage: 'moveMessage',
+        moveDirection: 0,
+        value: new BigNumber(0),
+      };
+
       event.type = 'keyup';
       thumb.$thumb.trigger(event);
       event.type = 'keydown';
@@ -299,6 +414,30 @@ describe('Thumb', () => {
       expect(moveMessage.typeMessage).toEqual('moveMessage');
       expect(moveMessage.value.toNumber()).toEqual(thumbValue);
       expect(moveMessage.moveDirection).toEqual(1);
+    });
+
+    test('if back restriction is set, should not send a message', () => {
+      thumb.state.restriction = new BigNumber(20);
+      thumb.state.position = new BigNumber(20);
+      thumb.typeRestriction = 'min';
+      event.keyCode = left;
+      $thumb.trigger(event);
+
+      expect(moveMessage.typeMessage).toEqual('moveMessage');
+      expect(moveMessage.value.toNumber()).toEqual(0);
+      expect(moveMessage.moveDirection).toEqual(0);
+    });
+
+    test('if forward restriction is set, should not send a message', () => {
+      thumb.state.restriction = new BigNumber(20);
+      thumb.state.position = new BigNumber(20);
+      thumb.typeRestriction = 'max';
+      event.keyCode = right;
+      $thumb.trigger(event);
+
+      expect(moveMessage.typeMessage).toEqual('moveMessage');
+      expect(moveMessage.value.toNumber()).toEqual(0);
+      expect(moveMessage.moveDirection).toEqual(0);
     });
   });
 

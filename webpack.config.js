@@ -1,10 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const dist = path.resolve(__dirname, 'demo/dist');
 const demo = path.resolve(__dirname, 'demo/src');
 const src = path.resolve(__dirname, 'src');
+const favicons = path.resolve(__dirname, 'demo/src/favicons');
 
 module.exports = {
   mode: 'development',
@@ -19,6 +21,7 @@ module.exports = {
 
   output: {
     path: dist,
+    clean: true,
   },
 
   devServer: {
@@ -41,6 +44,12 @@ module.exports = {
     }),
 
     new MiniCssExtractPlugin({ filename: '[name].css' }),
+
+    new CopyPlugin({
+      patterns: [
+        { from: favicons, to: dist },
+      ],
+    }),
   ],
 
   module: {
@@ -48,6 +57,9 @@ module.exports = {
       {
         test: /\.pug$/,
         loader: 'simple-pug-loader',
+        options: {
+          pretty: true,
+        },
       },
       {
         test: /\.(ts|tsx)$/i,

@@ -1,0 +1,65 @@
+mixin stand(options = {})
+  -
+    const {
+      start = 0,
+      end = 0,
+      step = 0,
+      from = 0,
+      to = 0,
+      hasTwoValues = false,
+      isVertical = false,
+      progressBarHidden = false,
+      tooltipHidden = false,
+      scaleHidden = false,
+      scaleStep = 0,
+      thumbsAreRestricted = false,
+      name = 'undefined-name',
+      units = '',
+    } = options;
+
+  .stand.js-stand
+    .stand__container.js-stand__container(
+      data-start= start
+      data-end= end
+      data-step= step
+      data-from= from
+      data-to= to
+      data-has-two-values= hasTwoValues
+      data-is-vertical= isVertical
+      data-progress-bar-hidden= progressBarHidden
+      data-tooltip-hidden= tooltipHidden
+      data-scale-hidden= scaleHidden
+      data-scale-step= scaleStep
+      data-thumbs-are-restricted= thumbsAreRestricted
+      data-name= name
+      data-units= units
+    )
+    form.stand__form.js-stand__form
+      label.stand__label.js-stand__label Начало шкалы
+        input.stand__input.js-stand__input(type="number" step="any" name="start")
+      label.stand__label.js-stand__label Конец шкалы
+        input.stand__input.js-stand__input(type="number" step="any" name="end")
+      label.stand__label.js-stand__label Шаг слайдера
+        input.stand__input.js-stand__input(type="number" step="any" name="step")
+      label.stand__label.js-stand__label Шаг шкалы
+        input.stand__input.js-stand__input(type="number" step="any" name="scale-step")
+      label.stand__label.js-stand__label От
+        input.stand__input.js-stand__input(type="number" step="any" name="from")
+      label.stand__label.js-stand__label До
+        input.stand__input.js-stand__input(type="number" step="any" name="to")
+      label.stand__label.js-stand__label единицы
+        input.stand__input.js-stand__input(type="text" name="units")
+      label.stand__label.js-stand__label два значения
+        input.stand__input.js-stand__input(type="checkbox" name="has-two-values")
+      label.stand__label.js-stand__label слайдер вертикальный
+        input.stand__input.js-stand__input(type="checkbox" name="is-vertical")
+      label.stand__label.js-stand__label бегунки ограничивают друг друга
+        input.stand__input.js-stand__input(type="checkbox" name="thumbs-are-restricted")
+      label.stand__label.js-stand__label шкала скрыта
+        input.stand__input.js-stand__input(type="checkbox" name="scale-hidden")
+      label.stand__label.js-stand__label прогресс-бар скрыт
+        input.stand__input.js-stand__input(type="checkbox" name="progress-bar-hidden")
+      label.stand__label.js-stand__label тултип скрыт
+        input.stand__input.js-stand__input(type="checkbox" name="tooltip-hidden")
+      button.stand__button применить
+

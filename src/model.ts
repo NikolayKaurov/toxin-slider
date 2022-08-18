@@ -152,14 +152,18 @@ export default class Model {
       ? unsignedScope
       : unsignedStep;
 
-    const isCorrectScaleStep = unsignedScaleStep.isGreaterThan(this.state.step)
-      && unsignedScaleStep.isLessThanOrEqualTo(unsignedScope)
-      && unsignedScaleStep.modulo(this.state.step).isZero();
-
-    if (isCorrectScaleStep) {
-      this.state.scaleStep = unsignedScaleStep;
+    if (this.state.step.isZero()) {
+      this.state.scaleStep = unsignedScaleStep.isGreaterThan(unsignedScope)
+        ? unsignedScope
+        : unsignedScaleStep;
     } else {
-      this.state.scaleStep = new BigNumber(this.state.step);
+      const isCorrectScaleStep = unsignedScaleStep.isGreaterThan(this.state.step)
+        && unsignedScaleStep.isLessThanOrEqualTo(unsignedScope)
+        && unsignedScaleStep.modulo(this.state.step).isZero();
+
+      this.state.scaleStep = isCorrectScaleStep
+        ? unsignedScaleStep
+        : new BigNumber(this.state.step);
     }
 
     return this;

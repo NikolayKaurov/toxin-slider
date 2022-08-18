@@ -1,106 +1,67 @@
+include ./Stand/Stand
+
 doctype html
 html(lang="ru")
   head
     title= 'toxin-slider demo'
     meta(charset="utf-8")
+    meta(name="description" content="4 этап обучения Metalamp")
+    meta(name="Keywords" content="typescript, SCSS, PUG, webpack, rollup")
+    meta(name="viewport" content="initial-scale=1.0, width=device-width")
+    link(rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
+    link(rel="manifest" href="/site.webmanifest")
+    link(rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5")
+    meta(name="msapplication-TileColor" content="#da532c")
+    meta(name="theme-color" content="#ffffff")
   body
     h1 toxin-slider demo
-    .demo.demo-1
-      .container.container-1.js-container.js-container-1
-      form.config.js-config.config-1.js-config-1
-        label.label Начало шкалы
-          input.input(type="number" step="0.001" name="start-1")
-        label.label Конец шкалы
-          input.input(type="number" step="0.001" name="end-1")
-        label.label Шаг шкалы
-          input.input(type="number" step="0.001" name="step-1")
-        label.label От
-          input.input(type="number" step="0.001" name="from-1")
-        label.label До
-          input.input(type="number" step="0.001" name="to-1")
-        label.label два значения
-          input(type="checkbox" name="hasTwoValues-1")
-        label.label слайдер вертикальный
-          input(type="checkbox" name="isVertical-1")
-        label.label шкала скрыта
-          input(type="checkbox" name="scaleHidden-1")
-        label.label прогресс-бар скрыт
-          input(type="checkbox" name="progressBarHidden-1")
-        label.label тултип скрыт
-          input(type="checkbox" name="tooltipHidden-1")
-        button применить
-    .demo.demo-2
-      .container.container-2.js-container.js-container-2
-      form.config.js-config.config-2.js-config-2
-        label.label Начало шкалы
-          input.input(type="number" step="0.001" name="start-2")
-        label.label Конец шкалы
-          input.input(type="number" step="0.001" name="end-2")
-        label.label Шаг шкалы
-          input.input(type="number" step="0.001" name="step-2")
-        label.label От
-          input.input(type="number" step="0.001" name="from-2")
-        label.label До
-          input.input(type="number" step="0.001" name="to-2")
-        label.label два значения
-          input(type="checkbox" name="hasTwoValues-2")
-        label.label слайдер вертикальный
-          input(type="checkbox" name="isVertical-2")
-        label.label шкала скрыта
-          input(type="checkbox" name="scaleHidden-2")
-        label.label прогресс-бар скрыт
-          input(type="checkbox" name="progressBarHidden-2")
-        label.label тултип скрыт
-          input(type="checkbox" name="tooltipHidden-2")
-        button применить
-    .demo.demo-3
-      .container.container-3.js-container.js-container-3
-      form.config.js-config.config-3.js-config-3
-        label.label Начало шкалы
-          input.input(type="number" step="0.001" name="start-3")
-        label.label Конец шкалы
-          input.input(type="number" step="0.001" name="end-3")
-        label.label Шаг шкалы
-          input.input(type="number" step="0.001" name="step-3")
-        label.label От
-          input.input(type="number" step="0.001" name="from-3")
-        label.label До
-          input.input(type="number" step="0.001" name="to-3")
-        label.label два значения
-          input(type="checkbox" name="hasTwoValues-3")
-        label.label слайдер вертикальный
-          input(type="checkbox" name="isVertical-3")
-        label.label шкала скрыта
-          input(type="checkbox" name="scaleHidden-3")
-        label.label прогресс-бар скрыт
-          input(type="checkbox" name="progressBarHidden-3")
-        label.label тултип скрыт
-          input(type="checkbox" name="tooltipHidden-3")
-        button применить
-    .demo.demo-4
-      .container.container-4.js-container.js-container-4
-      form.config.js-config.config-4.js-config-4
-        label.label Начало шкалы
-          input.input(type="number" step="0.001" name="start-4")
-        label.label Конец шкалы
-          input.input(type="number" step="0.001" name="end-4")
-        label.label Шаг шкалы
-          input.input(type="number" step="0.001" name="step-4")
-        label.label От
-          input.input(type="number" step="0.001" name="from-4")
-        label.label До
-          input.input(type="number" step="0.001" name="to-4")
-        label.label два значения
-          input(type="checkbox" name="hasTwoValues-4")
-        label.label слайдер вертикальный
-          input(type="checkbox" name="isVertical-4")
-        label.label шкала скрыта
-          input(type="checkbox" name="scaleHidden-4")
-        label.label прогресс-бар скрыт
-          input(type="checkbox" name="progressBarHidden-4")
-        label.label тултип скрыт
-          input(type="checkbox" name="tooltipHidden-4")
-        button применить
-
-
-
+    .stands
+      +stand({
+        start: -4,
+        step: 2,
+        end: 14,
+        from: 1,
+        to: 10,
+        hasTwoValues: true,
+        units: ' коп.',
+        scaleHidden: true,
+        name: 'slider-1',
+        thumbsAreRestricted: true,
+      })
+      +stand({
+        start: -40,
+        step: 5,
+        end: 50,
+        from: 20,
+        to: 10,
+        isVertical: true,
+        units: ' °C',
+        tooltipHidden: true,
+        name: 'thermometer',
+        thumbsAreRestricted: true,
+      })
+      +stand({
+        start: 19,
+        step: 3.25,
+        end: 0,
+        from: 1,
+        to: 10,
+        hasTwoValues: true,
+        units: '',
+        name: 'slider-2',
+        thumbsAreRestricted: true,
+      })
+      +stand({
+        start: 80,
+        step: 1,
+        end: 105,
+        from: 81,
+        to: 102,
+        hasTwoValues: true,
+        units: '',
+        name: 'slider-3',
+        isVertical: true,
+        thumbsAreRestricted: true,
+      })

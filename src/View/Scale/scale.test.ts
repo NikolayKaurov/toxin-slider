@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import Scale from '../src/scale';
+import Scale from './Scale';
 
 describe('Scale', () => {
   const $wrapper = $('<div></div>');

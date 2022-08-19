@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import Model from '../src/model';
+import Model from './Model';
 
 describe('Model', () => {
   const model = new Model({ typeMessage: 'options' });

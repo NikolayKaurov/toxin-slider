@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import Thumb from '../src/thumb';
+import Thumb from './Thumb';
 
 describe('Thumb', () => {
   const $wrapper = $('<div></div>');

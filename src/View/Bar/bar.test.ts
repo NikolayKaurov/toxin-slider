@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import Bar from './bar';
+import Bar from './Bar';
 
 describe('Bar', () => {
   const $wrapper = $('<div></div>');

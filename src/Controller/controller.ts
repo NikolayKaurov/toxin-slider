@@ -1,5 +1,5 @@
-import Model from './model';
-import View from './view';
+import Model from '../Model/Model';
+import View from '../View/View';
 
 export default class Controller {
   readonly model;

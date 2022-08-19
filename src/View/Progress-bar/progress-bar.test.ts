@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import ProgressBar from '../src/progress-bar';
+import ProgressBar from './Progress-bar';
 
 describe('Progress-bar', () => {
   const $wrapper = $('<div></div>');

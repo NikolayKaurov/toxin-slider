@@ -1,8 +1,8 @@
 import $ from 'jquery';
 
-import Model from '../src/model';
-import View from '../src/view';
-import Controller from '../src/controller';
+import Model from '../Model/Model';
+import View from '../View/View';
+import Controller from './Controller';
 
 describe('Controller', () => {
   const $outerWrapper = $('<div></div>');

@@ -1,10 +1,10 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import Thumb from './thumb';
-import ProgressBar from './progress-bar';
-import Bar from './bar';
-import Scale from './scale';
+import Thumb from './Thumb/Thumb';
+import ProgressBar from './Progress-bar/Progress-bar';
+import Bar from './Bar/Bar';
+import Scale from './Scale/Scale';
 
 const toxinSliderHTML = '<div class="toxin-slider js-toxin-slider"></div>';
 const innerWrapperHTML = '<div class="toxin-slider__inner-wrapper js-toxin-slider__inner-wrapper"></div>';

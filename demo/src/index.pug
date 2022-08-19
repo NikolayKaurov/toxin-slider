@@ -19,11 +19,11 @@ html(lang="ru")
     h1 toxin-slider demo
     .stands
       +stand({
-        start: -4,
-        step: 2,
-        end: 14,
+        start: 0,
+        step: 0.9,
+        end: 99,
         from: 1,
-        to: 10,
+        to: 50,
         hasTwoValues: true,
         units: ' коп.',
         scaleHidden: true,
@@ -37,14 +37,14 @@ html(lang="ru")
         from: 20,
         to: 10,
         isVertical: true,
-        units: ' °C',
+        units: ' °C',
         tooltipHidden: true,
         name: 'thermometer',
         thumbsAreRestricted: true,
       })
       +stand({
         start: 19,
-        step: 3.25,
+        step: 3,
         end: 0,
         from: 1,
         to: 10,

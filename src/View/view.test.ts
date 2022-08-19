@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-import View from '../src/view';
+import View from './View';
 
 describe('View', () => {
   const state: SliderState = {

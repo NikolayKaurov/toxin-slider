@@ -1,8 +1,8 @@
 import $ from 'jquery';
 
-import Model from './model';
-import View from './view';
-import Controller from './controller';
+import Model from './Model/Model';
+import View from './View/View';
+import Controller from './Controller/Controller';
 
 $.fn.toxinSlider = function toxinSlider(this: JQuery, outsideOptions: OutsideOptions): JQuery {
   return this.each((index, outerWrapper) => {

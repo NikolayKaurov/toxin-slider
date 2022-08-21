@@ -35,7 +35,7 @@
 $('.container').toxinSlider({
   start: 30, // начало шкалы
   end: 50, // конец шкалы
-  step: 1, // шаг слайдерв
+  step: 1, // шаг слайдера
   scaleStep: 5, // шаг шкалы
   from: 32, // положение 1 бегунка по умолчанию 
   to: 41, // положение 2 бегунка по умолчанию
@@ -109,7 +109,7 @@ $('.container')
   .toxinSlider({
     start: 30, // начало шкалы
     end: 50, // конец шкалы
-    step: 1, // шаг слайдерв
+    step: 1, // шаг слайдера
     scaleStep: 5, // шаг шкалы
     from: 32, // положение 1 бегунка по умолчанию 
     to: 41, // положение 2 бегунка по умолчанию
@@ -182,23 +182,23 @@ const model = new Model({
 параметры слайдера (соответствует интерфейсу `SliderState`).
 ```
 interface SliderState {
-  start: Big;
-  end: Big;
-  step: Big;
-  from: Big;
-  to: Big;
+  start: BigNumber;
+  end: BigNumber;
+  step: BigNumber;
+  from: BigNumber;
+  to: BigNumber;
   hasTwoValues: boolean;
   isVertical: boolean;
   progressBarHidden: boolean;
   tooltipHidden: boolean;
   scaleHidden: boolean;
-  scaleStep: Big;
+  scaleStep: BigNumber;
   thumbsAreRestricted: boolean;
   name: string;
   units: string;
 }
-
 ```
+
 ```
 const view = new View({
   $outerWrapper,
@@ -232,7 +232,11 @@ const view = new View({
 ### Класс Controller
 
 При создании экземпляра *контроллера*, указываются конкретные экземпляры *вида*
-и *модели*. К jQuery-объекту данного экземпляра *вида* прикрепляется обработчик
+и *модели*.
+```
+const controller = new Controller({ model, view });
+```
+К jQuery-объекту данного экземпляра *вида* прикрепляется обработчик
 события `toxin-slider.update`. Это событие генерируется при
 вводе пользователя или вызове метода `.toxinSlider()`. Обработчик события `toxin-slider.update`
 изменяет состояние *модели*, используя данные события, затем вызывает обновление

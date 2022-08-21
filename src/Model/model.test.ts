@@ -38,6 +38,28 @@ describe('Model', () => {
       }).step.toNumber()).toEqual(1);
     });
 
+    test('should normalize the scale step value', () => {
+      expect(model.update({
+        typeMessage: 'options',
+        start: 10,
+        end: 0,
+        step: 3,
+        from: -8,
+        scaleStep: 4,
+      }).scaleStep.toNumber()).toEqual(Math.abs(3));
+
+      expect(model.update({
+        typeMessage: 'options',
+        scaleStep: -9,
+      }).scaleStep.toNumber()).toEqual(Math.abs(9));
+
+      expect(model.update({
+        typeMessage: 'options',
+        step: 0,
+        scaleStep: -6.66,
+      }).scaleStep.toNumber()).toEqual(Math.abs(6.66));
+    });
+
     test('should normalize thumb value', () => {
       expect(model.update({
         typeMessage: 'options',

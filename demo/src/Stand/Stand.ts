@@ -171,8 +171,6 @@ function handleFormSubmit(event: JQuery.TriggeredEvent) {
     scaleHidden: $scaleHidden.prop('checked') === true,
     units: String($units.val()),
   });
-
-  console.log(Number($start.val()));
 }
 
 $('.js-stand').each((index, stand) => {

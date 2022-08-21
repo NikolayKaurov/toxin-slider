@@ -88,11 +88,11 @@ describe('Progress-bar', () => {
         }%)`);
     });
 
-    test('must appear or show', () => {
+    test('must appear or hide', () => {
       expect($progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(state.hidden);
     });
 
-    test('must appear or show (repeated with inversion)', () => {
+    test('must appear or hide (repeated with inversion)', () => {
       expect($progressBar.hasClass('toxin-slider__progress-bar_hidden')).toEqual(state.hidden);
     });
   });

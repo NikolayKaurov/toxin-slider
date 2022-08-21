@@ -62,6 +62,48 @@ describe('Scale', () => {
     });
   });
 
+  describe('in horizontal state', () => {
+    beforeEach(() => {
+      $scale.css({
+        width: '290px',
+        'font-size': '10px',
+      });
+
+      state.start = new BigNumber(-1);
+      state.end = new BigNumber(32.3);
+      state.step = new BigNumber(5.55);
+      state.units = ' руб.';
+      state.isVertical = false;
+      scale.update(state);
+    });
+
+    test('should limit the density of values', () => {
+      expect($('.js-toxin-slider__scale-value', $scale).text())
+        .toEqual('-1 руб.-1 руб.10,1 руб.21,2 руб.32,3 руб.32,3 руб.');
+    });
+  });
+
+  describe('in vertical state', () => {
+    beforeEach(() => {
+      $scale.css({
+        height: '85px',
+        'line-height': '15px',
+      });
+
+      state.start = new BigNumber(-2);
+      state.end = new BigNumber(31.3);
+      state.step = new BigNumber(5.55);
+      state.units = ' коп.';
+      state.isVertical = true;
+      scale.update(state);
+    });
+
+    test('should limit the density of values', () => {
+      expect($('.js-toxin-slider__scale-value', $scale).text())
+        .toEqual('-2 коп.-2 коп.9,1 коп.20,2 коп.31,3 коп.31,3 коп.');
+    });
+  });
+
   describe('after clicking on the scale division', () => {
     const triggerEvent = $.Event('mousedown');
 

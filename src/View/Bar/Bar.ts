@@ -1,8 +1,8 @@
 import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
-/*  This constant should be duplicated in the stylesheet ./toxin-slider.scss: $thumb-length
-    and the test file ../test/bar.test.ts: const thumbLength */
+/*  This constant should be duplicated in the stylesheet ../../toxin-slider.scss: $thumb-length
+    and the test file ./bar.test.ts: const thumbLength */
 const thumbLength = new BigNumber(16);
 
 const halfThumbLength = thumbLength.dividedBy(2);

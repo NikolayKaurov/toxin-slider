@@ -2,7 +2,7 @@ import $ from 'jquery';
 import BigNumber from 'bignumber.js';
 
 import Thumb from './Thumb/Thumb';
-import ProgressBar from './Progress-bar/Progress-bar';
+import ProgressBar from './ProgressBar/ProgressBar';
 import Bar from './Bar/Bar';
 import Scale from './Scale/Scale';
 

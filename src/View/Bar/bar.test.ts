@@ -51,8 +51,8 @@ describe('Bar', () => {
   });
 
   describe('when clicked on', () => {
-    /*  This constant should be duplicated in the stylesheet ../src/toxin-slider.scss: $thumb-length
-        and the file ../src/bar.ts: const thumbLength */
+    /*  This constant should be duplicated in the stylesheet ../../toxin-slider.scss: $thumb-length
+        and the file ./Bar.ts: const thumbLength */
     const thumbLength = new BigNumber(16);
     const halfThumbLength = thumbLength.dividedBy(2);
 

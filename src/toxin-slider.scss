@@ -4,8 +4,8 @@
   $root: &;
   $thumb-thickness: 16px;
 
-  /* This constant must be duplicated in the file ./bar.ts: const thumbLength
-  and the test file ../test/bar.test.ts: const thumbLength */
+  /* This constant must be duplicated in the file ./View/Bar/Bar.ts: const thumbLength
+  and the test file ./View/Bar/bar.test.ts: const thumbLength */
   $thumb-length: 16px;
   $half-thumb-thickness: math.div($thumb-thickness, 2);
   $half-thumb-length: math.div($thumb-length, 2);

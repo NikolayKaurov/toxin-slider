@@ -35,6 +35,8 @@ class Stand {
 
   $units: JQuery;
 
+  $lamp: JQuery;
+
   constructor(stand: HTMLElement) {
     this.$stand = $(stand);
     this.$container = $('.js-stand__container', this.$stand);
@@ -52,6 +54,7 @@ class Stand {
     this.$tooltipHidden = $('input.js-stand__input[name="tooltip-hidden"]', this.$form);
     this.$scaleHidden = $('input.js-stand__input[name="scale-hidden"]', this.$form);
     this.$units = $('input.js-stand__input[name="units"]', this.$form);
+    this.$lamp = $('.js-stand__lamp', this.$stand);
 
     this.$container.on('toxin-slider.slide', this, handleContainerSlide);
     this.$form.on('submit', this, handleFormSubmit);
@@ -112,6 +115,7 @@ function handleContainerSlide(event: JQuery.TriggeredEvent, options: OutsideOpti
     $scaleHidden,
     $thumbsAreRestricted,
     $units,
+    $lamp,
   } = stand;
 
   $start.val(start);
@@ -128,6 +132,9 @@ function handleContainerSlide(event: JQuery.TriggeredEvent, options: OutsideOpti
   $tooltipHidden.prop('checked', tooltipHidden);
   $scaleHidden.prop('checked', scaleHidden);
   $units.val(units);
+
+  $lamp.addClass('stand__lamp_enabled');
+  setTimeout(() => $lamp.removeClass('stand__lamp_enabled'), 300);
 }
 
 function handleFormSubmit(event: JQuery.TriggeredEvent) {

@@ -18,22 +18,26 @@ mixin stand(options = {})
     } = options;
 
   .stand.js-stand
-    .stand__container.js-stand__container(
-      data-start= start
-      data-end= end
-      data-step= step
-      data-from= from
-      data-to= to
-      data-has-two-values= hasTwoValues
-      data-is-vertical= isVertical
-      data-progress-bar-hidden= progressBarHidden
-      data-tooltip-hidden= tooltipHidden
-      data-scale-hidden= scaleHidden
-      data-scale-step= scaleStep
-      data-thumbs-are-restricted= thumbsAreRestricted
-      data-name= name
-      data-units= units
-    )
+    .stand__wrapper.js-stand__wrapper
+      .stand__lamp-container.js-stand__lamp-container
+        .stand__lamp.js-stand__lamp
+        .stand__lamp-label.js-stand__lamp-label слайдер обновляется
+      .stand__container.js-stand__container(
+        data-start= start
+        data-end= end
+        data-step= step
+        data-from= from
+        data-to= to
+        data-has-two-values= hasTwoValues
+        data-is-vertical= isVertical
+        data-progress-bar-hidden= progressBarHidden
+        data-tooltip-hidden= tooltipHidden
+        data-scale-hidden= scaleHidden
+        data-scale-step= scaleStep
+        data-thumbs-are-restricted= thumbsAreRestricted
+        data-name= name
+        data-units= units
+      )
     form.stand__form.js-stand__form
       label.stand__label.js-stand__label Начало шкалы
         input.stand__input.js-stand__input(type="number" step="any" name="start")

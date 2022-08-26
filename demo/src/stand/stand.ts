@@ -2,6 +2,8 @@ import $ from 'jquery';
 
 import '../../../src/toxin-slider';
 
+const glowTime = 300;
+
 class Stand {
   $stand: JQuery;
 
@@ -36,6 +38,8 @@ class Stand {
   $units: JQuery;
 
   $lamp: JQuery;
+
+  timerID: NodeJS.Timeout | null;
 
   constructor(stand: HTMLElement) {
     this.$stand = $(stand);
@@ -75,6 +79,17 @@ class Stand {
       units: this.$container.attr('data-units'),
       name: this.$container.attr('data-name'),
     });
+
+    this.timerID = null;
+  }
+
+  enableLamp() {
+    if (this.timerID !== null) {
+      clearTimeout(this.timerID);
+    }
+
+    this.$lamp.addClass('stand__lamp_enabled');
+    this.timerID = setTimeout(() => this.$lamp.removeClass('stand__lamp_enabled'), glowTime);
   }
 }
 
@@ -115,7 +130,6 @@ function handleContainerSlide(event: JQuery.TriggeredEvent, options: OutsideOpti
     $scaleHidden,
     $thumbsAreRestricted,
     $units,
-    $lamp,
   } = stand;
 
   $start.val(start);
@@ -133,8 +147,7 @@ function handleContainerSlide(event: JQuery.TriggeredEvent, options: OutsideOpti
   $scaleHidden.prop('checked', scaleHidden);
   $units.val(units);
 
-  $lamp.addClass('stand__lamp_enabled');
-  setTimeout(() => $lamp.removeClass('stand__lamp_enabled'), 300);
+  stand.enableLamp();
 }
 
 function handleFormSubmit(event: JQuery.TriggeredEvent) {

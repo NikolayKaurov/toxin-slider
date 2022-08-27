@@ -10,16 +10,40 @@
   font-size: 16px;
   font-family: Montserrat, Arial, sans-serif;
 
+  &:nth-child(2) {
+    #{$root}__wrapper {
+      max-width: 60vw;
+      height: 60vh;
+    }
+  }
+
+  &:nth-child(3) {
+    #{$root}__wrapper {
+      max-width: 65vw;
+      height: 70vh;
+    }
+  }
+
+  &:nth-child(4) {
+    #{$root}__wrapper {
+      max-width: 55vw;
+      height: 80vh;
+    }
+  }
+
   &__wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     flex-grow: 1;
     max-width: 70vw;
-    height: 40vh;
+    height: 50vh;
   }
 
   &__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid #6fcf97;
     box-shadow: 0 0 32px #6fcf97;
     flex-grow: 1;
@@ -37,39 +61,36 @@
     position: relative;
     background: radial-gradient(circle at center, red 0, white 100%);
 
-    @mixin lamp-auxiliary {
-      content: '';
-      width: calc(100% + 1px);
-      height: calc(100% + 1px);
-      border-radius: 100%;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1;
+    &_enabled#{$root}__lamp {
+      &::before {
+        opacity: 0;
+      }
     }
 
     &::before {
-      @include lamp-auxiliary;
-
+      width: calc(100% + 1px);
+      height: calc(100% + 1px);
       background-color: white;
       opacity: 1;
       transition: opacity 300ms;
     }
 
     &::after {
-      @include lamp-auxiliary;
-
       width: calc(100% - 2px);
       height: calc(100% - 2px);
       border: 3px solid rgba(31 32 65 / 25%);
       background: transparent;
     }
 
-    &_enabled {
-      &::before {
-        opacity: 0;
-      }
+    &::before,
+    &::after {
+      content: '';
+      border-radius: 100%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
     }
 
     &-container {
@@ -91,6 +112,7 @@
     align-items: center;
     font-size: 20px;
     margin: 10px;
+    cursor: pointer;
   }
 
   &__input {
@@ -106,6 +128,10 @@
       outline: 0;
       box-shadow: 0 0 10px black;
     }
+
+    &[type='checkbox'] {
+      cursor: pointer;
+    }
   }
 
   &__button {
@@ -113,6 +139,7 @@
     font-family: Montserrat, Arial, sans-serif;
     border: 1px solid gray;
     border-radius: 5px;
+    cursor: pointer;
 
     &:focus {
       outline: 0;
@@ -121,27 +148,6 @@
 
     &:active {
       transform: scale(0.9);
-    }
-  }
-
-  &:nth-child(2) {
-    #{$root}__wrapper {
-      max-width: 60vw;
-      height: 60vh;
-    }
-  }
-
-  &:nth-child(3) {
-    #{$root}__wrapper {
-      max-width: 65vw;
-      height: 70vh;
-    }
-  }
-
-  &:nth-child(4) {
-    #{$root}__wrapper {
-      max-width: 55vw;
-      height: 80vh;
     }
   }
 }

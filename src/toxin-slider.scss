@@ -251,6 +251,7 @@
     z-index: 0;
     will-change: transform;
     transition: transform $animation-duration;
+    cursor: pointer;
 
     &_hidden {
       visibility: hidden;
@@ -268,6 +269,7 @@
     border: 1px solid rgba(31 32 65 / 25%);
     border-radius: $bar-thickness;
     z-index: 0;
+    cursor: pointer;
   }
 
   &__scale {
